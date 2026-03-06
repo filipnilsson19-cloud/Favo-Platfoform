@@ -1,6 +1,6 @@
 # Supabase Setup
 
-Det här projektet är nu förberett för `Prisma + Supabase Postgres`.
+Det här projektet är nu förberett för `Prisma + Supabase Postgres + Supabase Auth`.
 
 ## 1. Skapa ett Supabase-projekt
 
@@ -19,12 +19,16 @@ Filen ska innehålla:
 ```env
 DATABASE_URL="YOUR_SUPABASE_POOLED_DATABASE_URL"
 DIRECT_URL="YOUR_SUPABASE_DIRECT_DATABASE_URL"
+NEXT_PUBLIC_SUPABASE_URL="YOUR_SUPABASE_PROJECT_URL"
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="YOUR_SUPABASE_PUBLISHABLE_KEY"
 ```
 
 Hämta värdena här:
 
 - `DATABASE_URL`: `Connect -> ORMs -> Prisma`
 - `DIRECT_URL`: `Connect -> Direct connection`
+- `NEXT_PUBLIC_SUPABASE_URL`: `Project Settings -> API`
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`: `Project Settings -> API`
 
 ## 3. Generera Prisma-klienten
 
@@ -52,18 +56,21 @@ npm run dev
 
 Om databasen är korrekt kopplad kommer startsidan nu att läsa recepten från Supabase i stället för från den lokala fallback-filen.
 
+## 7. Lägg till första testanvändaren
+
+Tills vi bygger en riktig användaradmin gör du så här:
+
+1. Gå till `Authentication -> Users` i Supabase
+2. Skapa en användare med e-post och lösenord
+3. Logga sedan in i appen med den användaren
+
+Första personen som loggar in får automatiskt rollen `admin`. Nästa användare får `personal`.
+
 ## Viktigt just nu
 
-Just nu är appen `database-ready` för läsning och seedning.
+Just nu är appen redo för:
 
-Det betyder:
-
-- recept kan ligga i Supabase
-- startsidan kan läsa recept från Supabase
-- editorn sparar fortfarande bara lokalt i klienten tills vi bygger write-flödet mot databasen
-
-Nästa steg efter detta är därför att bygga:
-
-1. `Skapa recept` mot databasen
-2. `Uppdatera recept` mot databasen
-3. `Ta bort/inaktivera recept` mot databasen
+- recept från Supabase
+- spara/uppdatera/radera recept mot Supabase
+- login via Supabase Auth
+- rollerna `admin` och `personal`

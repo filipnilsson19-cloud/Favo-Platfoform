@@ -51,3 +51,8 @@ export type Recipe = Prisma.RecipeModel
  * 
  */
 export type RecipeItem = Prisma.RecipeItemModel
+/**
+ * Model UserProfile
+ * 
+ */
+export type UserProfile = Prisma.UserProfileModel

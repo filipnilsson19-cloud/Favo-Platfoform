@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { logoutAction } from "@/app/login/actions";
 import {
   BookIcon,
   DocumentIcon,
@@ -9,6 +10,7 @@ import {
   ShieldIcon,
   StarIcon,
 } from "@/components/navigation-icons";
+import type { AppUser } from "@/types/auth";
 
 import styles from "./favo-shell.module.css";
 
@@ -26,10 +28,12 @@ const secondaryNav = [
 ];
 
 type FavoShellProps = {
+  authEnabled: boolean;
   children: React.ReactNode;
+  user: AppUser;
 };
 
-export function FavoShell({ children }: FavoShellProps) {
+export function FavoShell({ authEnabled, children, user }: FavoShellProps) {
   return (
     <div className={styles.shell}>
       <aside className={styles.sidebar} aria-label="Huvudmeny">
@@ -79,6 +83,27 @@ export function FavoShell({ children }: FavoShellProps) {
               </a>
             );
           })}
+
+          <div className={styles.sessionCard}>
+            <div className={styles.sessionMeta}>
+              <strong>{user.displayName}</strong>
+              <span>
+                {authEnabled
+                  ? user.role === "admin"
+                    ? "Admin"
+                    : "Personal"
+                  : "Lokalt förhandsläge"}
+              </span>
+            </div>
+
+            {authEnabled ? (
+              <form action={logoutAction}>
+                <button className={styles.sessionButton} type="submit">
+                  Logga ut
+                </button>
+              </form>
+            ) : null}
+          </div>
         </div>
       </aside>
 

@@ -10,4 +10,5 @@
  */
 export type * from './models/Recipe'
 export type * from './models/RecipeItem'
+export type * from './models/UserProfile'
 export type * from './commonInputTypes'

@@ -676,6 +676,13 @@
   transform: translateY(-1px);
 }
 
+.drawerButtonPrimary:disabled,
+.drawerButtonSecondary:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+  transform: none;
+}
+
 .drawerButtonPrimary {
   background: rgba(17, 17, 17, 0.94);
   color: #fff;
@@ -688,6 +695,14 @@
   box-shadow:
     inset 0 0 0 1px rgba(20, 20, 20, 0.08),
     0 4px 10px rgba(20, 20, 20, 0.08);
+}
+
+.drawerButtonDanger {
+  background: rgba(177, 36, 36, 0.08);
+  color: #8a2b2b;
+  box-shadow:
+    inset 0 0 0 1px rgba(177, 36, 36, 0.12),
+    0 4px 10px rgba(20, 20, 20, 0.06);
 }
 
 .drawerStatusBadge {

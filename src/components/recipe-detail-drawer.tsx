@@ -6,19 +6,23 @@ import type { Recipe } from "@/types/recipe";
 import styles from "./recipe-book.module.css";
 
 type RecipeDetailDrawerProps = {
+  canManage: boolean;
   recipe?: Recipe;
   isOpen: boolean;
   onClose: () => void;
   onEdit: (recipeId: string) => void;
   onDuplicate: (recipeId: string) => void;
+  onDelete: (recipeId: string) => void;
 };
 
 export function RecipeDetailDrawer({
+  canManage,
   recipe,
   isOpen,
   onClose,
   onEdit,
   onDuplicate,
+  onDelete,
 }: RecipeDetailDrawerProps) {
   return (
     <section
@@ -50,13 +54,6 @@ export function RecipeDetailDrawer({
               <button
                 className={styles.drawerButtonSecondary}
                 type="button"
-                onClick={() => onDuplicate(recipe.id)}
-              >
-                Duplicera
-              </button>
-              <button
-                className={styles.drawerButtonSecondary}
-                type="button"
                 onClick={() => window.print()}
               >
                 Skriv ut
@@ -68,13 +65,31 @@ export function RecipeDetailDrawer({
               >
                 Stäng
               </button>
-              <button
-                className={styles.drawerButtonPrimary}
-                type="button"
-                onClick={() => onEdit(recipe.id)}
-              >
-                Redigera
-              </button>
+              {canManage ? (
+                <>
+                  <button
+                    className={styles.drawerButtonSecondary}
+                    type="button"
+                    onClick={() => onDuplicate(recipe.id)}
+                  >
+                    Duplicera
+                  </button>
+                  <button
+                    className={`${styles.drawerButtonSecondary} ${styles.drawerButtonDanger}`}
+                    type="button"
+                    onClick={() => onDelete(recipe.id)}
+                  >
+                    Radera
+                  </button>
+                  <button
+                    className={styles.drawerButtonPrimary}
+                    type="button"
+                    onClick={() => onEdit(recipe.id)}
+                  >
+                    Redigera
+                  </button>
+                </>
+              ) : null}
             </div>
           </header>
 

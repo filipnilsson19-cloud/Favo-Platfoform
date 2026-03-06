@@ -22,6 +22,8 @@ type RecipeEditorDrawerProps = {
   isOpen: boolean;
   mode: EditorMode;
   saveLabel: string;
+  canSave: boolean;
+  isSaving: boolean;
   onAddItem: () => void;
   onClose: () => void;
   onFieldChange: <K extends keyof Recipe>(field: K, value: Recipe[K]) => void;
@@ -42,6 +44,8 @@ export function RecipeEditorDrawer({
   isOpen,
   mode,
   saveLabel,
+  canSave,
+  isSaving,
   onAddItem,
   onClose,
   onFieldChange,
@@ -303,11 +307,21 @@ export function RecipeEditorDrawer({
         </section>
 
         <footer className={styles.editorFooter}>
-          <button className={styles.drawerButtonSecondary} type="button" onClick={onSaveDraft}>
-            Spara
+          <button
+            className={styles.drawerButtonSecondary}
+            type="button"
+            disabled={!canSave || isSaving}
+            onClick={onSaveDraft}
+          >
+            {isSaving ? "Sparar..." : "Spara"}
           </button>
-          <button className={styles.drawerButtonPrimary} type="button" onClick={onPublish}>
-            Publicera
+          <button
+            className={styles.drawerButtonPrimary}
+            type="button"
+            disabled={!canSave || isSaving}
+            onClick={onPublish}
+          >
+            {isSaving ? "Sparar..." : "Publicera"}
           </button>
         </footer>
       </article>

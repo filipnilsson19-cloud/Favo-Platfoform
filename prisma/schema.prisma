@@ -7,6 +7,11 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserRole {
+  admin
+  personal
+}
+
 model Recipe {
   id           String       @id
   title        String
@@ -42,4 +47,16 @@ model RecipeItem {
 
   @@index([recipeId, sortOrder])
   @@map("recipe_items")
+}
+
+model UserProfile {
+  id          String   @id
+  email       String   @unique
+  displayName String   @default("")
+  role        UserRole @default(personal)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([role])
+  @@map("user_profiles")
 }

@@ -25,6 +25,7 @@ import { StationDrawer } from "./station-drawer";
 import styles from "./recipe-book.module.css";
 
 type RecipeBookProps = {
+  canManage: boolean;
   recipes: Recipe[];
 };
 
@@ -32,7 +33,7 @@ type ViewMode = "card" | "table";
 type ActiveCategory = RecipeCategory | "Alla";
 type ActiveStatus = RecipeStatus | "Alla";
 
-export function RecipeBook({ recipes }: RecipeBookProps) {
+export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
   const [recipeList, setRecipeList] = useState<Recipe[]>(() =>
     recipes.map((recipe) => cloneRecipe(recipe)),
   );
@@ -48,6 +49,11 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
   const [editorMode, setEditorMode] = useState<EditorMode>("new");
   const [editorSaveLabel, setEditorSaveLabel] = useState("Inte sparad ännu");
   const [editorDraft, setEditorDraft] = useState<Recipe>(() => blankRecipe());
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setRecipeList(recipes.map((recipe) => cloneRecipe(recipe)));
+  }, [recipes]);
 
   const categories = ["Alla", ...new Set(recipeList.map((recipe) => recipe.category))] as ActiveCategory[];
   const visibleRecipes = recipeList.filter((recipe) => {
@@ -69,6 +75,13 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
   const selectedRecipes = recipeList.filter((recipe) =>
     selectedRecipeIds.includes(recipe.id),
   );
+  const draftContentItems = contentItems(editorDraft.items);
+  const canSaveRecipe =
+    editorDraft.title.trim().length > 0 &&
+    draftContentItems.length > 0 &&
+    draftContentItems.every(
+      (item) => item.name.trim().length > 0 && item.amount.trim().length > 0,
+    );
   const resolvedStationSource =
     stationSource === "selected" && selectedRecipes.length === 0
       ? "visible"
@@ -114,6 +127,8 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
   }
 
   function openEditor(mode: EditorMode, recipeId?: string) {
+    if (!canManage) return;
+
     setEditorMode(mode);
     setIsDetailOpen(false);
     setIsStationOpen(false);
@@ -214,41 +229,112 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
     setEditorSaveLabel("Ändringar ej sparade");
   }
 
-  function saveRecipe(statusOverride?: RecipeStatus) {
+  async function saveRecipe(statusOverride?: RecipeStatus) {
+    if (!canSaveRecipe || isSaving) {
+      setEditorSaveLabel("Fyll i namn och minst en komplett rad");
+      return;
+    }
+
     const nextStatus = statusOverride ?? editorDraft.status;
     const normalized = normalizeRecipe(editorDraft, nextStatus);
     normalized.summary = buildRecipeSummary(normalized.items);
 
-    setRecipeList((current) => {
-      const existingIndex = current.findIndex((recipe) => recipe.id === normalized.id);
+    setEditorSaveLabel("Sparar...");
+    setIsSaving(true);
 
-      if (existingIndex === -1) {
-        return [normalized, ...current];
+    try {
+      const response = await fetch("/api/recipes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          recipe: normalized,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save recipe");
       }
 
-      return current.map((recipe, index) =>
-        index === existingIndex ? normalized : recipe,
+      const payload = (await response.json()) as { recipe: Recipe };
+      const savedRecipe = cloneRecipe(payload.recipe);
+
+      setRecipeList((current) => {
+        const existingIndex = current.findIndex(
+          (recipe) => recipe.id === savedRecipe.id,
+        );
+
+        if (existingIndex === -1) {
+          return [savedRecipe, ...current];
+        }
+
+        return current.map((recipe, index) =>
+          index === existingIndex ? savedRecipe : recipe,
+        );
+      });
+
+      if (activeCategory !== "Alla" && activeCategory !== savedRecipe.category) {
+        setActiveCategory(savedRecipe.category);
+      }
+
+      setActiveRecipeId(savedRecipe.id);
+      setEditorDraft(cloneRecipe(savedRecipe));
+      setEditorMode("edit");
+      setEditorSaveLabel(
+        nextStatus === "Publicerad"
+          ? "Publicerad"
+          : nextStatus === "Inaktiv"
+            ? "Inaktiv"
+            : "Utkast sparat",
       );
-    });
 
-    if (activeCategory !== "Alla" && activeCategory !== normalized.category) {
-      setActiveCategory(normalized.category);
+      if (nextStatus === "Publicerad") {
+        setIsEditorOpen(false);
+        setIsDetailOpen(true);
+      }
+    } catch (error) {
+      console.error("Could not save recipe", error);
+      setEditorSaveLabel("Kunde inte spara");
+      window.alert("Det gick inte att spara receptet. Försök igen.");
+    } finally {
+      setIsSaving(false);
     }
+  }
 
-    setActiveRecipeId(normalized.id);
-    setEditorDraft(cloneRecipe(normalized));
-    setEditorMode("edit");
-    setEditorSaveLabel(
-      nextStatus === "Publicerad"
-        ? "Publicerad"
-        : nextStatus === "Inaktiv"
-          ? "Inaktiv"
-          : "Utkast sparat",
+  async function deleteRecipe(recipeId: string) {
+    const recipe = recipeList.find((entry) => entry.id === recipeId);
+    const shouldDelete = window.confirm(
+      `Vill du radera "${recipe?.title || "receptet"}"? Detta går inte att ångra.`,
     );
 
-    if (nextStatus === "Publicerad") {
-      setIsEditorOpen(false);
-      setIsDetailOpen(true);
+    if (!shouldDelete) return;
+
+    try {
+      const response = await fetch("/api/recipes", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          recipeId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete recipe");
+      }
+
+      setRecipeList((current) => current.filter((entry) => entry.id !== recipeId));
+      setSelectedRecipeIds((current) => current.filter((id) => id !== recipeId));
+      setIsDetailOpen(false);
+
+      if (activeRecipeId === recipeId) {
+        setActiveRecipeId("");
+      }
+    } catch (error) {
+      console.error("Could not delete recipe", error);
+      window.alert("Det gick inte att radera receptet. Försök igen.");
     }
   }
 
@@ -372,16 +458,18 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
           >
             Visa
           </button>
-          <button
-            className={`${styles.rowAction} ${styles.rowActionStrong}`}
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              openEditor("edit", recipe.id);
-            }}
-          >
-            Redigera
-          </button>
+          {canManage ? (
+            <button
+              className={`${styles.rowAction} ${styles.rowActionStrong}`}
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                openEditor("edit", recipe.id);
+              }}
+            >
+              Redigera
+            </button>
+          ) : null}
         </div>
       </article>
     );
@@ -508,13 +596,15 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
               >
                 Stationsvy
               </button>
-              <button
-                className={styles.actionButtonGhost}
-                type="button"
-                onClick={() => openEditor("new")}
-              >
-                Nytt recept
-              </button>
+              {canManage ? (
+                <button
+                  className={styles.actionButtonGhost}
+                  type="button"
+                  onClick={() => openEditor("new")}
+                >
+                  Nytt recept
+                </button>
+              ) : null}
             </div>
           </div>
 
@@ -545,28 +635,34 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
       </section>
 
       <RecipeDetailDrawer
+        canManage={canManage}
         recipe={activeRecipe}
         isOpen={isDetailOpen}
         onClose={() => setIsDetailOpen(false)}
         onEdit={(recipeId) => openEditor("edit", recipeId)}
         onDuplicate={(recipeId) => openEditor("duplicate", recipeId)}
+        onDelete={deleteRecipe}
       />
 
-      <RecipeEditorDrawer
-        categories={categories.filter((category): category is RecipeCategory => category !== "Alla")}
-        draft={editorDraft}
-        isOpen={isEditorOpen}
-        mode={editorMode}
-        saveLabel={editorSaveLabel}
-        onAddItem={addDraftItem}
-        onClose={() => setIsEditorOpen(false)}
-        onFieldChange={updateDraftField}
-        onItemChange={updateDraftItem}
-        onItemFlagToggle={toggleDraftItemFlag}
-        onPublish={() => saveRecipe("Publicerad")}
-        onRemoveItem={removeDraftItem}
-        onSaveDraft={() => saveRecipe()}
-      />
+      {canManage ? (
+        <RecipeEditorDrawer
+          categories={categories.filter((category): category is RecipeCategory => category !== "Alla")}
+          draft={editorDraft}
+          canSave={canSaveRecipe}
+          isOpen={isEditorOpen}
+          isSaving={isSaving}
+          mode={editorMode}
+          saveLabel={editorSaveLabel}
+          onAddItem={addDraftItem}
+          onClose={() => setIsEditorOpen(false)}
+          onFieldChange={updateDraftField}
+          onItemChange={updateDraftItem}
+          onItemFlagToggle={toggleDraftItemFlag}
+          onPublish={() => saveRecipe("Publicerad")}
+          onRemoveItem={removeDraftItem}
+          onSaveDraft={() => saveRecipe()}
+        />
+      ) : null}
 
       <StationDrawer
         canBuildSelected={selectedRecipes.length > 0}
