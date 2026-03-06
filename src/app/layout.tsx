@@ -1,10 +1,36 @@
 import type { Metadata } from "next";
-import { Archivo } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const archivo = Archivo({
-  subsets: ["latin"],
-  variable: "--font-archivo",
+const graphik = localFont({
+  variable: "--font-graphik",
+  src: [
+    {
+      path: "../../Graphik Family/Graphik-Regular-Trial.otf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../Graphik Family/Graphik-Medium-Trial.otf",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../Graphik Family/Graphik-Semibold-Trial.otf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../Graphik Family/Graphik-Bold-Trial.otf",
+      weight: "700",
+      style: "normal",
+    },
+    {
+      path: "../../Graphik Family/Graphik-Black-Trial.otf",
+      weight: "900",
+      style: "normal",
+    },
+  ],
 });
 
 export const metadata: Metadata = {
@@ -19,7 +45,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sv">
-      <body className={archivo.variable}>{children}</body>
+      <body className={`${graphik.className} ${graphik.variable}`}>{children}</body>
     </html>
   );
 }

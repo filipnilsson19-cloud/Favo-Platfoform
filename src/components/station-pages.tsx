@@ -1,4 +1,5 @@
-import { buildStationMeta, paginateStationRecipes } from "@/lib/station-utils";
+import { formatRecipeItemAmount } from "@/lib/recipe-utils";
+import { paginateStationRecipes } from "@/lib/station-utils";
 import type { StationPrintPayload } from "@/types/station";
 
 import styles from "./station-pages.module.css";
@@ -15,6 +16,16 @@ const packClassMap = {
   spread: styles.packSpread,
   dense: styles.packDense,
   compact: styles.packCompact,
+};
+
+const cardToneClassMap = {
+  Bowl: styles.cardToneBowl,
+  Sallad: styles.cardToneSalad,
+  Burger: styles.cardToneBurger,
+  Taco: styles.cardToneTaco,
+  Bao: styles.cardToneBao,
+  Sides: styles.cardToneSides,
+  Sås: styles.cardToneSauce,
 };
 
 export function StationPages({
@@ -48,37 +59,41 @@ export function StationPages({
       }`}
     >
       {pages.map((page, pageIndex) => {
-        const pageRecipes = page.columns.flatMap((column) => column.recipes);
-        const meta =
+        const pageMeta =
           pages.length > 1
-            ? `${buildStationMeta(pageRecipes.length)} • Sida ${pageIndex + 1}/${pages.length}`
-            : buildStationMeta(pageRecipes.length);
+            ? `Sida ${pageIndex + 1}/${pages.length}`
+            : `${payload.recipeCount} recept`;
 
         return (
           <section key={`${payload.title}-${pageIndex}`} className={styles.page}>
             <div className={styles.pageHeader}>
-              <span>{payload.title}</span>
-              <span>{meta}</span>
+              <span className={styles.pageLabel}>{payload.title}</span>
+              <span className={styles.pageMeta}>{pageMeta}</span>
             </div>
 
             <div className={`${styles.pack} ${packClassMap[page.layout.key]}`}>
               {page.columns.map((column, columnIndex) => (
                 <div key={`${pageIndex}-${columnIndex}`} className={styles.column}>
                   {column.recipes.map((recipe) => (
-                    <article key={recipe.id} className={styles.card}>
+                    <article
+                      key={recipe.id}
+                      className={`${styles.card} ${cardToneClassMap[recipe.category]}`}
+                    >
                       <header className={styles.cardHeader}>
-                        <h2 className={styles.cardTitle}>{recipe.title}</h2>
-                        {payload.showCategoryLabel ? (
-                          <span className={styles.cardCategory}>{recipe.category}</span>
-                        ) : null}
+                        <div className={styles.cardIdentity}>
+                          <h2 className={styles.cardTitle}>{recipe.title}</h2>
+                          {payload.showCategoryLabel ? (
+                            <span className={styles.cardCategory}>{recipe.category}</span>
+                          ) : null}
+                        </div>
                       </header>
 
-                      <div className={styles.table}>
+                      <div className={styles.list}>
                         {recipe.items.map((item, index) =>
                           item.isSpacer ? (
                             <div
                               key={`${recipe.id}-spacer-${index}`}
-                              className={`${styles.row} ${styles.rowSpacer}`}
+                              className={styles.rowSpacer}
                               aria-hidden="true"
                             />
                           ) : (
@@ -88,26 +103,26 @@ export function StationPages({
                                 item.isEmphasis ? styles.rowEmphasis : ""
                               }`}
                             >
-                              <span
-                                className={`${styles.rowInfo} ${
-                                  item.info ? "" : styles.rowInfoEmpty
-                                }`}
-                              >
-                                {item.info || "–"}
+                              <div className={styles.rowLead}>
+                                {item.info ? (
+                                  <span className={styles.rowTag}>{item.info}</span>
+                                ) : null}
+                                <span className={styles.rowName}>{item.name}</span>
+                              </div>
+                              <span className={styles.rowAmount}>
+                                {formatRecipeItemAmount(item)}
                               </span>
-                              <span className={styles.rowName}>{item.name}</span>
-                              <span className={styles.rowAmount}>{item.amount}</span>
                             </div>
                           ),
                         )}
-
-                        <div className={styles.total}>
-                          <span className={styles.totalLabel}>Totalvikt</span>
-                          <strong className={styles.totalValue}>
-                            {recipe.totalAmount}
-                          </strong>
-                        </div>
                       </div>
+
+                      <footer className={styles.cardFooter}>
+                        <span className={styles.cardFooterLabel}>Total</span>
+                        <strong className={styles.cardFooterValue}>
+                          {recipe.totalAmount}
+                        </strong>
+                      </footer>
                     </article>
                   ))}
                 </div>

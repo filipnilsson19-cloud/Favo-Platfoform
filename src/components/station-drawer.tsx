@@ -48,32 +48,35 @@ export function StationDrawer({
         <header className={styles.toolbar}>
           <div className={styles.meta}>
             <h2 id="station-sheet-title">{payload?.title || "Stationsblad"}</h2>
-            <span aria-hidden="true">•</span>
-            <span>{payload?.sourceLabel || "Inget urval"}</span>
-            <span aria-hidden="true">•</span>
-            <span>{payload?.recipeCount || 0} recept</span>
+            <p>
+              {payload
+                ? `${payload.sourceLabel} • ${payload.recipeCount} recept`
+                : "Inget urval"}
+            </p>
           </div>
 
           <div className={styles.actions}>
-            <button
-              className={`${styles.buttonGhost} ${
-                source === "visible" ? styles.buttonGhostActive : ""
-              }`}
-              type="button"
-              onClick={onBuildVisible}
-            >
-              Från synliga
-            </button>
-            <button
-              className={`${styles.buttonGhost} ${
-                source === "selected" ? styles.buttonGhostActive : ""
-              }`}
-              type="button"
-              disabled={!canBuildSelected}
-              onClick={onBuildSelected}
-            >
-              Från valda
-            </button>
+            <div className={styles.sourceToggle} role="group" aria-label="Välj urval">
+              <button
+                className={`${styles.sourceButton} ${
+                  source === "visible" ? styles.sourceButtonActive : ""
+                }`}
+                type="button"
+                onClick={onBuildVisible}
+              >
+                Synliga
+              </button>
+              <button
+                className={`${styles.sourceButton} ${
+                  source === "selected" ? styles.sourceButtonActive : ""
+                }`}
+                type="button"
+                disabled={!canBuildSelected}
+                onClick={onBuildSelected}
+              >
+                Valda
+              </button>
+            </div>
             <button className={styles.button} type="button" onClick={onPrint}>
               Skriv ut A4
             </button>

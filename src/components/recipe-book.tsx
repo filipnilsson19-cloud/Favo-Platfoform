@@ -10,6 +10,7 @@ import {
   computeAmountSummary,
   contentItems,
   normalizeRecipe,
+  recipeStatusOptions,
 } from "@/lib/recipe-utils";
 import {
   buildStationPayload,
@@ -27,16 +28,18 @@ type RecipeBookProps = {
   recipes: Recipe[];
 };
 
-type ViewMode = "list" | "card" | "table";
+type ViewMode = "card" | "table";
 type ActiveCategory = RecipeCategory | "Alla";
+type ActiveStatus = RecipeStatus | "Alla";
 
 export function RecipeBook({ recipes }: RecipeBookProps) {
   const [recipeList, setRecipeList] = useState<Recipe[]>(() =>
     recipes.map((recipe) => cloneRecipe(recipe)),
   );
-  const [view, setView] = useState<ViewMode>("list");
+  const [view, setView] = useState<ViewMode>("table");
   const [activeCategory, setActiveCategory] = useState<ActiveCategory>("Alla");
-  const [activeRecipeId, setActiveRecipeId] = useState<string>(recipes[0]?.id ?? "");
+  const [activeStatus, setActiveStatus] = useState<ActiveStatus>("Alla");
+  const [activeRecipeId, setActiveRecipeId] = useState<string>("");
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isStationOpen, setIsStationOpen] = useState(false);
@@ -47,10 +50,12 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
   const [editorDraft, setEditorDraft] = useState<Recipe>(() => blankRecipe());
 
   const categories = ["Alla", ...new Set(recipeList.map((recipe) => recipe.category))] as ActiveCategory[];
-  const visibleRecipes =
-    activeCategory === "Alla"
-      ? recipeList
-      : recipeList.filter((recipe) => recipe.category === activeCategory);
+  const visibleRecipes = recipeList.filter((recipe) => {
+    const categoryMatch =
+      activeCategory === "Alla" || recipe.category === activeCategory;
+    const statusMatch = activeStatus === "Alla" || recipe.status === activeStatus;
+    return categoryMatch && statusMatch;
+  });
   const resolvedActiveRecipeId =
     visibleRecipes.find((recipe) => recipe.id === activeRecipeId)?.id ??
     recipeList.find((recipe) => recipe.id === activeRecipeId)?.id ??
@@ -114,11 +119,13 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
     setIsStationOpen(false);
 
     if (mode === "new") {
+      setActiveRecipeId("");
       setEditorDraft(blankRecipe());
       setEditorSaveLabel("Tomt utkast");
     } else {
       const source = recipeList.find((recipe) => recipe.id === recipeId);
       if (!source) return;
+      setActiveRecipeId(source.id);
 
       if (mode === "duplicate") {
         setEditorDraft({
@@ -148,7 +155,7 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
 
   function updateDraftItem(
     index: number,
-    field: "info" | "name" | "amount",
+    field: "info" | "name" | "amount" | "unit",
     value: string,
   ) {
     setEditorDraft((current) => ({
@@ -169,6 +176,7 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
           info: "",
           name: "",
           amount: "",
+          unit: "g",
           isEmphasis: false,
           isSpacer: false,
         },
@@ -206,8 +214,9 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
     setEditorSaveLabel("Ändringar ej sparade");
   }
 
-  function saveRecipe(status: RecipeStatus) {
-    const normalized = normalizeRecipe(editorDraft, status);
+  function saveRecipe(statusOverride?: RecipeStatus) {
+    const nextStatus = statusOverride ?? editorDraft.status;
+    const normalized = normalizeRecipe(editorDraft, nextStatus);
     normalized.summary = buildRecipeSummary(normalized.items);
 
     setRecipeList((current) => {
@@ -229,9 +238,15 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
     setActiveRecipeId(normalized.id);
     setEditorDraft(cloneRecipe(normalized));
     setEditorMode("edit");
-    setEditorSaveLabel(status === "Publicerad" ? "Publicerad" : "Utkast sparat");
+    setEditorSaveLabel(
+      nextStatus === "Publicerad"
+        ? "Publicerad"
+        : nextStatus === "Inaktiv"
+          ? "Inaktiv"
+          : "Utkast sparat",
+    );
 
-    if (status === "Publicerad") {
+    if (nextStatus === "Publicerad") {
       setIsEditorOpen(false);
       setIsDetailOpen(true);
     }
@@ -281,7 +296,7 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
       JSON.stringify(stationPayload),
     );
 
-    const printUrl = `/station-print?ts=${Date.now()}`;
+    const printUrl = "/station-print";
     const printWindow = window.open(printUrl, "_blank", "noopener,noreferrer");
 
     if (!printWindow) {
@@ -302,43 +317,68 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
           view === "card" ? styles.recipeCardCard : "",
           view === "table" ? styles.recipeCardTable : "",
           isActive ? styles.recipeCardActive : "",
+          isSelected ? styles.recipeCardSelected : "",
         ].join(" ")}
+        onClick={() => openRecipe(recipe.id)}
       >
-        <label className={styles.recipeSelect} aria-label={`Välj ${recipe.title}`}>
+        <label
+          className={styles.recipeSelect}
+          aria-label={`Välj ${recipe.title}`}
+          onClick={(event) => event.stopPropagation()}
+        >
           <input
             className={styles.recipeCheckbox}
             type="checkbox"
             checked={isSelected}
+            onClick={(event) => event.stopPropagation()}
             onChange={() => toggleRecipeSelection(recipe.id)}
           />
         </label>
         <span className={styles.recipeType}>{recipe.category}</span>
 
-        <button
-          className={styles.recipeMain}
-          type="button"
-          onClick={() => openRecipe(recipe.id)}
-        >
+        <div className={styles.recipeMain}>
           <strong className={styles.recipeTitle}>{recipe.title}</strong>
           <span className={styles.recipeCopy}>{recipe.summary}</span>
-        </button>
+        </div>
 
-        <span className={styles.recipeCell}>{itemCount} komponenter</span>
-        <span className={styles.recipeCell}>{computeAmountSummary(recipe.items)}</span>
-        <span className={styles.recipeCell}>{recipe.updatedLabel}</span>
+        <span className={`${styles.recipeCell} ${styles.recipeComponentsCell}`}>
+          {itemCount} komponenter
+        </span>
+        <span className={`${styles.recipeCell} ${styles.recipeTotalCell}`}>
+          {computeAmountSummary(recipe.items)}
+        </span>
+        <span className={`${styles.recipeCell} ${styles.recipeUpdatedCell}`}>
+          <span
+            className={`${styles.recipeStatus} ${
+              recipe.status === "Publicerad"
+                ? styles.recipeStatusPublished
+                : recipe.status === "Inaktiv"
+                  ? styles.recipeStatusInactive
+                  : styles.recipeStatusDraft
+            }`}
+          >
+            {recipe.status}
+          </span>
+        </span>
 
         <div className={styles.recipeActions}>
           <button
             className={styles.rowAction}
             type="button"
-            onClick={() => openRecipe(recipe.id)}
+            onClick={(event) => {
+              event.stopPropagation();
+              openRecipe(recipe.id);
+            }}
           >
             Visa
           </button>
           <button
             className={`${styles.rowAction} ${styles.rowActionStrong}`}
             type="button"
-            onClick={() => openEditor("edit", recipe.id)}
+            onClick={(event) => {
+              event.stopPropagation();
+              openEditor("edit", recipe.id);
+            }}
           >
             Redigera
           </button>
@@ -359,113 +399,147 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
           </p>
         </header>
 
-        <div className={styles.recipeToolbar} aria-label="Receptöversikt">
-          <div className={styles.toolbarCluster}>
-            <div className={styles.toolbarGroup}>
-              <span className={`${styles.toolbarPill} ${styles.toolbarPillActive}`}>
-                {visibleRecipes.length} recept
-              </span>
-              <span className={styles.toolbarPill}>
-                {selectedRecipes.length} valda
-              </span>
-              <button
-                className={styles.toolbarButton}
-                type="button"
-                onClick={selectVisibleRecipes}
-              >
-                Markera synliga
-              </button>
-              <button
-                className={styles.toolbarButton}
-                type="button"
-                onClick={clearSelectedRecipes}
-                disabled={selectedRecipes.length === 0}
-              >
-                Rensa val
-              </button>
-            </div>
-
-            <div className={styles.toolbarFilters}>
-              {categories.map((category) => {
-                const isActive = category === activeCategory;
-
-                return (
-                  <button
-                    key={category}
-                    className={[
-                      styles.filterChip,
-                      styles[
-                        `filterChip${categoryToneMap[category][0].toUpperCase()}${categoryToneMap[category].slice(1)}`
-                      ],
-                      isActive ? styles.filterChipActive : "",
-                    ].join(" ")}
-                    type="button"
-                    aria-pressed={isActive}
-                    onClick={() => setActiveCategory(category)}
-                  >
-                    {category}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className={styles.toolbarActions}>
-            <div className={styles.viewToggle} role="group" aria-label="Välj vy">
-              {(["list", "card", "table"] as ViewMode[]).map((mode) => (
+        <div className={styles.recipeWorkspace}>
+          <div className={styles.recipeToolbar} aria-label="Receptöversikt">
+            <div className={styles.toolbarCluster}>
+              <div className={styles.toolbarGroup}>
+                <span className={`${styles.toolbarPill} ${styles.toolbarPillActive}`}>
+                  {visibleRecipes.length} recept
+                </span>
+                <span className={styles.toolbarPill}>
+                  {selectedRecipes.length} valda
+                </span>
                 <button
-                  key={mode}
-                  className={`${styles.viewToggleButton} ${
-                    view === mode ? styles.viewToggleButtonActive : ""
-                  }`}
+                  className={styles.toolbarButton}
                   type="button"
-                  aria-pressed={view === mode}
-                  onClick={() => setView(mode)}
+                  onClick={selectVisibleRecipes}
                 >
-                  {mode === "list" ? "Lista" : mode === "card" ? "Kort" : "Tabell"}
+                  Markera synliga
                 </button>
-              ))}
+                <button
+                  className={styles.toolbarButton}
+                  type="button"
+                  onClick={clearSelectedRecipes}
+                  disabled={selectedRecipes.length === 0}
+                >
+                  Rensa val
+                </button>
+              </div>
+
+              <div className={styles.toolbarFilters}>
+                {categories.map((category) => {
+                  const isActive = category === activeCategory;
+
+                  return (
+                    <button
+                      key={category}
+                      className={[
+                        styles.filterChip,
+                        styles[
+                          `filterChip${categoryToneMap[category][0].toUpperCase()}${categoryToneMap[category].slice(1)}`
+                        ],
+                        isActive ? styles.filterChipActive : "",
+                      ].join(" ")}
+                      type="button"
+                      aria-pressed={isActive}
+                      onClick={() => setActiveCategory(category)}
+                    >
+                      {category}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className={styles.toolbarStatusFilters}>
+                {(["Alla", ...recipeStatusOptions] as ActiveStatus[]).map((status) => {
+                  const isActive = status === activeStatus;
+
+                  return (
+                    <button
+                      key={status}
+                      className={[
+                        styles.filterChip,
+                        styles[
+                          `statusChip${
+                            status === "Alla"
+                              ? "All"
+                              : status === "Publicerad"
+                                ? "Published"
+                                : status === "Inaktiv"
+                                  ? "Inactive"
+                                  : "Draft"
+                          }`
+                        ],
+                        isActive ? styles.filterChipActive : "",
+                      ].join(" ")}
+                      type="button"
+                      aria-pressed={isActive}
+                      onClick={() => setActiveStatus(status)}
+                    >
+                      {status}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            <button
-              className={styles.actionButton}
-              type="button"
-              onClick={() => openStation("auto")}
-              disabled={visibleRecipes.length === 0}
-            >
-              Stationsvy
-            </button>
-            <button
-              className={styles.actionButtonGhost}
-              type="button"
-              onClick={() => openEditor("new")}
-            >
-              Nytt recept
-            </button>
+            <div className={styles.toolbarActions}>
+              <div className={styles.viewToggle} role="group" aria-label="Välj vy">
+                {(["table", "card"] as ViewMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    className={`${styles.viewToggleButton} ${
+                      view === mode ? styles.viewToggleButtonActive : ""
+                    }`}
+                    type="button"
+                    aria-pressed={view === mode}
+                    onClick={() => setView(mode)}
+                  >
+                    {mode === "card" ? "Kort" : "Tabell"}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className={`${styles.actionButton} ${styles.toolbarActionCompact}`}
+                type="button"
+                onClick={() => openStation("auto")}
+                disabled={visibleRecipes.length === 0}
+              >
+                Stationsvy
+              </button>
+              <button
+                className={styles.actionButtonGhost}
+                type="button"
+                onClick={() => openEditor("new")}
+              >
+                Nytt recept
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div
-          className={[
-            styles.recipeList,
-            view === "card" ? styles.recipeListCard : "",
-            view === "table" ? styles.recipeListTable : "",
-          ].join(" ")}
-        >
-          {view !== "card" ? (
-            <div className={styles.recipeListHeader} aria-hidden="true">
-              <span>Val</span>
-              <span>Typ</span>
-              <span>Recept</span>
-              <span>Komponenter</span>
-              <span>Total</span>
-              <span>Uppdaterad</span>
-              <span>Åtgärder</span>
+          <div
+            className={[
+              styles.recipeList,
+              view === "card" ? styles.recipeListCard : "",
+              view === "table" ? styles.recipeListTable : "",
+            ].join(" ")}
+          >
+            {view === "table" ? (
+              <div className={styles.recipeListHeader} aria-hidden="true">
+                <span>Val</span>
+                <span>Typ</span>
+                <span>Recept</span>
+                <span>Komponenter</span>
+                <span>Total</span>
+                <span>Status</span>
+                <span>Åtgärder</span>
+              </div>
+            ) : null}
+
+            <div className={styles.recipeListBody}>
+              {visibleRecipes.map((recipe) => renderRecipeRow(recipe))}
             </div>
-          ) : null}
-
-          <div className={styles.recipeListBody}>
-            {visibleRecipes.map((recipe) => renderRecipeRow(recipe))}
           </div>
         </div>
       </section>
@@ -491,7 +565,7 @@ export function RecipeBook({ recipes }: RecipeBookProps) {
         onItemFlagToggle={toggleDraftItemFlag}
         onPublish={() => saveRecipe("Publicerad")}
         onRemoveItem={removeDraftItem}
-        onSaveDraft={() => saveRecipe("Utkast")}
+        onSaveDraft={() => saveRecipe()}
       />
 
       <StationDrawer

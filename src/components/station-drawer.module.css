@@ -13,7 +13,7 @@
   position: absolute;
   inset: 0;
   border: 0;
-  background: rgba(20, 20, 20, 0.18);
+  background: rgba(20, 20, 20, 0.16);
   opacity: 0;
   transition: opacity 200ms ease;
 }
@@ -24,17 +24,17 @@
 
 .sheet {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  bottom: 1rem;
-  left: 8rem;
+  top: 0.75rem;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  left: 4.75rem;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 0.4rem;
-  padding: 0.45rem;
+  gap: 0.3rem;
+  padding: 0.35rem;
   border: 1px solid rgba(20, 20, 20, 0.08);
-  border-radius: 1.8rem;
-  background: #f6f3ee;
+  border-radius: 1.55rem;
+  background: #efeae1;
   box-shadow: 0 26px 60px rgba(17, 17, 17, 0.16);
   transform: translateY(104%);
   transition: transform 240ms ease;
@@ -50,45 +50,88 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.55rem;
-  min-height: 2.05rem;
-  padding: 0 0.12rem;
+  min-height: 2rem;
+  padding: 0 0.1rem;
 }
 
 .meta {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
+  display: grid;
+  gap: 0.08rem;
   min-width: 0;
-  color: rgba(20, 20, 20, 0.64);
-  font-size: 0.67rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
 }
 
 .meta h2 {
   margin: 0;
   color: #141414;
-  font-size: 0.8rem;
+  font-size: 0.86rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta p {
+  margin: 0;
+  color: rgba(20, 20, 20, 0.6);
+  font-size: 0.68rem;
+  font-weight: 500;
 }
 
 .actions {
   display: flex;
-  gap: 0.32rem;
+  align-items: center;
+  gap: 0.36rem;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
-.button,
-.buttonGhost {
+.sourceToggle {
+  display: inline-flex;
+  padding: 0.16rem;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42);
+}
+
+.sourceButton {
   min-height: 1.72rem;
-  padding: 0.26rem 0.62rem;
+  padding: 0 0.72rem;
   border: 0;
   border-radius: 999px;
-  font-size: 0.71rem;
+  background: transparent;
+  color: rgba(20, 20, 20, 0.72);
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.sourceButton:hover {
+  color: #141414;
+}
+
+.sourceButtonActive {
+  background: rgba(255, 255, 255, 0.96);
+  color: #141414;
+  font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    0 4px 10px rgba(20, 20, 20, 0.08);
+}
+
+.button,
+.buttonGhost {
+  min-height: 1.74rem;
+  padding: 0.26rem 0.68rem;
+  border: 0;
+  border-radius: 999px;
+  font-size: 0.72rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -103,11 +146,7 @@
   color: #141414;
 }
 
-.buttonGhostActive {
-  background: rgba(20, 20, 20, 0.94);
-  color: #fff;
-}
-
+.sourceButton:disabled,
 .buttonGhost:disabled,
 .button:disabled {
   cursor: not-allowed;
@@ -137,8 +176,7 @@
     align-items: stretch;
   }
 
-  .meta,
   .actions {
-    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 }

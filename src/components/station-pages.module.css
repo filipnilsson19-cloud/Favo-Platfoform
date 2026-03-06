@@ -4,29 +4,29 @@
 }
 
 .pagesScreen {
-  gap: 0.55rem;
+  gap: 0.65rem;
 }
 
 .pagesPrint {
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.9rem;
+  padding: 0.8rem;
 }
 
 .page {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 0.3rem;
+  gap: 0.24rem;
   width: 100%;
   margin-inline: auto;
-  padding: 0.32rem;
+  padding: 0.28rem;
   border: 1px solid rgba(20, 20, 20, 0.08);
-  border-radius: 0.72rem;
-  background: #ffffff;
+  border-radius: 0.82rem;
+  background: #fff;
 }
 
 .pagesScreen .page {
   aspect-ratio: 297 / 210;
-  box-shadow: 0 12px 24px rgba(17, 17, 17, 0.06);
+  box-shadow: 0 14px 30px rgba(17, 17, 17, 0.08);
 }
 
 .pagesPrint .page {
@@ -40,44 +40,66 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.55rem;
-  min-height: 0.86rem;
-  color: rgba(20, 20, 20, 0.62);
-  font-size: 0.52rem;
-  font-weight: 700;
+  gap: 0.5rem;
+  min-height: 0.72rem;
+  padding: 0 0.08rem;
+  color: rgba(20, 20, 20, 0.56);
+  font-size: 0.5rem;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.pagesPrint .pageHeader {
-  gap: 0.75rem;
-  min-height: 0.92rem;
-  font-size: 0.56rem;
+.pageLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pageMeta {
+  white-space: nowrap;
 }
 
 .pack {
   --columns: 3;
-  --pack-gap: 0.28rem;
-  --card-padding: 0.38rem;
-  --card-gap: 0.2rem;
-  --card-radius: 0.58rem;
-  --table-radius: 0.34rem;
-  --title-size: 0.92rem;
-  --title-line-height: 1;
-  --category-size: 0.46rem;
-  --info-width: 5.9ch;
-  --amount-width: 2.7rem;
-  --row-gap: 0.26rem;
-  --row-padding-y: 0.03rem;
-  --row-padding-x: 0.18rem;
-  --row-size: 0.78rem;
-  --row-line-height: 1.02;
+  --pack-gap: 0.34rem;
+  --card-padding: 0.44rem;
+  --card-gap: 0.34rem;
+  --card-radius: 0.76rem;
+  --accent-height: 0.18rem;
+  --title-size: 1rem;
+  --title-line-height: 0.97;
+  --category-size: 0.5rem;
+  --row-gap: 0.18rem;
+  --row-padding-y: 0.2rem;
+  --row-padding-x: 0.28rem;
+  --row-radius: 0.5rem;
+  --row-size: 0.79rem;
+  --row-line-height: 1.05;
+  --tag-size: 0.55rem;
+  --tag-padding-inline: 0.34rem;
+  --tag-height: 1.18rem;
+  --tag-min-width: 3.7rem;
+  --tag-gap: 0.34rem;
+  --amount-size: 0.78rem;
+  --amount-min-width: 3.25rem;
+  --amount-padding-y: 0.18rem;
+  --amount-padding-x: 0.42rem;
+  --footer-size: 0.74rem;
+  --spacer-size: 0.42rem;
+  --card-start: #ffffff;
+  --card-end: #faf7f1;
+  --accent-color: rgba(20, 20, 20, 0.92);
+  --accent-soft: rgba(20, 20, 20, 0.08);
+  --accent-soft-strong: rgba(20, 20, 20, 0.12);
+  --accent-text: #141414;
   display: grid;
   grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
   gap: var(--pack-gap);
   height: 100%;
   min-height: 0;
-  align-content: stretch;
+  align-content: start;
 }
 
 .column {
@@ -89,24 +111,39 @@
 }
 
 .card {
+  position: relative;
   display: grid;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   align-content: start;
   gap: var(--card-gap);
-  height: auto;
   min-height: 0;
   padding: var(--card-padding);
   border: 1px solid rgba(20, 20, 20, 0.08);
   border-radius: var(--card-radius);
-  background: #fcfbf8;
+  background: linear-gradient(180deg, var(--card-start) 0%, var(--card-end) 100%);
+  box-shadow: 0 8px 18px rgba(20, 20, 20, 0.05);
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--accent-height);
+  background: var(--accent-color);
 }
 
 .cardHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.4rem;
-  min-height: auto;
+  gap: 0.42rem;
+}
+
+.cardIdentity {
+  display: grid;
+  gap: 0.16rem;
+  min-width: 0;
 }
 
 .cardTitle {
@@ -116,126 +153,220 @@
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: var(--title-line-height);
+  overflow-wrap: anywhere;
 }
 
 .cardCategory {
-  flex: 0 0 auto;
-  color: rgba(20, 20, 20, 0.58);
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-height: 1.08rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: color-mix(in srgb, var(--accent-text) 78%, #141414 22%);
   font-size: var(--category-size);
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
-.table {
+.list {
   display: grid;
-  align-self: start;
   align-content: start;
-  grid-auto-rows: max-content;
-  overflow: hidden;
-  border: 1px solid rgba(20, 20, 20, 0.08);
-  border-radius: var(--table-radius);
-  background: #ffffff;
+  gap: var(--row-gap);
+  min-height: 0;
 }
 
 .row {
   display: grid;
-  grid-template-columns: var(--info-width) minmax(0, 1fr) var(--amount-width);
-  gap: var(--row-gap);
-  align-items: baseline;
-  min-height: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.46rem;
   padding: var(--row-padding-y) var(--row-padding-x);
-  border-bottom: 1px solid rgba(20, 20, 20, 0.07);
-  font-size: var(--row-size);
-  line-height: var(--row-line-height);
+  border-radius: var(--row-radius);
+  background: color-mix(in srgb, var(--accent-soft) 46%, #ffffff 54%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-soft-strong) 44%, rgba(20, 20, 20, 0.04) 56%);
 }
 
-.row:nth-child(odd) {
-  background: rgba(20, 20, 20, 0.02);
+.rowLead {
+  display: flex;
+  align-items: center;
+  gap: var(--tag-gap);
+  min-width: 0;
 }
 
-.row:last-child {
-  border-bottom: 0;
-}
-
-.rowEmphasis {
-  background: rgba(20, 20, 20, 0.08);
+.rowTag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--tag-min-width);
+  min-height: var(--tag-height);
+  padding: 0 var(--tag-padding-inline);
+  border-radius: 999px;
+  background: var(--accent-soft-strong);
+  color: var(--accent-text);
+  font-size: var(--tag-size);
   font-weight: 700;
-}
-
-.rowSpacer {
-  min-height: 0.55rem;
-  padding: 0;
-  border-bottom: 0;
-  background: transparent;
-}
-
-.rowInfo {
-  color: rgba(20, 20, 20, 0.58);
-  font-size: 0.86em;
-  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
-}
-
-.rowInfoEmpty {
-  visibility: hidden;
 }
 
 .rowName {
   min-width: 0;
+  font-size: var(--row-size);
+  line-height: var(--row-line-height);
+  font-weight: 500;
+  overflow-wrap: anywhere;
 }
 
 .rowAmount {
-  text-align: right;
-  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(var(--tag-height) - 0.08rem);
+  min-width: var(--amount-min-width);
+  padding: var(--amount-padding-y) var(--amount-padding-x);
+  border-radius: 999px;
+  background: var(--accent-soft-strong);
+  color: var(--accent-text);
+  font-size: var(--amount-size);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    0 1px 2px rgba(20, 20, 20, 0.04);
 }
 
-.total {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.35rem;
-  padding: var(--row-padding-y) var(--row-padding-x);
-  border-top: 1px solid rgba(20, 20, 20, 0.09);
-  background: rgba(20, 20, 20, 0.03);
-  font-size: var(--row-size);
-  line-height: var(--row-line-height);
+.rowEmphasis {
+  background: color-mix(in srgb, var(--accent-soft-strong) 62%, #ffffff 38%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-color) 16%, rgba(20, 20, 20, 0.08) 84%);
 }
 
-.totalLabel {
-  color: rgba(20, 20, 20, 0.64);
-  font-size: 0.86em;
+.rowEmphasis .rowTag {
+  background: color-mix(in srgb, var(--accent-color) 22%, #ffffff 78%);
+}
+
+.rowEmphasis .rowName,
+.rowEmphasis .rowAmount {
   font-weight: 700;
+}
+
+.rowSpacer {
+  min-height: var(--spacer-size);
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  padding: calc(var(--row-padding-y) + 0.06rem) calc(var(--row-padding-x) + 0.04rem);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-soft) 78%, #ffffff 22%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.46);
+}
+
+.cardFooterLabel {
+  color: rgba(20, 20, 20, 0.64);
+  font-size: var(--footer-size);
+  font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.totalValue {
-  white-space: nowrap;
-  font-weight: 800;
+.cardFooterValue {
+  font-size: calc(var(--row-size) * 0.98);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cardToneBowl {
+  --card-end: #f6fbf6;
+  --accent-color: #66a785;
+  --accent-soft: rgba(102, 167, 133, 0.14);
+  --accent-soft-strong: rgba(102, 167, 133, 0.2);
+  --accent-text: #2a5942;
+}
+
+.cardToneSalad {
+  --card-end: #fffce8;
+  --accent-color: #c6b200;
+  --accent-soft: rgba(235, 218, 74, 0.18);
+  --accent-soft-strong: rgba(235, 218, 74, 0.28);
+  --accent-text: #5b5300;
+}
+
+.cardToneBurger {
+  --card-end: #fff3f3;
+  --accent-color: #db838b;
+  --accent-soft: rgba(219, 131, 139, 0.16);
+  --accent-soft-strong: rgba(219, 131, 139, 0.24);
+  --accent-text: #74363d;
+}
+
+.cardToneTaco {
+  --card-end: #fff5ea;
+  --accent-color: #de742d;
+  --accent-soft: rgba(222, 116, 45, 0.16);
+  --accent-soft-strong: rgba(222, 116, 45, 0.24);
+  --accent-text: #7a4016;
+}
+
+.cardToneBao {
+  --card-end: #f2f9fe;
+  --accent-color: #4994ca;
+  --accent-soft: rgba(73, 148, 202, 0.15);
+  --accent-soft-strong: rgba(73, 148, 202, 0.22);
+  --accent-text: #255272;
+}
+
+.cardToneSides {
+  --card-end: #f7f3ed;
+  --accent-color: #8c7664;
+  --accent-soft: rgba(140, 118, 100, 0.13);
+  --accent-soft-strong: rgba(140, 118, 100, 0.2);
+  --accent-text: #574638;
+}
+
+.cardToneSauce {
+  --card-end: #f5f1fb;
+  --accent-color: #8b72bd;
+  --accent-soft: rgba(139, 114, 189, 0.15);
+  --accent-soft-strong: rgba(139, 114, 189, 0.22);
+  --accent-text: #4b3d69;
 }
 
 .packSingle {
   --columns: 1;
-  --pack-gap: 0.38rem;
-  --card-padding: 1.05rem;
-  --card-gap: 0.55rem;
-  --card-radius: 1rem;
-  --table-radius: 0.8rem;
-  --title-size: 2.2rem;
+  --pack-gap: 0.42rem;
+  --card-padding: 1.15rem;
+  --card-gap: 0.7rem;
+  --card-radius: 1.2rem;
+  --accent-height: 0.32rem;
+  --title-size: 2.4rem;
   --title-line-height: 0.92;
   --category-size: 0.82rem;
-  --info-width: 8ch;
-  --amount-width: 6rem;
-  --row-gap: 0.52rem;
-  --row-padding-y: 0.15rem;
-  --row-padding-x: 0.55rem;
+  --row-gap: 0.3rem;
+  --row-padding-y: 0.34rem;
+  --row-padding-x: 0.56rem;
+  --row-radius: 0.82rem;
   --row-size: 1.2rem;
   --row-line-height: 1.12;
+  --tag-size: 0.78rem;
+  --tag-padding-inline: 0.52rem;
+  --tag-height: 1.72rem;
+  --tag-min-width: 5rem;
+  --tag-gap: 0.5rem;
+  --amount-size: 1.05rem;
+  --amount-min-width: 5.8rem;
+  --amount-padding-y: 0.3rem;
+  --amount-padding-x: 0.7rem;
+  --footer-size: 0.92rem;
+  --spacer-size: 0.6rem;
 }
 
 .packSingle .column,
@@ -252,66 +383,118 @@
 
 .packDuo {
   --columns: 2;
-  --pack-gap: 0.34rem;
-  --card-padding: 0.74rem;
-  --card-gap: 0.42rem;
-  --title-size: 1.6rem;
-  --category-size: 0.68rem;
-  --info-width: 7.4ch;
-  --amount-width: 4.6rem;
-  --row-gap: 0.44rem;
-  --row-padding-y: 0.11rem;
-  --row-padding-x: 0.4rem;
-  --row-size: 0.99rem;
+  --pack-gap: 0.38rem;
+  --card-padding: 0.78rem;
+  --card-gap: 0.5rem;
+  --card-radius: 0.98rem;
+  --accent-height: 0.24rem;
+  --title-size: 1.65rem;
+  --title-line-height: 0.94;
+  --category-size: 0.66rem;
+  --row-gap: 0.22rem;
+  --row-padding-y: 0.24rem;
+  --row-padding-x: 0.42rem;
+  --row-radius: 0.62rem;
+  --row-size: 0.98rem;
   --row-line-height: 1.08;
+  --tag-size: 0.64rem;
+  --tag-padding-inline: 0.42rem;
+  --tag-height: 1.4rem;
+  --tag-min-width: 4.2rem;
+  --tag-gap: 0.38rem;
+  --amount-size: 0.9rem;
+  --amount-min-width: 4.55rem;
+  --amount-padding-y: 0.22rem;
+  --amount-padding-x: 0.56rem;
+  --footer-size: 0.78rem;
+  --spacer-size: 0.5rem;
 }
 
 .packSpread {
   --columns: 2;
   --pack-gap: 0.3rem;
-  --card-padding: 0.5rem;
-  --card-gap: 0.28rem;
-  --title-size: 1.06rem;
-  --category-size: 0.58rem;
-  --info-width: 6.2ch;
-  --amount-width: 3.45rem;
-  --row-gap: 0.34rem;
-  --row-padding-y: 0.06rem;
-  --row-padding-x: 0.24rem;
-  --row-size: 0.82rem;
+  --card-padding: 0.52rem;
+  --card-gap: 0.32rem;
+  --card-radius: 0.82rem;
+  --accent-height: 0.18rem;
+  --title-size: 1.08rem;
+  --title-line-height: 0.95;
+  --category-size: 0.56rem;
+  --row-gap: 0.16rem;
+  --row-padding-y: 0.16rem;
+  --row-padding-x: 0.28rem;
+  --row-radius: 0.5rem;
+  --row-size: 0.84rem;
   --row-line-height: 1.04;
+  --tag-size: 0.54rem;
+  --tag-padding-inline: 0.34rem;
+  --tag-height: 1.16rem;
+  --tag-min-width: 3.5rem;
+  --tag-gap: 0.3rem;
+  --amount-size: 0.8rem;
+  --amount-min-width: 3.4rem;
+  --amount-padding-y: 0.16rem;
+  --amount-padding-x: 0.42rem;
+  --footer-size: 0.7rem;
+  --spacer-size: 0.38rem;
 }
 
 .packDense {
   --columns: 3;
-  --pack-gap: 0.26rem;
-  --card-padding: 0.36rem;
-  --card-gap: 0.22rem;
-  --title-size: 0.96rem;
+  --pack-gap: 0.28rem;
+  --card-padding: 0.38rem;
+  --card-gap: 0.24rem;
+  --card-radius: 0.72rem;
+  --accent-height: 0.16rem;
+  --title-size: 0.94rem;
+  --title-line-height: 0.96;
   --category-size: 0.48rem;
-  --info-width: 5.6ch;
-  --amount-width: 2.95rem;
-  --row-gap: 0.2rem;
-  --row-padding-y: 0.03rem;
-  --row-padding-x: 0.18rem;
-  --row-size: 0.79rem;
-  --row-line-height: 1;
+  --row-gap: 0.14rem;
+  --row-padding-y: 0.14rem;
+  --row-padding-x: 0.22rem;
+  --row-radius: 0.44rem;
+  --row-size: 0.76rem;
+  --row-line-height: 1.02;
+  --tag-size: 0.5rem;
+  --tag-padding-inline: 0.28rem;
+  --tag-height: 1.04rem;
+  --tag-min-width: 3.1rem;
+  --tag-gap: 0.26rem;
+  --amount-size: 0.74rem;
+  --amount-min-width: 3rem;
+  --amount-padding-y: 0.14rem;
+  --amount-padding-x: 0.36rem;
+  --footer-size: 0.66rem;
+  --spacer-size: 0.32rem;
 }
 
 .packCompact {
   --columns: 4;
   --pack-gap: 0.24rem;
-  --card-padding: 0.28rem;
+  --card-padding: 0.3rem;
   --card-gap: 0.18rem;
-  --title-size: 0.86rem;
+  --card-radius: 0.64rem;
+  --accent-height: 0.14rem;
+  --title-size: 0.84rem;
+  --title-line-height: 0.98;
   --category-size: 0.44rem;
-  --info-width: 5.2ch;
-  --amount-width: 2.55rem;
-  --row-gap: 0.14rem;
-  --row-padding-y: 0.02rem;
-  --row-padding-x: 0.15rem;
-  --row-size: 0.74rem;
-  --row-line-height: 0.98;
+  --row-gap: 0.12rem;
+  --row-padding-y: 0.1rem;
+  --row-padding-x: 0.18rem;
+  --row-radius: 0.36rem;
+  --row-size: 0.72rem;
+  --row-line-height: 1;
+  --tag-size: 0.46rem;
+  --tag-padding-inline: 0.24rem;
+  --tag-height: 0.94rem;
+  --tag-min-width: 2.7rem;
+  --tag-gap: 0.22rem;
+  --amount-size: 0.7rem;
+  --amount-min-width: 2.7rem;
+  --amount-padding-y: 0.1rem;
+  --amount-padding-x: 0.3rem;
+  --footer-size: 0.62rem;
+  --spacer-size: 0.26rem;
 }
 
 .emptyPage {
@@ -340,7 +523,7 @@
     min-height: calc(210mm - 16mm);
     aspect-ratio: auto;
     margin: 0;
-    padding: 2.4mm;
+    padding: 2.2mm;
     border: 0;
     border-radius: 0;
     box-shadow: none;
@@ -355,24 +538,36 @@
 
   .pagesPrint .pageHeader {
     min-height: auto;
-    margin-bottom: 1.1mm;
-    font-size: 6pt;
+    margin-bottom: 1mm;
+    padding: 0 0.3mm;
+    font-size: 5.6pt;
   }
 
   .pagesPrint .pack {
-    --pack-gap: 1.45mm;
-    --card-padding: 1mm;
-    --card-radius: 1.2mm;
-    --table-radius: 0.9mm;
-    --title-size: 9.2pt;
+    --pack-gap: 1.3mm;
+    --card-padding: 1.2mm;
+    --card-gap: 0.9mm;
+    --card-radius: 1.5mm;
+    --accent-height: 0.7mm;
+    --title-size: 9.6pt;
     --category-size: 5pt;
-    --info-width: 14mm;
-    --amount-width: 13mm;
     --row-gap: 0.7mm;
-    --row-padding-y: 0;
-    --row-padding-x: 0.45mm;
-    --row-size: 7.3pt;
-    --row-line-height: 1.02;
+    --row-padding-y: 0.45mm;
+    --row-padding-x: 0.65mm;
+    --row-radius: 0.9mm;
+    --row-size: 7.2pt;
+    --row-line-height: 1.04;
+    --tag-size: 4.8pt;
+    --tag-padding-inline: 0.8mm;
+    --tag-height: 3.7mm;
+    --tag-min-width: 13mm;
+    --tag-gap: 0.9mm;
+    --amount-size: 7pt;
+    --amount-min-width: 12.8mm;
+    --amount-padding-y: 0.35mm;
+    --amount-padding-x: 1mm;
+    --footer-size: 5.2pt;
+    --spacer-size: 1.4mm;
     height: 100%;
   }
 
@@ -382,95 +577,152 @@
 
   .pagesPrint .card {
     padding: var(--card-padding);
-    border: 0.2mm solid rgba(20, 20, 20, 0.14);
-    border-radius: var(--card-radius);
-    gap: 0.5mm;
+    border: 0.22mm solid rgba(20, 20, 20, 0.14);
+    gap: var(--card-gap);
     box-shadow: none;
     break-inside: avoid;
     page-break-inside: avoid;
   }
 
   .pagesPrint .row {
-    gap: var(--row-gap);
-    padding: var(--row-padding-y) var(--row-padding-x);
-    font-size: var(--row-size);
-    line-height: var(--row-line-height);
+    gap: 1mm;
   }
 
-  .pagesPrint .total {
-    padding: var(--row-padding-y) var(--row-padding-x);
-    font-size: var(--row-size);
-    line-height: var(--row-line-height);
+  .pagesPrint .cardFooter {
+    padding: 0.5mm 0.8mm;
   }
 
   .pagesPrint .rowSpacer {
-    min-height: 1.6mm;
+    min-height: var(--spacer-size);
   }
 
   .pagesPrint .packSingle {
     --card-padding: 3mm;
-    --card-radius: 1.2mm;
-    --table-radius: 1.2mm;
+    --card-gap: 2.1mm;
+    --card-radius: 2.2mm;
+    --accent-height: 1mm;
     --title-size: 24pt;
     --category-size: 8pt;
-    --info-width: 20mm;
-    --amount-width: 27mm;
-    --row-gap: 1.6mm;
-    --row-padding-y: 0.3mm;
-    --row-padding-x: 1.3mm;
-    --row-size: 12.8pt;
+    --row-gap: 1.4mm;
+    --row-padding-y: 1mm;
+    --row-padding-x: 1.4mm;
+    --row-radius: 2mm;
+    --row-size: 12.4pt;
     --row-line-height: 1.12;
+    --tag-size: 8pt;
+    --tag-padding-inline: 1.8mm;
+    --tag-height: 7.2mm;
+    --tag-min-width: 23mm;
+    --tag-gap: 1.8mm;
+    --amount-size: 11.2pt;
+    --amount-min-width: 28mm;
+    --amount-padding-y: 0.9mm;
+    --amount-padding-x: 2mm;
+    --footer-size: 8.6pt;
+    --spacer-size: 2.8mm;
   }
 
   .pagesPrint .packDuo {
     --card-padding: 2mm;
-    --title-size: 16pt;
+    --card-gap: 1.4mm;
+    --card-radius: 1.8mm;
+    --accent-height: 0.8mm;
+    --title-size: 16.5pt;
     --category-size: 6.8pt;
-    --info-width: 18mm;
-    --amount-width: 19mm;
-    --row-gap: 1.05mm;
-    --row-padding-y: 0.16mm;
-    --row-padding-x: 0.9mm;
-    --row-size: 9.6pt;
+    --row-gap: 1mm;
+    --row-padding-y: 0.65mm;
+    --row-padding-x: 0.95mm;
+    --row-radius: 1.4mm;
+    --row-size: 9.8pt;
     --row-line-height: 1.08;
+    --tag-size: 6.6pt;
+    --tag-padding-inline: 1.2mm;
+    --tag-height: 5.2mm;
+    --tag-min-width: 18mm;
+    --tag-gap: 1.2mm;
+    --amount-size: 9pt;
+    --amount-min-width: 19mm;
+    --amount-padding-y: 0.55mm;
+    --amount-padding-x: 1.4mm;
+    --footer-size: 6.8pt;
+    --spacer-size: 2mm;
   }
 
   .pagesPrint .packSpread {
-    --card-padding: 1.2mm;
-    --title-size: 10pt;
-    --category-size: 5.8pt;
-    --info-width: 14.5mm;
-    --amount-width: 14.8mm;
-    --row-gap: 0.8mm;
-    --row-padding-y: 0.08mm;
-    --row-padding-x: 0.55mm;
-    --row-size: 7.7pt;
+    --card-padding: 1.45mm;
+    --card-gap: 1mm;
+    --card-radius: 1.45mm;
+    --accent-height: 0.7mm;
+    --title-size: 10.4pt;
+    --category-size: 5.6pt;
+    --row-gap: 0.75mm;
+    --row-padding-y: 0.45mm;
+    --row-padding-x: 0.7mm;
+    --row-radius: 1mm;
+    --row-size: 7.8pt;
     --row-line-height: 1.04;
+    --tag-size: 5pt;
+    --tag-padding-inline: 0.85mm;
+    --tag-height: 3.9mm;
+    --tag-min-width: 14mm;
+    --tag-gap: 0.9mm;
+    --amount-size: 7.5pt;
+    --amount-min-width: 13.8mm;
+    --amount-padding-y: 0.35mm;
+    --amount-padding-x: 1mm;
+    --footer-size: 5.4pt;
+    --spacer-size: 1.5mm;
   }
 
   .pagesPrint .packDense {
-    --card-padding: 1mm;
+    --card-padding: 1.1mm;
+    --card-gap: 0.82mm;
+    --card-radius: 1.3mm;
+    --accent-height: 0.6mm;
     --title-size: 8.8pt;
     --category-size: 4.8pt;
-    --info-width: 13mm;
-    --amount-width: 12.2mm;
-    --row-gap: 0.55mm;
-    --row-padding-y: 0.02mm;
-    --row-padding-x: 0.42mm;
+    --row-gap: 0.58mm;
+    --row-padding-y: 0.34mm;
+    --row-padding-x: 0.55mm;
+    --row-radius: 0.85mm;
     --row-size: 7.1pt;
-    --row-line-height: 1;
+    --row-line-height: 1.02;
+    --tag-size: 4.6pt;
+    --tag-padding-inline: 0.72mm;
+    --tag-height: 3.45mm;
+    --tag-min-width: 11.8mm;
+    --tag-gap: 0.72mm;
+    --amount-size: 6.8pt;
+    --amount-min-width: 12.4mm;
+    --amount-padding-y: 0.3mm;
+    --amount-padding-x: 0.82mm;
+    --footer-size: 5pt;
+    --spacer-size: 1.25mm;
   }
 
   .pagesPrint .packCompact {
-    --card-padding: 0.8mm;
+    --card-padding: 0.9mm;
+    --card-gap: 0.65mm;
+    --card-radius: 1.05mm;
+    --accent-height: 0.55mm;
     --title-size: 7.8pt;
     --category-size: 4.4pt;
-    --info-width: 11mm;
-    --amount-width: 10.5mm;
-    --row-gap: 0.38mm;
-    --row-padding-y: 0.02mm;
-    --row-padding-x: 0.34mm;
+    --row-gap: 0.42mm;
+    --row-padding-y: 0.24mm;
+    --row-padding-x: 0.42mm;
+    --row-radius: 0.72mm;
     --row-size: 6.7pt;
-    --row-line-height: 0.98;
+    --row-line-height: 1;
+    --tag-size: 4.2pt;
+    --tag-padding-inline: 0.58mm;
+    --tag-height: 3mm;
+    --tag-min-width: 9.8mm;
+    --tag-gap: 0.58mm;
+    --amount-size: 6.4pt;
+    --amount-min-width: 10.8mm;
+    --amount-padding-y: 0.18mm;
+    --amount-padding-x: 0.68mm;
+    --footer-size: 4.7pt;
+    --spacer-size: 1.05mm;
   }
 }

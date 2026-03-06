@@ -7,12 +7,24 @@ export type RecipeCategory =
   | "Sides"
   | "Sås";
 
-export type RecipeStatus = "Publicerad" | "Utkast";
+export type RecipeStatus = "Publicerad" | "Utkast" | "Inaktiv";
+
+export type RecipeUnit =
+  | "g"
+  | "kg"
+  | "ml"
+  | "cl"
+  | "dl"
+  | "l"
+  | "st"
+  | "tsk"
+  | "msk";
 
 export type RecipeItem = {
   info: string;
   name: string;
   amount: string;
+  unit: RecipeUnit;
   isEmphasis: boolean;
   isSpacer: boolean;
 };

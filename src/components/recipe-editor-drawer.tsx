@@ -1,7 +1,18 @@
 "use client";
 
-import { computeAmountSummary, contentItems } from "@/lib/recipe-utils";
-import type { EditorMode, Recipe, RecipeCategory } from "@/types/recipe";
+import {
+  computeAmountSummary,
+  contentItems,
+  recipeStatusOptions,
+  recipeUnitOptions,
+} from "@/lib/recipe-utils";
+import type {
+  EditorMode,
+  Recipe,
+  RecipeCategory,
+  RecipeStatus,
+  RecipeUnit,
+} from "@/types/recipe";
 
 import styles from "./recipe-book.module.css";
 
@@ -16,7 +27,7 @@ type RecipeEditorDrawerProps = {
   onFieldChange: <K extends keyof Recipe>(field: K, value: Recipe[K]) => void;
   onItemChange: (
     index: number,
-    field: "info" | "name" | "amount",
+    field: "info" | "name" | "amount" | "unit",
     value: string,
   ) => void;
   onItemFlagToggle: (index: number, flag: "isEmphasis" | "isSpacer") => void;
@@ -64,19 +75,19 @@ export function RecipeEditorDrawer({
         role="dialog"
         aria-modal="true"
         aria-labelledby="recipe-editor-title"
-      >
-        <header className={styles.sheetHeader}>
-          <div>
-            <p className={styles.pageEyebrow}>{editorTitle}</p>
-            <h2 id="recipe-editor-title">{draft.title.trim() || "Nytt recept"}</h2>
+        >
+          <header className={styles.sheetHeader}>
+            <div>
+              <p className={styles.pageEyebrow}>{editorTitle}</p>
+              <h2 id="recipe-editor-title">{draft.title.trim() || "Nytt recept"}</h2>
             <p className={styles.sheetIntro}>
               Skapa, ändra och publicera recept direkt i den riktiga appen.
             </p>
           </div>
 
-          <div className={styles.sheetActions}>
-            <span className={styles.metaPill}>{saveLabel}</span>
-            <button className={styles.actionButtonGhost} type="button" onClick={onClose}>
+          <div className={styles.drawerActionStack}>
+            <span className={styles.drawerStatusBadge}>{saveLabel}</span>
+            <button className={styles.drawerButtonSecondary} type="button" onClick={onClose}>
               Stäng
             </button>
           </div>
@@ -128,6 +139,23 @@ export function RecipeEditorDrawer({
                     onFieldChange("servings", Number(event.target.value || 1))
                   }
                 />
+              </label>
+
+              <label className={styles.fieldGroup}>
+                <span>Status</span>
+                <select
+                  className={styles.editorInput}
+                  value={draft.status}
+                  onChange={(event) =>
+                    onFieldChange("status", event.target.value as RecipeStatus)
+                  }
+                >
+                  {recipeStatusOptions.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
               </label>
 
               <label className={styles.fieldGroupWide}>
@@ -183,7 +211,7 @@ export function RecipeEditorDrawer({
               <h3>Komponenter</h3>
             </div>
 
-            <button className={styles.actionButtonGhost} type="button" onClick={onAddItem}>
+            <button className={styles.drawerButtonSecondary} type="button" onClick={onAddItem}>
               Ny rad
             </button>
           </div>
@@ -192,6 +220,7 @@ export function RecipeEditorDrawer({
             <span>Info</span>
             <span>Komponent</span>
             <span>Mängd</span>
+            <span>Mått</span>
             <span>Verktyg</span>
           </div>
 
@@ -220,10 +249,24 @@ export function RecipeEditorDrawer({
                 <input
                   className={styles.editorInput}
                   type="text"
-                  placeholder="35 g / 3 dl / 4 st"
+                  placeholder="35"
                   value={item.amount}
                   onChange={(event) => onItemChange(index, "amount", event.target.value)}
                 />
+
+                <select
+                  className={styles.editorInput}
+                  value={item.unit}
+                  onChange={(event) =>
+                    onItemChange(index, "unit", event.target.value as RecipeUnit)
+                  }
+                >
+                  {recipeUnitOptions.map((unit) => (
+                    <option key={unit.value} value={unit.value}>
+                      {unit.label}
+                    </option>
+                  ))}
+                </select>
 
                 <div className={styles.editorRowControls}>
                   <button
@@ -260,10 +303,10 @@ export function RecipeEditorDrawer({
         </section>
 
         <footer className={styles.editorFooter}>
-          <button className={styles.actionButtonGhost} type="button" onClick={onSaveDraft}>
-            Spara utkast
+          <button className={styles.drawerButtonSecondary} type="button" onClick={onSaveDraft}>
+            Spara
           </button>
-          <button className={styles.actionButton} type="button" onClick={onPublish}>
+          <button className={styles.drawerButtonPrimary} type="button" onClick={onPublish}>
             Publicera
           </button>
         </footer>

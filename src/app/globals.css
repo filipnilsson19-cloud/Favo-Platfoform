@@ -1,5 +1,5 @@
 :root {
-  --favo-bg: #d7d4ce;
+  --favo-bg: #f4f2ee;
   --favo-text: #141414;
   --favo-muted: rgba(20, 20, 20, 0.7);
   --favo-border: rgba(9, 9, 9, 0.08);
@@ -17,6 +17,12 @@
   --favo-yellow: #ecd749;
   --favo-yellow-soft: #e8df74;
   --favo-grey: #b9b9b9;
+  --favo-filter-pink: #f7bfc0;
+  --favo-filter-blue: #74c5ef;
+  --favo-filter-orange: #f7aa4e;
+  --favo-filter-green: #c1dfc4;
+  --favo-filter-yellow: #fff375;
+  --font-sans: var(--font-graphik), "Helvetica Neue", Arial, sans-serif;
 }
 
 *,
@@ -36,7 +42,11 @@ body {
   margin: 0;
   background: var(--favo-bg);
   color: var(--favo-text);
-  font-family: var(--font-archivo), "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-synthesis: none;
+  line-height: 1.45;
+  letter-spacing: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

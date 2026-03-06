@@ -8,9 +8,9 @@
 
 .pageEyebrow {
   margin: 0 0 0.6rem;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -20,6 +20,7 @@
   font-size: clamp(2rem, 3.6vw, 3rem);
   line-height: 0.95;
   letter-spacing: -0.05em;
+  font-weight: 700;
 }
 
 .pageIntro,
@@ -29,7 +30,15 @@
   margin: 0.75rem 0 0;
   max-width: 44rem;
   color: var(--favo-muted);
-  line-height: 1.6;
+  font-weight: 400;
+  line-height: 1.58;
+}
+
+.recipeWorkspace {
+  padding: 1rem;
+  border: 1px solid rgba(20, 20, 20, 0.06);
+  border-radius: 1.7rem;
+  background: #ebe8e2;
 }
 
 .recipeToolbar {
@@ -56,7 +65,13 @@
 .toolbarFilters {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.38rem;
+}
+
+.toolbarStatusFilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
 }
 
 .toolbarActions {
@@ -85,7 +100,7 @@
   min-height: 2rem;
   padding: 0 0.72rem;
   color: var(--favo-muted);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
@@ -102,12 +117,21 @@
 .rowAction {
   min-height: 2.15rem;
   padding: 0 0.85rem;
+  font-weight: 600;
   cursor: pointer;
   transition:
     transform 180ms ease,
     background 180ms ease,
     color 180ms ease,
-    border-color 180ms ease;
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.toolbarButton {
+  min-height: 2rem;
+  padding: 0 0.72rem;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .filterChip:hover,
@@ -118,11 +142,49 @@
   transform: translateY(-1px);
 }
 
-.filterChipActive,
-.viewToggleButtonActive,
+.filterChip {
+  min-height: 1.92rem;
+  padding: 0 0.72rem;
+  font-size: 0.76rem;
+  font-weight: 500;
+  border: 0;
+  color: #141414;
+  box-shadow:
+    inset 0 0 0 999px rgba(20, 20, 20, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 2px 6px rgba(20, 20, 20, 0.06);
+}
+
+.filterChip:hover {
+  box-shadow:
+    inset 0 0 0 999px rgba(20, 20, 20, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 6px 14px rgba(20, 20, 20, 0.1);
+}
+
+.filterChip:active {
+  transform: translateY(0);
+  box-shadow:
+    inset 0 0 0 999px rgba(20, 20, 20, 0.14),
+    inset 0 1px 2px rgba(20, 20, 20, 0.1),
+    0 2px 4px rgba(20, 20, 20, 0.07);
+}
+
 .actionButton {
   background: rgba(17, 17, 17, 0.94);
   color: #fff;
+}
+
+.toolbarActionCompact {
+  min-height: 1.98rem;
+  padding: 0 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 4px 10px rgba(20, 20, 20, 0.1);
+}
+
+.toolbarActionCompact:hover {
+  box-shadow: 0 8px 16px rgba(20, 20, 20, 0.14);
 }
 
 .filterChipAll {
@@ -130,46 +192,96 @@
 }
 
 .filterChipBowl {
-  background: rgba(115, 179, 151, 0.28);
+  background: var(--favo-filter-green);
 }
 
 .filterChipSalad {
-  background: rgba(177, 201, 175, 0.42);
+  background: var(--favo-filter-yellow);
 }
 
 .filterChipBurger {
-  background: rgba(219, 131, 139, 0.35);
+  background: var(--favo-filter-pink);
 }
 
 .filterChipTaco {
-  background: rgba(222, 116, 45, 0.28);
+  background: var(--favo-filter-orange);
 }
 
 .filterChipBao {
-  background: rgba(73, 148, 202, 0.28);
+  background: var(--favo-filter-blue);
 }
 
 .filterChipSides {
-  background: rgba(236, 215, 73, 0.38);
+  background: var(--favo-filter-yellow);
 }
 
 .filterChipSauce {
-  background: rgba(185, 185, 185, 0.4);
+  background: var(--favo-filter-pink);
+}
+
+.statusChipAll {
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.statusChipPublished {
+  background: #e6dff4;
+  color: #5b4a80;
+}
+
+.statusChipDraft {
+  background: #ece4d8;
+  color: #715c34;
+}
+
+.statusChipInactive {
+  background: #e4e7eb;
+  color: #57606b;
+}
+
+.filterChipActive {
+  color: #141414;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 0 0 999px rgba(255, 255, 255, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 10px 22px rgba(20, 20, 20, 0.16);
 }
 
 .viewToggle {
   display: inline-flex;
   padding: 0.18rem;
-  border: 1px solid var(--favo-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(20, 20, 20, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38);
 }
 
 .viewToggleButton {
   border: 0;
   background: transparent;
+  min-height: 1.98rem;
+  padding: 0 0.9rem;
   font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(20, 20, 20, 0.72);
+  border-radius: 999px;
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.viewToggleButton:hover {
+  color: #141414;
+}
+
+.viewToggleButtonActive {
+  background: rgba(255, 255, 255, 0.96);
+  color: #141414;
   font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    0 4px 10px rgba(20, 20, 20, 0.08);
 }
 
 .actionButtonGhost:disabled {
@@ -185,7 +297,7 @@
 .recipeList {
   border: 1px solid var(--favo-border);
   border-radius: 1.5rem;
-  background: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.52);
   overflow: hidden;
 }
 
@@ -201,9 +313,9 @@
   padding: 0.85rem 1rem;
   border-bottom: 1px solid rgba(20, 20, 20, 0.08);
   color: rgba(20, 20, 20, 0.66);
-  font-size: 0.73rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -215,6 +327,27 @@
   position: relative;
   padding: 0.82rem 1rem;
   border-bottom: 1px solid rgba(20, 20, 20, 0.08);
+  cursor: pointer;
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.recipeCard:hover,
+.recipeCard:focus-within {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.recipeCardActive,
+.recipeCardSelected {
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.recipeCardActive:hover,
+.recipeCardActive:focus-within,
+.recipeCardSelected:hover,
+.recipeCardSelected:focus-within {
+  background: rgba(255, 255, 255, 0.46);
 }
 
 .recipeCard:last-child {
@@ -224,11 +357,11 @@
 .recipeCardActive::before {
   content: "";
   position: absolute;
-  left: 2.2rem;
-  top: 0.7rem;
-  bottom: 0.7rem;
-  width: 3px;
-  border-radius: 999px;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  border-radius: 0 999px 999px 0;
   background: rgba(17, 17, 17, 0.95);
 }
 
@@ -236,6 +369,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  cursor: default;
 }
 
 .recipeCheckbox {
@@ -250,8 +384,8 @@
   padding: 0.45rem 0.72rem;
   border-radius: 999px;
   background: rgba(17, 17, 17, 0.06);
-  font-size: 0.74rem;
-  font-weight: 700;
+  font-size: 0.73rem;
+  font-weight: 600;
 }
 
 .recipeMain {
@@ -261,12 +395,12 @@
   border: 0;
   background: transparent;
   text-align: left;
-  cursor: pointer;
 }
 
 .recipeTitle {
   font-size: 0.98rem;
   letter-spacing: -0.02em;
+  font-weight: 600;
 }
 
 .recipeCopy {
@@ -279,6 +413,38 @@
 .recipeCell {
   color: rgba(20, 20, 20, 0.8);
   font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.recipeComponentsCell,
+.recipeTotalCell,
+.recipeUpdatedCell {
+  white-space: nowrap;
+}
+
+.recipeStatus {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.6rem;
+  padding: 0 0.56rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+
+.recipeStatusPublished {
+  background: #e6dff4;
+  color: #5b4a80;
+}
+
+.recipeStatusDraft {
+  background: #ece4d8;
+  color: #715c34;
+}
+
+.recipeStatusInactive {
+  background: #e4e7eb;
+  color: #57606b;
 }
 
 .recipeActions {
@@ -288,7 +454,7 @@
 
 .rowAction {
   font-size: 0.84rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .rowActionStrong {
@@ -304,34 +470,91 @@
 
 .recipeListCard .recipeListBody {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
 .recipeListCard .recipeCard {
-  grid-template-columns: 1fr;
-  align-items: flex-start;
-  gap: 0.8rem;
-  padding: 1rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "select type actions"
+    "main main main"
+    "components total updated";
+  align-items: start;
+  gap: 0.42rem 0.6rem;
+  padding: 0.82rem 0.9rem;
   border: 1px solid var(--favo-border);
-  border-radius: 1.5rem;
-  background: rgba(255, 255, 255, 0.46);
-}
-
-.recipeListCard .recipeMain {
-  min-height: 5rem;
+  border-radius: 1.2rem;
+  background: rgba(255, 255, 255, 0.44);
 }
 
 .recipeListCard .recipeSelect {
+  grid-area: select;
   justify-content: flex-start;
 }
 
+.recipeListCard .recipeType {
+  grid-area: type;
+  padding: 0.34rem 0.56rem;
+  font-size: 0.69rem;
+}
+
 .recipeListCard .recipeActions {
-  justify-content: flex-start;
+  grid-area: actions;
+  justify-content: flex-end;
+}
+
+.recipeListCard .recipeMain {
+  grid-area: main;
+  gap: 0.12rem;
+}
+
+.recipeListCard .recipeTitle {
+  font-size: 0.96rem;
+}
+
+.recipeListCard .recipeCopy {
+  font-size: 0.8rem;
+  line-height: 1.36;
+}
+
+.recipeListCard .recipeCell {
+  font-size: 0.76rem;
+  line-height: 1.2;
+}
+
+.recipeListCard .recipeComponentsCell {
+  grid-area: components;
+}
+
+.recipeListCard .recipeTotalCell {
+  grid-area: total;
+  text-align: center;
+}
+
+.recipeListCard .recipeUpdatedCell {
+  grid-area: updated;
+  text-align: right;
+}
+
+.recipeListCard .recipeCard:hover,
+.recipeListCard .recipeCard:focus-within {
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.recipeListCard .recipeCardActive,
+.recipeListCard .recipeCardSelected {
+  background: rgba(255, 255, 255, 0.64);
+}
+
+.recipeListCard .rowAction {
+  min-height: 1.8rem;
+  padding: 0 0.68rem;
+  font-size: 0.77rem;
 }
 
 .recipeListTable .recipeListHeader,
 .recipeListTable .recipeCard {
-  grid-template-columns: 2.1rem 5.4rem minmax(0, 2fr) 6.6rem 6.4rem 6rem 7rem;
+  grid-template-columns: 2.1rem 5.4rem minmax(0, 2fr) 6.2rem 5.8rem 6.8rem 7rem;
 }
 
 .recipeListTable .recipeCard {
@@ -409,6 +632,7 @@
   font-size: clamp(1.8rem, 4vw, 2.4rem);
   line-height: 0.95;
   letter-spacing: -0.05em;
+  font-weight: 700;
 }
 
 .sheetActions {
@@ -416,6 +640,67 @@
   gap: 0.55rem;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+.drawerActionGroup,
+.drawerActionStack {
+  display: flex;
+  align-items: center;
+  gap: 0.42rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.drawerActionStack {
+  align-self: flex-start;
+}
+
+.drawerButtonPrimary,
+.drawerButtonSecondary {
+  min-height: 2rem;
+  padding: 0 0.82rem;
+  border: 0;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.drawerButtonPrimary:hover,
+.drawerButtonSecondary:hover {
+  transform: translateY(-1px);
+}
+
+.drawerButtonPrimary {
+  background: rgba(17, 17, 17, 0.94);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(20, 20, 20, 0.14);
+}
+
+.drawerButtonSecondary {
+  background: rgba(255, 255, 255, 0.88);
+  color: rgba(20, 20, 20, 0.86);
+  box-shadow:
+    inset 0 0 0 1px rgba(20, 20, 20, 0.08),
+    0 4px 10px rgba(20, 20, 20, 0.08);
+}
+
+.drawerStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 0.72rem;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.08);
+  color: rgba(20, 20, 20, 0.66);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .sheetMeta {
@@ -430,8 +715,8 @@
   align-items: center;
   min-height: 2.1rem;
   padding: 0 0.82rem;
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .sheetContent {
@@ -454,9 +739,9 @@
 
 .sectionHeading p {
   margin-top: 0;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -464,6 +749,7 @@
   margin: 0.35rem 0 0;
   font-size: 1.12rem;
   letter-spacing: -0.03em;
+  font-weight: 600;
 }
 
 .recipeTable {
@@ -484,9 +770,9 @@
   padding: 0.82rem 1rem;
   background: rgba(20, 20, 20, 0.04);
   color: rgba(20, 20, 20, 0.66);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
@@ -498,15 +784,17 @@
   padding: 0.7rem 1rem;
   border-top: 1px solid rgba(20, 20, 20, 0.08);
   font-size: 0.95rem;
+  font-weight: 400;
 }
 
 .recipeTableRowEmphasis {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .recipeTableInfo {
   color: rgba(20, 20, 20, 0.6);
   font-size: 0.84rem;
+  font-weight: 500;
 }
 
 .recipeTableSpacer {
@@ -527,9 +815,9 @@
 
 .infoList dt {
   color: rgba(20, 20, 20, 0.58);
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -537,18 +825,150 @@
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.5;
+  font-weight: 400;
+}
+
+.detailSheet {
+  width: min(42rem, calc(100vw - 2rem));
+  padding: 1rem;
+}
+
+.detailSheet .sheetHeader {
+  gap: 0.8rem;
+}
+
+.detailSheet .sheetHeader h2 {
+  font-size: clamp(1.55rem, 3.3vw, 2rem);
+}
+
+.detailSheet .sheetIntro {
+  margin-top: 0.45rem;
+  max-width: 32rem;
+  font-size: 0.9rem;
+  line-height: 1.42;
+}
+
+.detailSheet .sheetActions {
+  gap: 0.4rem;
+}
+
+.detailSheet .metaPill {
+  min-height: 1.92rem;
+  padding: 0 0.68rem;
+  font-size: 0.74rem;
+}
+
+.detailSheet .sheetMeta {
+  gap: 0.4rem;
+  margin-top: 0.8rem;
+}
+
+.detailSheet .sheetContent {
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.detailSheet .sheetPanel {
+  padding: 0.82rem;
+  border-radius: 1.1rem;
+}
+
+.detailSheet .sectionHeading {
+  margin-bottom: 0.62rem;
+}
+
+.detailSheet .sectionHeading p {
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+}
+
+.detailSheet .sectionHeading h3 {
+  margin-top: 0.24rem;
+  font-size: 0.96rem;
+}
+
+.detailSheet .recipeTable {
+  border-radius: 0.9rem;
+}
+
+.detailSheet .recipeTableHeader,
+.detailSheet .recipeTableRow {
+  grid-template-columns: 5rem minmax(0, 1fr) 4.8rem;
+  gap: 0.55rem;
+}
+
+.detailSheet .recipeTableHeader {
+  padding: 0.58rem 0.78rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+}
+
+.detailSheet .recipeTableRow {
+  padding: 0.5rem 0.78rem;
+  font-size: 0.86rem;
+}
+
+.detailSheet .recipeTableInfo {
+  font-size: 0.76rem;
+}
+
+.detailSheet .recipeTableSpacer {
+  height: 0.48rem;
+}
+
+.detailSheet .infoList {
+  gap: 0.62rem;
+}
+
+.detailSheet .infoList div {
+  gap: 0.12rem;
+}
+
+.detailSheet .infoList dt {
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+}
+
+.detailSheet .infoList dd {
+  font-size: 0.84rem;
+  line-height: 1.38;
 }
 
 .editorSheet {
-  width: min(70rem, calc(100vw - 2rem));
+  width: min(64rem, calc(100vw - 2rem));
+  padding: 1rem;
+}
+
+.editorSheet .sheetHeader {
+  gap: 0.8rem;
+}
+
+.editorSheet .sheetHeader h2 {
+  font-size: clamp(1.5rem, 3.2vw, 2rem);
+}
+
+.editorSheet .sheetIntro {
+  margin-top: 0.45rem;
+  max-width: 36rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.editorSheet .sheetActions {
+  gap: 0.4rem;
+}
+
+.editorSheet .sheetPanel {
+  padding: 0.82rem;
+  border-radius: 1.1rem;
 }
 
 .editorGrid {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(18rem, 0.8fr);
-  gap: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.8rem;
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
 }
 
 .editorSidebar {
@@ -557,14 +977,14 @@
 
 .editorFields {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.85rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
 }
 
 .fieldGroup,
 .fieldGroupWide {
   display: grid;
-  gap: 0.45rem;
+  gap: 0.24rem;
 }
 
 .fieldGroupWide {
@@ -574,25 +994,27 @@
 .fieldGroup span,
 .fieldGroupWide span {
   color: rgba(20, 20, 20, 0.62);
-  font-size: 0.77rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .editorInput,
 .editorTextarea {
   width: 100%;
-  min-height: 2.9rem;
-  padding: 0.72rem 0.9rem;
+  min-height: 2.12rem;
+  padding: 0.42rem 0.64rem;
   border: 1px solid rgba(20, 20, 20, 0.1);
-  border-radius: 1rem;
+  border-radius: 0.72rem;
   background: rgba(255, 255, 255, 0.74);
   color: var(--favo-text);
+  font-size: 0.86rem;
+  font-weight: 400;
 }
 
 .editorTextarea {
-  min-height: 6.8rem;
+  min-height: 4.1rem;
   resize: vertical;
 }
 
@@ -605,29 +1027,30 @@
 
 .summaryGrid {
   display: grid;
-  gap: 0.7rem;
+  gap: 0.36rem;
 }
 
 .summaryCard {
   display: grid;
-  gap: 0.18rem;
-  padding: 0.9rem 0.95rem;
+  gap: 0.12rem;
+  padding: 0.5rem 0.58rem;
   border: 1px solid rgba(20, 20, 20, 0.08);
-  border-radius: 1rem;
+  border-radius: 0.72rem;
   background: rgba(255, 255, 255, 0.54);
 }
 
 .summaryCard span {
   color: rgba(20, 20, 20, 0.58);
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .summaryCard strong {
-  font-size: 1rem;
+  font-size: 0.84rem;
   letter-spacing: -0.02em;
+  font-weight: 600;
 }
 
 .editorListHeader {
@@ -635,37 +1058,44 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 0.9rem;
+  margin-bottom: 0.65rem;
 }
 
 .editorTableHeader,
 .editorRow {
   display: grid;
-  grid-template-columns: 6.4rem minmax(0, 1.7fr) 8.2rem auto;
-  gap: 0.7rem;
+  grid-template-columns: 4.8rem minmax(0, 1.6fr) 4.3rem 5.2rem auto;
+  gap: 0.42rem;
   align-items: center;
 }
 
 .editorTableHeader {
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.35rem;
   padding: 0 0.15rem;
   color: rgba(20, 20, 20, 0.66);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .editorItems {
   display: grid;
-  gap: 0.62rem;
+  gap: 0.32rem;
 }
 
 .editorRow {
-  padding: 0.65rem;
+  padding: 0.36rem;
   border: 1px solid rgba(20, 20, 20, 0.08);
-  border-radius: 1rem;
+  border-radius: 0.72rem;
   background: rgba(255, 255, 255, 0.52);
+}
+
+.editorRow .editorInput {
+  min-height: 2rem;
+  padding: 0.38rem 0.58rem;
+  border-radius: 0.68rem;
+  font-size: 0.84rem;
 }
 
 .editorRowSpacer {
@@ -675,18 +1105,18 @@
 .editorRowControls {
   display: flex;
   justify-content: flex-end;
-  gap: 0.45rem;
+  gap: 0.24rem;
   flex-wrap: wrap;
 }
 
 .iconButton {
-  min-height: 2.4rem;
-  padding: 0 0.72rem;
+  min-height: 1.82rem;
+  padding: 0 0.48rem;
   border: 1px solid rgba(20, 20, 20, 0.1);
-  border-radius: 0.85rem;
+  border-radius: 0.64rem;
   background: rgba(255, 255, 255, 0.74);
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.7rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -698,8 +1128,14 @@
 .editorFooter {
   display: flex;
   justify-content: flex-end;
-  gap: 0.6rem;
-  margin-top: 1rem;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.editorFooter .drawerButtonPrimary,
+.editorFooter .drawerButtonSecondary {
+  min-width: 6.8rem;
+  justify-content: center;
 }
 
 @media (max-width: 1100px) {
@@ -720,6 +1156,11 @@
 @media (max-width: 820px) {
   .recipeToolbar {
     align-items: stretch;
+  }
+
+  .recipeWorkspace {
+    padding: 0.85rem;
+    border-radius: 1.35rem;
   }
 
   .toolbarActions {
@@ -747,6 +1188,24 @@
 
   .recipeListCard .recipeListBody {
     grid-template-columns: 1fr;
+  }
+
+  .recipeListCard .recipeCard {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "select"
+      "type"
+      "main"
+      "components"
+      "total"
+      "updated"
+      "actions";
+    gap: 0.3rem;
+  }
+
+  .recipeListCard .recipeTotalCell,
+  .recipeListCard .recipeUpdatedCell {
+    text-align: left;
   }
 
   .sheet {

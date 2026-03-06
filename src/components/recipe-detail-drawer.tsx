@@ -1,6 +1,6 @@
 "use client";
 
-import { computeAmountSummary } from "@/lib/recipe-utils";
+import { computeAmountSummary, formatRecipeItemAmount } from "@/lib/recipe-utils";
 import type { Recipe } from "@/types/recipe";
 
 import styles from "./recipe-book.module.css";
@@ -34,7 +34,7 @@ export function RecipeDetailDrawer({
 
       {recipe ? (
         <article
-          className={styles.sheet}
+          className={`${styles.sheet} ${styles.detailSheet}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby="recipe-sheet-title"
@@ -46,30 +46,34 @@ export function RecipeDetailDrawer({
               <p className={styles.sheetIntro}>{recipe.intro}</p>
             </div>
 
-            <div className={styles.sheetActions}>
+            <div className={styles.drawerActionGroup}>
               <button
-                className={styles.actionButtonGhost}
-                type="button"
-                onClick={() => onEdit(recipe.id)}
-              >
-                Redigera
-              </button>
-              <button
-                className={styles.actionButtonGhost}
+                className={styles.drawerButtonSecondary}
                 type="button"
                 onClick={() => onDuplicate(recipe.id)}
               >
                 Duplicera
               </button>
               <button
-                className={styles.actionButtonGhost}
+                className={styles.drawerButtonSecondary}
                 type="button"
                 onClick={() => window.print()}
               >
                 Skriv ut
               </button>
-              <button className={styles.actionButton} type="button" onClick={onClose}>
+              <button
+                className={styles.drawerButtonSecondary}
+                type="button"
+                onClick={onClose}
+              >
                 Stäng
+              </button>
+              <button
+                className={styles.drawerButtonPrimary}
+                type="button"
+                onClick={() => onEdit(recipe.id)}
+              >
+                Redigera
               </button>
             </div>
           </header>
@@ -116,7 +120,7 @@ export function RecipeDetailDrawer({
                       >
                         <span className={styles.recipeTableInfo}>{item.info || "–"}</span>
                         <span>{item.name}</span>
-                        <span>{item.amount}</span>
+                        <span>{formatRecipeItemAmount(item)}</span>
                       </div>
                     ),
                   )}
