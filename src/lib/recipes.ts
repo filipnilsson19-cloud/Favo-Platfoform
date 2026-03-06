@@ -1,4 +1,4 @@
-import { createRecipe } from "@/lib/recipe-utils";
+import { createRecipe } from "./recipe-utils";
 
 export const recipes = [
   createRecipe({

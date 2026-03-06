@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Recipe {
+  id           String       @id
+  title        String
+  category     String
+  status       String
+  servings     Int          @default(1)
+  updatedLabel String       @default("Importerad")
+  allergens    String       @default("")
+  notes        String       @default("")
+  summary      String       @default("")
+  intro        String       @default("")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  items        RecipeItem[]
+
+  @@index([category])
+  @@index([status])
+  @@index([updatedAt])
+  @@map("recipes")
+}
+
+model RecipeItem {
+  id         String  @id @default(cuid())
+  recipeId   String
+  sortOrder  Int
+  info       String  @default("")
+  name       String
+  amount     String
+  unit       String  @default("g")
+  isEmphasis Boolean @default(false)
+  isSpacer   Boolean @default(false)
+  recipe     Recipe  @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@index([recipeId, sortOrder])
+  @@map("recipe_items")
+}

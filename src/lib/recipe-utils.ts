@@ -4,7 +4,7 @@ import type {
   RecipeItem,
   RecipeUnit,
   RecipeStatus,
-} from "@/types/recipe";
+} from "../types/recipe";
 
 type RecipeSeed = {
   title: string;
