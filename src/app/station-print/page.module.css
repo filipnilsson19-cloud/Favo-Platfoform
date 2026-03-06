@@ -1,0 +1,76 @@
+.page {
+  min-height: 100vh;
+  background: #d7d4ce;
+  color: #141414;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid rgba(20, 20, 20, 0.08);
+  background: rgba(246, 243, 238, 0.92);
+  backdrop-filter: blur(12px);
+}
+
+.copy {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.copy strong {
+  font-size: 0.95rem;
+  letter-spacing: -0.02em;
+}
+
+.copy span {
+  color: rgba(20, 20, 20, 0.64);
+  font-size: 0.78rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.button,
+.buttonGhost {
+  min-height: 2rem;
+  padding: 0.35rem 0.8rem;
+  border: 0;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button {
+  background: rgba(20, 20, 20, 0.94);
+  color: #fff;
+}
+
+.buttonGhost {
+  background: rgba(20, 20, 20, 0.08);
+  color: #141414;
+}
+
+@page {
+  size: A4 landscape;
+  margin: 8mm;
+}
+
+@media print {
+  .toolbar {
+    display: none !important;
+  }
+
+  .page {
+    background: #fff;
+  }
+}

@@ -1,0 +1,78 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
+import { StationPages } from "@/components/station-pages";
+import { STATION_PRINT_STORAGE_KEY } from "@/lib/station-utils";
+import type { StationPrintPayload } from "@/types/station";
+
+import styles from "./page.module.css";
+
+function readPayload(): StationPrintPayload | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.localStorage.getItem(STATION_PRINT_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as StationPrintPayload) : null;
+  } catch {
+    return null;
+  }
+}
+
+export default function StationPrintPage() {
+  const [payload] = useState<StationPrintPayload | null>(() => readPayload());
+  const hasAutoPrinted = useRef(false);
+
+  useEffect(() => {
+    if (payload?.title) {
+      document.title = `${payload.title} - Utskrift`;
+    }
+  }, [payload]);
+
+  useEffect(() => {
+    if (!payload || hasAutoPrinted.current) return;
+
+    hasAutoPrinted.current = true;
+    window.setTimeout(() => {
+      window.print();
+    }, 250);
+  }, [payload]);
+
+  const summary = payload
+    ? `${payload.sourceLabel} • ${payload.recipeCount} recept`
+    : "Ingen utskriftsdata hittades.";
+
+  return (
+    <div className={styles.page}>
+      <header className={styles.toolbar}>
+        <div className={styles.copy}>
+          <strong>{payload?.title || "Stationsblad"}</strong>
+          <span>{summary}</span>
+        </div>
+
+        <div className={styles.actions}>
+          <button
+            className={styles.buttonGhost}
+            type="button"
+            onClick={() => window.close()}
+          >
+            Stäng
+          </button>
+          <button
+            className={styles.button}
+            type="button"
+            onClick={() => window.print()}
+          >
+            Skriv ut
+          </button>
+        </div>
+      </header>
+
+      <StationPages
+        payload={payload}
+        variant="print"
+        emptyMessage="Ingen utskriftsdata hittades. Gå tillbaka till stationsvyn och försök igen."
+      />
+    </div>
+  );
+}

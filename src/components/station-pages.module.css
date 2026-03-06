@@ -1,0 +1,476 @@
+.pages {
+  display: grid;
+  align-content: start;
+}
+
+.pagesScreen {
+  gap: 0.55rem;
+}
+
+.pagesPrint {
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.page {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.3rem;
+  width: 100%;
+  margin-inline: auto;
+  padding: 0.32rem;
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  border-radius: 0.72rem;
+  background: #ffffff;
+}
+
+.pagesScreen .page {
+  aspect-ratio: 297 / 210;
+  box-shadow: 0 12px 24px rgba(17, 17, 17, 0.06);
+}
+
+.pagesPrint .page {
+  width: min(96vw, 1280px);
+  min-height: min(68vw, 900px);
+  aspect-ratio: 297 / 210;
+  box-shadow: 0 18px 36px rgba(17, 17, 17, 0.08);
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  min-height: 0.86rem;
+  color: rgba(20, 20, 20, 0.62);
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pagesPrint .pageHeader {
+  gap: 0.75rem;
+  min-height: 0.92rem;
+  font-size: 0.56rem;
+}
+
+.pack {
+  --columns: 3;
+  --pack-gap: 0.28rem;
+  --card-padding: 0.38rem;
+  --card-gap: 0.2rem;
+  --card-radius: 0.58rem;
+  --table-radius: 0.34rem;
+  --title-size: 0.92rem;
+  --title-line-height: 1;
+  --category-size: 0.46rem;
+  --info-width: 5.9ch;
+  --amount-width: 2.7rem;
+  --row-gap: 0.26rem;
+  --row-padding-y: 0.03rem;
+  --row-padding-x: 0.18rem;
+  --row-size: 0.78rem;
+  --row-line-height: 1.02;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: var(--pack-gap);
+  height: 100%;
+  min-height: 0;
+  align-content: stretch;
+}
+
+.column {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex-direction: column;
+  gap: var(--pack-gap);
+}
+
+.card {
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: start;
+  gap: var(--card-gap);
+  height: auto;
+  min-height: 0;
+  padding: var(--card-padding);
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  border-radius: var(--card-radius);
+  background: #fcfbf8;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.4rem;
+  min-height: auto;
+}
+
+.cardTitle {
+  margin: 0;
+  min-width: 0;
+  font-size: var(--title-size);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: var(--title-line-height);
+}
+
+.cardCategory {
+  flex: 0 0 auto;
+  color: rgba(20, 20, 20, 0.58);
+  font-size: var(--category-size);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.table {
+  display: grid;
+  align-self: start;
+  align-content: start;
+  grid-auto-rows: max-content;
+  overflow: hidden;
+  border: 1px solid rgba(20, 20, 20, 0.08);
+  border-radius: var(--table-radius);
+  background: #ffffff;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: var(--info-width) minmax(0, 1fr) var(--amount-width);
+  gap: var(--row-gap);
+  align-items: baseline;
+  min-height: 0;
+  padding: var(--row-padding-y) var(--row-padding-x);
+  border-bottom: 1px solid rgba(20, 20, 20, 0.07);
+  font-size: var(--row-size);
+  line-height: var(--row-line-height);
+}
+
+.row:nth-child(odd) {
+  background: rgba(20, 20, 20, 0.02);
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.rowEmphasis {
+  background: rgba(20, 20, 20, 0.08);
+  font-weight: 700;
+}
+
+.rowSpacer {
+  min-height: 0.55rem;
+  padding: 0;
+  border-bottom: 0;
+  background: transparent;
+}
+
+.rowInfo {
+  color: rgba(20, 20, 20, 0.58);
+  font-size: 0.86em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rowInfoEmpty {
+  visibility: hidden;
+}
+
+.rowName {
+  min-width: 0;
+}
+
+.rowAmount {
+  text-align: right;
+  white-space: nowrap;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.total {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.35rem;
+  padding: var(--row-padding-y) var(--row-padding-x);
+  border-top: 1px solid rgba(20, 20, 20, 0.09);
+  background: rgba(20, 20, 20, 0.03);
+  font-size: var(--row-size);
+  line-height: var(--row-line-height);
+}
+
+.totalLabel {
+  color: rgba(20, 20, 20, 0.64);
+  font-size: 0.86em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.totalValue {
+  white-space: nowrap;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.packSingle {
+  --columns: 1;
+  --pack-gap: 0.38rem;
+  --card-padding: 1.05rem;
+  --card-gap: 0.55rem;
+  --card-radius: 1rem;
+  --table-radius: 0.8rem;
+  --title-size: 2.2rem;
+  --title-line-height: 0.92;
+  --category-size: 0.82rem;
+  --info-width: 8ch;
+  --amount-width: 6rem;
+  --row-gap: 0.52rem;
+  --row-padding-y: 0.15rem;
+  --row-padding-x: 0.55rem;
+  --row-size: 1.2rem;
+  --row-line-height: 1.12;
+}
+
+.packSingle .column,
+.packSingle .card,
+.packDuo .column,
+.packDuo .card {
+  height: 100%;
+}
+
+.packSingle .card,
+.packDuo .card {
+  flex: 1 1 auto;
+}
+
+.packDuo {
+  --columns: 2;
+  --pack-gap: 0.34rem;
+  --card-padding: 0.74rem;
+  --card-gap: 0.42rem;
+  --title-size: 1.6rem;
+  --category-size: 0.68rem;
+  --info-width: 7.4ch;
+  --amount-width: 4.6rem;
+  --row-gap: 0.44rem;
+  --row-padding-y: 0.11rem;
+  --row-padding-x: 0.4rem;
+  --row-size: 0.99rem;
+  --row-line-height: 1.08;
+}
+
+.packSpread {
+  --columns: 2;
+  --pack-gap: 0.3rem;
+  --card-padding: 0.5rem;
+  --card-gap: 0.28rem;
+  --title-size: 1.06rem;
+  --category-size: 0.58rem;
+  --info-width: 6.2ch;
+  --amount-width: 3.45rem;
+  --row-gap: 0.34rem;
+  --row-padding-y: 0.06rem;
+  --row-padding-x: 0.24rem;
+  --row-size: 0.82rem;
+  --row-line-height: 1.04;
+}
+
+.packDense {
+  --columns: 3;
+  --pack-gap: 0.26rem;
+  --card-padding: 0.36rem;
+  --card-gap: 0.22rem;
+  --title-size: 0.96rem;
+  --category-size: 0.48rem;
+  --info-width: 5.6ch;
+  --amount-width: 2.95rem;
+  --row-gap: 0.2rem;
+  --row-padding-y: 0.03rem;
+  --row-padding-x: 0.18rem;
+  --row-size: 0.79rem;
+  --row-line-height: 1;
+}
+
+.packCompact {
+  --columns: 4;
+  --pack-gap: 0.24rem;
+  --card-padding: 0.28rem;
+  --card-gap: 0.18rem;
+  --title-size: 0.86rem;
+  --category-size: 0.44rem;
+  --info-width: 5.2ch;
+  --amount-width: 2.55rem;
+  --row-gap: 0.14rem;
+  --row-padding-y: 0.02rem;
+  --row-padding-x: 0.15rem;
+  --row-size: 0.74rem;
+  --row-line-height: 0.98;
+}
+
+.emptyPage {
+  min-height: 18rem;
+  aspect-ratio: auto;
+}
+
+.emptyState {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
+  color: rgba(20, 20, 20, 0.62);
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+@media print {
+  .pagesPrint {
+    gap: 0;
+    padding: 0;
+  }
+
+  .pagesPrint .page {
+    width: 100%;
+    height: calc(210mm - 16mm);
+    min-height: calc(210mm - 16mm);
+    aspect-ratio: auto;
+    margin: 0;
+    padding: 2.4mm;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .pagesPrint .page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .pagesPrint .pageHeader {
+    min-height: auto;
+    margin-bottom: 1.1mm;
+    font-size: 6pt;
+  }
+
+  .pagesPrint .pack {
+    --pack-gap: 1.45mm;
+    --card-padding: 1mm;
+    --card-radius: 1.2mm;
+    --table-radius: 0.9mm;
+    --title-size: 9.2pt;
+    --category-size: 5pt;
+    --info-width: 14mm;
+    --amount-width: 13mm;
+    --row-gap: 0.7mm;
+    --row-padding-y: 0;
+    --row-padding-x: 0.45mm;
+    --row-size: 7.3pt;
+    --row-line-height: 1.02;
+    height: 100%;
+  }
+
+  .pagesPrint .column {
+    gap: var(--pack-gap);
+  }
+
+  .pagesPrint .card {
+    padding: var(--card-padding);
+    border: 0.2mm solid rgba(20, 20, 20, 0.14);
+    border-radius: var(--card-radius);
+    gap: 0.5mm;
+    box-shadow: none;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .pagesPrint .row {
+    gap: var(--row-gap);
+    padding: var(--row-padding-y) var(--row-padding-x);
+    font-size: var(--row-size);
+    line-height: var(--row-line-height);
+  }
+
+  .pagesPrint .total {
+    padding: var(--row-padding-y) var(--row-padding-x);
+    font-size: var(--row-size);
+    line-height: var(--row-line-height);
+  }
+
+  .pagesPrint .rowSpacer {
+    min-height: 1.6mm;
+  }
+
+  .pagesPrint .packSingle {
+    --card-padding: 3mm;
+    --card-radius: 1.2mm;
+    --table-radius: 1.2mm;
+    --title-size: 24pt;
+    --category-size: 8pt;
+    --info-width: 20mm;
+    --amount-width: 27mm;
+    --row-gap: 1.6mm;
+    --row-padding-y: 0.3mm;
+    --row-padding-x: 1.3mm;
+    --row-size: 12.8pt;
+    --row-line-height: 1.12;
+  }
+
+  .pagesPrint .packDuo {
+    --card-padding: 2mm;
+    --title-size: 16pt;
+    --category-size: 6.8pt;
+    --info-width: 18mm;
+    --amount-width: 19mm;
+    --row-gap: 1.05mm;
+    --row-padding-y: 0.16mm;
+    --row-padding-x: 0.9mm;
+    --row-size: 9.6pt;
+    --row-line-height: 1.08;
+  }
+
+  .pagesPrint .packSpread {
+    --card-padding: 1.2mm;
+    --title-size: 10pt;
+    --category-size: 5.8pt;
+    --info-width: 14.5mm;
+    --amount-width: 14.8mm;
+    --row-gap: 0.8mm;
+    --row-padding-y: 0.08mm;
+    --row-padding-x: 0.55mm;
+    --row-size: 7.7pt;
+    --row-line-height: 1.04;
+  }
+
+  .pagesPrint .packDense {
+    --card-padding: 1mm;
+    --title-size: 8.8pt;
+    --category-size: 4.8pt;
+    --info-width: 13mm;
+    --amount-width: 12.2mm;
+    --row-gap: 0.55mm;
+    --row-padding-y: 0.02mm;
+    --row-padding-x: 0.42mm;
+    --row-size: 7.1pt;
+    --row-line-height: 1;
+  }
+
+  .pagesPrint .packCompact {
+    --card-padding: 0.8mm;
+    --title-size: 7.8pt;
+    --category-size: 4.4pt;
+    --info-width: 11mm;
+    --amount-width: 10.5mm;
+    --row-gap: 0.38mm;
+    --row-padding-y: 0.02mm;
+    --row-padding-x: 0.34mm;
+    --row-size: 6.7pt;
+    --row-line-height: 0.98;
+  }
+}

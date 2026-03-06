@@ -1,0 +1,211 @@
+.shell {
+  min-height: 100vh;
+}
+
+.canvas {
+  min-height: 100vh;
+  margin-left: 6.5rem;
+  padding: 1.5rem 1.5rem 2rem;
+}
+
+.sidebar {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  bottom: 1rem;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 5.25rem;
+  padding: 1rem 0.8rem;
+  border: 1px solid var(--favo-border);
+  border-radius: 1.75rem;
+  background: var(--favo-panel);
+  box-shadow: var(--favo-shadow);
+  backdrop-filter: blur(16px);
+  transition:
+    width 220ms ease,
+    background 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.sidebar:hover,
+.sidebar:focus-within {
+  width: 17rem;
+  background: rgba(255, 255, 255, 0.74);
+  box-shadow: 0 24px 44px rgba(17, 17, 17, 0.12);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0.45rem 0.25rem 1rem;
+}
+
+.brandCrop {
+  display: block;
+  width: 1.9rem;
+  overflow: hidden;
+  transition: width 220ms ease;
+}
+
+.sidebar:hover .brandCrop,
+.sidebar:focus-within .brandCrop {
+  width: 8.9rem;
+}
+
+.brandLogo {
+  display: block;
+  width: 8.9rem;
+  height: auto;
+  max-width: none;
+}
+
+.nav,
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.nav {
+  flex: 1 1 auto;
+}
+
+.footer {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--favo-border);
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  min-height: 3rem;
+  padding: 0.75rem 0;
+  border-radius: 1.1rem;
+  color: var(--favo-text);
+  transition:
+    background 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.navLink:hover,
+.navLink:focus-visible {
+  background: var(--favo-panel-strong);
+  transform: translateX(2px);
+  outline: none;
+}
+
+.navLinkActive {
+  background: rgba(17, 17, 17, 0.94);
+  color: #ffffff;
+}
+
+.sidebar:hover .navLink,
+.sidebar:focus-within .navLink {
+  justify-content: flex-start;
+  gap: 0.9rem;
+  padding-inline: 0.7rem;
+}
+
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  flex: 0 0 2.2rem;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.06);
+}
+
+.navLinkActive .iconWrap {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.iconWrap svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.label {
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transform: translateX(-0.35rem);
+  transition:
+    max-width 220ms ease,
+    opacity 160ms ease,
+    transform 220ms ease;
+}
+
+.sidebar:hover .label,
+.sidebar:focus-within .label {
+  max-width: 11rem;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 960px) {
+  .canvas {
+    margin-left: 0;
+    padding-top: 7rem;
+  }
+
+  .sidebar {
+    top: 1rem;
+    right: 1rem;
+    bottom: auto;
+    width: auto;
+    min-width: calc(100vw - 2rem);
+    padding: 0.85rem;
+    border-radius: 1.5rem;
+  }
+
+  .sidebar:hover,
+  .sidebar:focus-within {
+    width: auto;
+  }
+
+  .brand {
+    padding-bottom: 0.35rem;
+  }
+
+  .brandCrop,
+  .sidebar:hover .brandCrop,
+  .sidebar:focus-within .brandCrop {
+    width: 8.9rem;
+  }
+
+  .nav,
+  .footer {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .navLink,
+  .sidebar:hover .navLink,
+  .sidebar:focus-within .navLink {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 0;
+  }
+
+  .label,
+  .sidebar:hover .label,
+  .sidebar:focus-within .label {
+    display: none;
+  }
+}
