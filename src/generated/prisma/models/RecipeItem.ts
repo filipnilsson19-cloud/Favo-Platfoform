@@ -491,10 +491,6 @@ export type RecipeItemUncheckedUpdateManyWithoutRecipeNestedInput = {
   deleteMany?: Prisma.RecipeItemScalarWhereInput | Prisma.RecipeItemScalarWhereInput[]
 }
 
-export type BoolFieldUpdateOperationsInput = {
-  set?: boolean
-}
-
 export type RecipeItemCreateWithoutRecipeInput = {
   id?: string
   sortOrder: number

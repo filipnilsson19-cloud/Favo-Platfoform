@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   computeAmountSummary,
   contentItems,
@@ -26,6 +28,7 @@ type RecipeEditorDrawerProps = {
   isSaving: boolean;
   onAddItem: () => void;
   onClose: () => void;
+  onCreateCategory: (name: string) => Promise<RecipeCategory | null>;
   onFieldChange: <K extends keyof Recipe>(field: K, value: Recipe[K]) => void;
   onItemChange: (
     index: number,
@@ -48,6 +51,7 @@ export function RecipeEditorDrawer({
   isSaving,
   onAddItem,
   onClose,
+  onCreateCategory,
   onFieldChange,
   onItemChange,
   onItemFlagToggle,
@@ -61,6 +65,35 @@ export function RecipeEditorDrawer({
       : mode === "duplicate"
         ? "Duplicera recept"
         : "Redigera recept";
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [categoryDraft, setCategoryDraft] = useState("");
+  const [isCreatingCategoryPending, setIsCreatingCategoryPending] = useState(false);
+  const [categoryFeedback, setCategoryFeedback] = useState("");
+
+  async function handleCreateCategory() {
+    const nextName = categoryDraft.trim();
+
+    if (!nextName) {
+      setCategoryFeedback("Skriv ett kategorinamn först.");
+      return;
+    }
+
+    setCategoryFeedback("Skapar kategori...");
+    setIsCreatingCategoryPending(true);
+
+    const createdCategory = await onCreateCategory(nextName);
+
+    if (createdCategory) {
+      onFieldChange("category", createdCategory);
+      setCategoryDraft("");
+      setIsCreatingCategory(false);
+      setCategoryFeedback("");
+    } else {
+      setCategoryFeedback("Kunde inte skapa kategorin.");
+    }
+
+    setIsCreatingCategoryPending(false);
+  }
 
   return (
     <section
@@ -117,19 +150,57 @@ export function RecipeEditorDrawer({
 
               <label className={styles.fieldGroup}>
                 <span>Kategori</span>
-                <select
-                  className={styles.editorInput}
-                  value={draft.category}
-                  onChange={(event) =>
-                    onFieldChange("category", event.target.value as RecipeCategory)
-                  }
-                >
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
+                <div className={styles.categoryControl}>
+                  <select
+                    className={styles.editorInput}
+                    value={draft.category}
+                    onChange={(event) =>
+                      onFieldChange("category", event.target.value as RecipeCategory)
+                    }
+                  >
+                    {categories.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+
+                  <button
+                    className={styles.categoryAddButton}
+                    type="button"
+                    aria-label="Skapa ny kategori"
+                    onClick={() => {
+                      setIsCreatingCategory((current) => !current);
+                      setCategoryFeedback("");
+                    }}
+                  >
+                    +
+                  </button>
+                </div>
+
+                {isCreatingCategory ? (
+                  <div className={styles.categoryCreatePanel}>
+                    <input
+                      className={styles.editorInput}
+                      type="text"
+                      placeholder="Ny kategori"
+                      value={categoryDraft}
+                      onChange={(event) => setCategoryDraft(event.target.value)}
+                    />
+                    <button
+                      className={styles.drawerButtonSecondary}
+                      type="button"
+                      disabled={isCreatingCategoryPending}
+                      onClick={() => void handleCreateCategory()}
+                    >
+                      {isCreatingCategoryPending ? "Skapar..." : "Lägg till"}
+                    </button>
+                  </div>
+                ) : null}
+
+                {isCreatingCategory && categoryFeedback ? (
+                  <span className={styles.fieldHint}>{categoryFeedback}</span>
+                ) : null}
               </label>
 
               <label className={styles.fieldGroup}>

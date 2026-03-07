@@ -50,14 +50,7 @@ export function RecipeDetailDrawer({
               <p className={styles.sheetIntro}>{recipe.intro}</p>
             </div>
 
-            <div className={styles.drawerActionGroup}>
-              <button
-                className={styles.drawerButtonSecondary}
-                type="button"
-                onClick={() => window.print()}
-              >
-                Skriv ut
-              </button>
+            <div className={styles.drawerActionStack}>
               <button
                 className={styles.drawerButtonSecondary}
                 type="button"
@@ -65,31 +58,6 @@ export function RecipeDetailDrawer({
               >
                 Stäng
               </button>
-              {canManage ? (
-                <>
-                  <button
-                    className={styles.drawerButtonSecondary}
-                    type="button"
-                    onClick={() => onDuplicate(recipe.id)}
-                  >
-                    Duplicera
-                  </button>
-                  <button
-                    className={`${styles.drawerButtonSecondary} ${styles.drawerButtonDanger}`}
-                    type="button"
-                    onClick={() => onDelete(recipe.id)}
-                  >
-                    Radera
-                  </button>
-                  <button
-                    className={styles.drawerButtonPrimary}
-                    type="button"
-                    onClick={() => onEdit(recipe.id)}
-                  >
-                    Redigera
-                  </button>
-                </>
-              ) : null}
             </div>
           </header>
 
@@ -167,6 +135,49 @@ export function RecipeDetailDrawer({
               </section>
             </aside>
           </div>
+
+          <footer className={`${styles.sheetActions} ${styles.detailFooter}`}>
+            <div className={styles.detailFooterLeft}>
+              <button
+                className={styles.drawerButtonSecondary}
+                type="button"
+                onClick={() => window.print()}
+              >
+                Skriv ut
+              </button>
+
+              {canManage ? (
+                <>
+                  <button
+                    className={styles.drawerButtonSecondary}
+                    type="button"
+                    onClick={() => onDuplicate(recipe.id)}
+                  >
+                    Duplicera
+                  </button>
+                  <button
+                    className={`${styles.drawerButtonSecondary} ${styles.drawerButtonDanger}`}
+                    type="button"
+                    onClick={() => onDelete(recipe.id)}
+                  >
+                    Radera
+                  </button>
+                </>
+              ) : null}
+            </div>
+
+            {canManage ? (
+              <div className={styles.detailFooterRight}>
+                <button
+                  className={styles.drawerButtonPrimary}
+                  type="button"
+                  onClick={() => onEdit(recipe.id)}
+                >
+                  Redigera
+                </button>
+              </div>
+            ) : null}
+          </footer>
         </article>
       ) : null}
     </section>

@@ -1,11 +1,4 @@
-export type RecipeCategory =
-  | "Bowl"
-  | "Sallad"
-  | "Burger"
-  | "Taco"
-  | "Bao"
-  | "Sides"
-  | "Sås";
+export type RecipeCategory = string;
 
 export type RecipeStatus = "Publicerad" | "Utkast" | "Inaktiv";
 

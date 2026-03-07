@@ -38,6 +38,23 @@ export const recipeCategories: RecipeCategory[] = [
   "Sås",
 ];
 
+export function sortRecipeCategories(categories: RecipeCategory[]) {
+  const unique = [...new Set(categories.map((category) => category.trim()).filter(Boolean))];
+
+  return unique.sort((left, right) => {
+    const leftIndex = recipeCategories.indexOf(left);
+    const rightIndex = recipeCategories.indexOf(right);
+
+    if (leftIndex !== -1 || rightIndex !== -1) {
+      if (leftIndex === -1) return 1;
+      if (rightIndex === -1) return -1;
+      return leftIndex - rightIndex;
+    }
+
+    return left.localeCompare(right, "sv");
+  });
+}
+
 export const recipeStatusOptions: RecipeStatus[] = [
   "Publicerad",
   "Utkast",

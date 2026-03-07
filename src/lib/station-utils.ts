@@ -273,6 +273,10 @@ function describeStationSource(
       : `${recipes.length} markerade recept`;
   }
 
+  if (activeCategory === "Flera kategorier") {
+    return "Synliga recept i flera kategorier";
+  }
+
   if (activeCategory !== "Alla") {
     return `Synliga recept i ${activeCategory}`;
   }
@@ -293,6 +297,10 @@ function buildStationHeading(
     }
 
     return "Valda recept";
+  }
+
+  if (activeCategory === "Flera kategorier") {
+    return "Stationsblad";
   }
 
   if (activeCategory !== "Alla") {

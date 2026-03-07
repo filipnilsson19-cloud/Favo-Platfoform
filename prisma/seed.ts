@@ -4,6 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 import { PrismaClient } from "../src/generated/prisma/client";
 
+import { recipeCategories, sortRecipeCategories } from "../src/lib/recipe-utils";
 import { recipes } from "../src/lib/recipes";
 
 loadEnv({ path: ".env.local" });
@@ -27,6 +28,19 @@ async function main() {
   await prisma.$transaction(async (tx) => {
     await tx.recipeItem.deleteMany();
     await tx.recipe.deleteMany();
+    await tx.category.deleteMany();
+
+    const categoryNames = sortRecipeCategories([
+      ...recipeCategories,
+      ...recipes.map((recipe) => recipe.category),
+    ]);
+
+    await tx.category.createMany({
+      data: categoryNames.map((name, index) => ({
+        name,
+        sortOrder: index,
+      })),
+    });
 
     for (const recipe of recipes) {
       await tx.recipe.create({

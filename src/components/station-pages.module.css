@@ -4,7 +4,7 @@
 }
 
 .pagesScreen {
-  gap: 0.65rem;
+  gap: 0.72rem;
 }
 
 .pagesPrint {
@@ -15,13 +15,13 @@
 .page {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: 0.24rem;
+  gap: 0.3rem;
   width: 100%;
   margin-inline: auto;
-  padding: 0.28rem;
-  border: 1px solid rgba(20, 20, 20, 0.08);
-  border-radius: 0.82rem;
-  background: #fff;
+  padding: 0.34rem;
+  border: 1px solid rgba(20, 20, 20, 0.06);
+  border-radius: 0.94rem;
+  background: #fcfbf8;
 }
 
 .pagesScreen .page {
@@ -41,10 +41,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  min-height: 0.72rem;
-  padding: 0 0.08rem;
+  min-height: 0.88rem;
+  padding: 0 0.12rem;
   color: rgba(20, 20, 20, 0.56);
-  font-size: 0.5rem;
+  font-size: 0.52rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -64,28 +64,28 @@
 .pack {
   --columns: 3;
   --pack-gap: 0.34rem;
-  --card-padding: 0.44rem;
-  --card-gap: 0.34rem;
+  --card-padding: 0.48rem;
+  --card-gap: 0.38rem;
   --card-radius: 0.76rem;
   --accent-height: 0.18rem;
   --title-size: 1rem;
   --title-line-height: 0.97;
   --category-size: 0.5rem;
-  --row-gap: 0.18rem;
-  --row-padding-y: 0.2rem;
-  --row-padding-x: 0.28rem;
-  --row-radius: 0.5rem;
-  --row-size: 0.79rem;
-  --row-line-height: 1.05;
+  --row-gap: 0.14rem;
+  --row-padding-y: 0.18rem;
+  --row-padding-x: 0.2rem;
+  --row-radius: 0.42rem;
+  --row-size: 0.8rem;
+  --row-line-height: 1.08;
   --tag-size: 0.55rem;
-  --tag-padding-inline: 0.34rem;
-  --tag-height: 1.18rem;
-  --tag-min-width: 3.7rem;
-  --tag-gap: 0.34rem;
+  --tag-padding-inline: 0.32rem;
+  --tag-height: 1.12rem;
+  --tag-min-width: 4.2rem;
+  --tag-gap: 0.28rem;
   --amount-size: 0.78rem;
-  --amount-min-width: 3.25rem;
-  --amount-padding-y: 0.18rem;
-  --amount-padding-x: 0.42rem;
+  --amount-min-width: 3rem;
+  --amount-padding-y: 0;
+  --amount-padding-x: 0;
   --footer-size: 0.74rem;
   --spacer-size: 0.42rem;
   --card-start: #ffffff;
@@ -118,10 +118,12 @@
   gap: var(--card-gap);
   min-height: 0;
   padding: var(--card-padding);
-  border: 1px solid rgba(20, 20, 20, 0.08);
+  border: 1px solid rgba(20, 20, 20, 0.06);
   border-radius: var(--card-radius);
   background: linear-gradient(180deg, var(--card-start) 0%, var(--card-end) 100%);
-  box-shadow: 0 8px 18px rgba(20, 20, 20, 0.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.54),
+    0 8px 18px rgba(20, 20, 20, 0.04);
   overflow: hidden;
 }
 
@@ -138,6 +140,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.42rem;
+  padding-bottom: 0.08rem;
 }
 
 .cardIdentity {
@@ -180,37 +183,36 @@
 
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: var(--tag-min-width) minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.46rem;
+  gap: 0.34rem;
   padding: var(--row-padding-y) var(--row-padding-x);
   border-radius: var(--row-radius);
-  background: color-mix(in srgb, var(--accent-soft) 46%, #ffffff 54%);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-soft-strong) 44%, rgba(20, 20, 20, 0.04) 56%);
+  background: color-mix(in srgb, var(--accent-soft) 34%, #ffffff 66%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-soft-strong) 28%, rgba(20, 20, 20, 0.04) 72%);
 }
 
-.rowLead {
-  display: flex;
-  align-items: center;
-  gap: var(--tag-gap);
-  min-width: 0;
-}
-
-.rowTag {
+.rowInfo {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: var(--tag-min-width);
+  width: var(--tag-min-width);
   min-height: var(--tag-height);
   padding: 0 var(--tag-padding-inline);
-  border-radius: 999px;
+  border-radius: 0.42rem;
   background: var(--accent-soft-strong);
   color: var(--accent-text);
   font-size: var(--tag-size);
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.rowInfoEmpty {
+  background: transparent;
+  color: transparent;
+  box-shadow: inset 0 0 0 1px transparent;
 }
 
 .rowName {
@@ -224,28 +226,23 @@
 .rowAmount {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-height: calc(var(--tag-height) - 0.08rem);
+  justify-content: flex-end;
   min-width: var(--amount-min-width);
   padding: var(--amount-padding-y) var(--amount-padding-x);
-  border-radius: 999px;
-  background: var(--accent-soft-strong);
   color: var(--accent-text);
   font-size: var(--amount-size);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.42),
-    0 1px 2px rgba(20, 20, 20, 0.04);
+  text-align: right;
 }
 
 .rowEmphasis {
-  background: color-mix(in srgb, var(--accent-soft-strong) 62%, #ffffff 38%);
+  background: color-mix(in srgb, var(--accent-soft-strong) 56%, #ffffff 44%);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-color) 16%, rgba(20, 20, 20, 0.08) 84%);
 }
 
-.rowEmphasis .rowTag {
+.rowEmphasis .rowInfo {
   background: color-mix(in srgb, var(--accent-color) 22%, #ffffff 78%);
 }
 
@@ -263,10 +260,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.45rem;
-  padding: calc(var(--row-padding-y) + 0.06rem) calc(var(--row-padding-x) + 0.04rem);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent-soft) 78%, #ffffff 22%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.46);
+  padding: calc(var(--row-padding-y) + 0.1rem) 0.02rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--accent-soft-strong) 46%, rgba(20, 20, 20, 0.04) 54%);
 }
 
 .cardFooterLabel {
@@ -359,12 +354,12 @@
   --tag-size: 0.78rem;
   --tag-padding-inline: 0.52rem;
   --tag-height: 1.72rem;
-  --tag-min-width: 5rem;
-  --tag-gap: 0.5rem;
+  --tag-min-width: 6.4rem;
+  --tag-gap: 0.4rem;
   --amount-size: 1.05rem;
   --amount-min-width: 5.8rem;
-  --amount-padding-y: 0.3rem;
-  --amount-padding-x: 0.7rem;
+  --amount-padding-y: 0;
+  --amount-padding-x: 0;
   --footer-size: 0.92rem;
   --spacer-size: 0.6rem;
 }
@@ -400,12 +395,12 @@
   --tag-size: 0.64rem;
   --tag-padding-inline: 0.42rem;
   --tag-height: 1.4rem;
-  --tag-min-width: 4.2rem;
-  --tag-gap: 0.38rem;
+  --tag-min-width: 5rem;
+  --tag-gap: 0.34rem;
   --amount-size: 0.9rem;
   --amount-min-width: 4.55rem;
-  --amount-padding-y: 0.22rem;
-  --amount-padding-x: 0.56rem;
+  --amount-padding-y: 0;
+  --amount-padding-x: 0;
   --footer-size: 0.78rem;
   --spacer-size: 0.5rem;
 }
@@ -429,12 +424,12 @@
   --tag-size: 0.54rem;
   --tag-padding-inline: 0.34rem;
   --tag-height: 1.16rem;
-  --tag-min-width: 3.5rem;
-  --tag-gap: 0.3rem;
+  --tag-min-width: 4.4rem;
+  --tag-gap: 0.26rem;
   --amount-size: 0.8rem;
   --amount-min-width: 3.4rem;
-  --amount-padding-y: 0.16rem;
-  --amount-padding-x: 0.42rem;
+  --amount-padding-y: 0;
+  --amount-padding-x: 0;
   --footer-size: 0.7rem;
   --spacer-size: 0.38rem;
 }
@@ -458,12 +453,12 @@
   --tag-size: 0.5rem;
   --tag-padding-inline: 0.28rem;
   --tag-height: 1.04rem;
-  --tag-min-width: 3.1rem;
-  --tag-gap: 0.26rem;
+  --tag-min-width: 3.8rem;
+  --tag-gap: 0.22rem;
   --amount-size: 0.74rem;
   --amount-min-width: 3rem;
-  --amount-padding-y: 0.14rem;
-  --amount-padding-x: 0.36rem;
+  --amount-padding-y: 0;
+  --amount-padding-x: 0;
   --footer-size: 0.66rem;
   --spacer-size: 0.32rem;
 }
@@ -487,12 +482,12 @@
   --tag-size: 0.46rem;
   --tag-padding-inline: 0.24rem;
   --tag-height: 0.94rem;
-  --tag-min-width: 2.7rem;
-  --tag-gap: 0.22rem;
+  --tag-min-width: 3.1rem;
+  --tag-gap: 0.18rem;
   --amount-size: 0.7rem;
   --amount-min-width: 2.7rem;
-  --amount-padding-y: 0.1rem;
-  --amount-padding-x: 0.3rem;
+  --amount-padding-y: 0;
+  --amount-padding-x: 0;
   --footer-size: 0.62rem;
   --spacer-size: 0.26rem;
 }
@@ -518,17 +513,18 @@
   }
 
   .pagesPrint .page {
-    width: 100%;
-    height: calc(210mm - 16mm);
-    min-height: calc(210mm - 16mm);
+    width: 297mm;
+    height: 210mm;
+    min-height: 210mm;
     aspect-ratio: auto;
     margin: 0;
-    padding: 2.2mm;
+    padding: 6mm;
     border: 0;
     border-radius: 0;
     box-shadow: none;
     break-after: page;
     page-break-after: always;
+    box-sizing: border-box;
   }
 
   .pagesPrint .page:last-child {
@@ -538,8 +534,8 @@
 
   .pagesPrint .pageHeader {
     min-height: auto;
-    margin-bottom: 1mm;
-    padding: 0 0.3mm;
+    margin-bottom: 1.6mm;
+    padding: 0 0.6mm;
     font-size: 5.6pt;
   }
 

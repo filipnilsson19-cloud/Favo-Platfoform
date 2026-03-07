@@ -1,11 +1,16 @@
 :root {
-  --favo-bg: #f4f2ee;
-  --favo-text: #141414;
-  --favo-muted: rgba(20, 20, 20, 0.7);
-  --favo-border: rgba(9, 9, 9, 0.08);
-  --favo-panel: rgba(255, 255, 255, 0.52);
-  --favo-panel-strong: rgba(255, 255, 255, 0.76);
-  --favo-shadow: 0 18px 36px rgba(17, 17, 17, 0.08);
+  --favo-bg: #ffffff;
+  --favo-surface: #f8f5f0;
+  --favo-surface-strong: rgba(255, 255, 255, 0.9);
+  --favo-text: #111111;
+  --favo-muted: rgba(17, 17, 17, 0.62);
+  --favo-border: rgba(17, 17, 17, 0.08);
+  --favo-border-strong: rgba(17, 17, 17, 0.12);
+  --favo-panel: rgba(248, 245, 240, 0.8);
+  --favo-panel-strong: rgba(255, 255, 255, 0.92);
+  --favo-shadow-sm: 0 10px 24px rgba(17, 17, 17, 0.05);
+  --favo-shadow: 0 22px 54px rgba(17, 17, 17, 0.08);
+  --favo-shadow-lg: 0 34px 84px rgba(17, 17, 17, 0.14);
   --favo-pink: #db838b;
   --favo-pink-soft: #ddb2b4;
   --favo-blue: #4994ca;
@@ -22,7 +27,8 @@
   --favo-filter-orange: #f7aa4e;
   --favo-filter-green: #c1dfc4;
   --favo-filter-yellow: #fff375;
-  --font-sans: var(--font-graphik), "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-manrope), "Avenir Next", "Helvetica Neue", Arial,
+    sans-serif;
 }
 
 *,
@@ -49,6 +55,11 @@ body {
   letter-spacing: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(116, 197, 239, 0.35);
+  color: var(--favo-text);
 }
 
 body.favo-lock-scroll {

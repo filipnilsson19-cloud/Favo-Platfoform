@@ -23,6 +23,19 @@ export default function StationPrintPage() {
   const [payload] = useState<StationPrintPayload | null>(() => readPayload());
   const hasAutoPrinted = useRef(false);
 
+  function handleClose() {
+    window.close();
+
+    window.setTimeout(() => {
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+
+      window.location.assign("/");
+    }, 120);
+  }
+
   useEffect(() => {
     if (payload?.title) {
       document.title = `${payload.title} - Utskrift`;
@@ -54,7 +67,7 @@ export default function StationPrintPage() {
           <button
             className={styles.buttonGhost}
             type="button"
-            onClick={() => window.close()}
+            onClick={handleClose}
           >
             Stäng
           </button>

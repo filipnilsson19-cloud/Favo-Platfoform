@@ -1,17 +1,18 @@
 "use client";
 
 import { StationPages } from "@/components/station-pages";
-import type { StationPrintPayload, StationSource } from "@/types/station";
+import type { RecipeCategory } from "@/types/recipe";
+import type { StationPrintPayload } from "@/types/station";
 
 import styles from "./station-drawer.module.css";
 
 type StationDrawerProps = {
   isOpen: boolean;
   payload: StationPrintPayload | null;
-  source: StationSource;
-  canBuildSelected: boolean;
-  onBuildVisible: () => void;
-  onBuildSelected: () => void;
+  categoryOptions: RecipeCategory[];
+  activeCategories: RecipeCategory[];
+  categoriesLocked: boolean;
+  onSelectCategory: (category: RecipeCategory) => void;
   onClose: () => void;
   onPrint: () => void;
 };
@@ -19,10 +20,10 @@ type StationDrawerProps = {
 export function StationDrawer({
   isOpen,
   payload,
-  source,
-  canBuildSelected,
-  onBuildVisible,
-  onBuildSelected,
+  categoryOptions,
+  activeCategories,
+  categoriesLocked,
+  onSelectCategory,
   onClose,
   onPrint,
 }: StationDrawerProps) {
@@ -56,26 +57,32 @@ export function StationDrawer({
           </div>
 
           <div className={styles.actions}>
-            <div className={styles.sourceToggle} role="group" aria-label="Välj urval">
-              <button
-                className={`${styles.sourceButton} ${
-                  source === "visible" ? styles.sourceButtonActive : ""
-                }`}
-                type="button"
-                onClick={onBuildVisible}
-              >
-                Synliga
-              </button>
-              <button
-                className={`${styles.sourceButton} ${
-                  source === "selected" ? styles.sourceButtonActive : ""
-                }`}
-                type="button"
-                disabled={!canBuildSelected}
-                onClick={onBuildSelected}
-              >
-                Valda
-              </button>
+            <div
+              className={`${styles.sourceToggle} ${
+                categoriesLocked ? styles.sourceToggleLocked : ""
+              }`}
+              role="group"
+              aria-label="Välj kategori för stationsvy"
+              aria-disabled={categoriesLocked}
+            >
+              {categoryOptions.map((category) => {
+                const isActive = activeCategories.includes(category);
+
+                return (
+                  <button
+                    key={category}
+                    className={`${styles.sourceButton} ${
+                      isActive ? styles.sourceButtonActive : ""
+                    }`}
+                    type="button"
+                    disabled={categoriesLocked}
+                    aria-pressed={isActive}
+                    onClick={() => onSelectCategory(category)}
+                  >
+                    {category}
+                  </button>
+                );
+              })}
             </div>
             <button className={styles.button} type="button" onClick={onPrint}>
               Skriv ut A4

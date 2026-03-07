@@ -7,8 +7,12 @@ const globalForPrisma = globalThis as typeof globalThis & {
 };
 
 export function getPrismaClient() {
-  if (globalForPrisma.prisma) {
-    return globalForPrisma.prisma;
+  const existingClient = globalForPrisma.prisma as
+    | (PrismaClient & { category?: unknown })
+    | undefined;
+
+  if (existingClient?.category) {
+    return existingClient;
   }
 
   if (!process.env.DATABASE_URL) {

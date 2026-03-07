@@ -105,10 +105,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <div className={styles.setupBox}>
             <h2>Auth behöver två nycklar till</h2>
             <p>
-              Lägg till <code>NEXT_PUBLIC_SUPABASE_URL</code> och{" "}
-              <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> i{" "}
-              <code>.env.local</code>, starta om appen och öppna sedan den här
-              sidan igen.
+              Lägg till <code>SUPABASE_URL</code> och{" "}
+              <code>SUPABASE_PUBLISHABLE_KEY</code> i miljövariablerna. Du kan
+              även använda <code>NEXT_PUBLIC_SUPABASE_URL</code> och{" "}
+              <code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code>. Starta om eller
+              redeploya appen och öppna sedan den här sidan igen.
             </p>
           </div>
         )}

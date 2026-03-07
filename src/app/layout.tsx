@@ -1,36 +1,12 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Manrope } from "next/font/google";
 import "./globals.css";
 
-const graphik = localFont({
-  variable: "--font-graphik",
-  src: [
-    {
-      path: "../../Graphik Family/Graphik-Regular-Trial.otf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../../Graphik Family/Graphik-Medium-Trial.otf",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../../Graphik Family/Graphik-Semibold-Trial.otf",
-      weight: "600",
-      style: "normal",
-    },
-    {
-      path: "../../Graphik Family/Graphik-Bold-Trial.otf",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../../Graphik Family/Graphik-Black-Trial.otf",
-      weight: "900",
-      style: "normal",
-    },
-  ],
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -45,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sv">
-      <body className={`${graphik.className} ${graphik.variable}`}>{children}</body>
+      <body className={`${manrope.className} ${manrope.variable}`}>{children}</body>
     </html>
   );
 }

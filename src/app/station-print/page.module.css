@@ -1,3 +1,9 @@
+.page,
+.page * {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
 .page {
   min-height: 100vh;
   background: #e9e3da;
@@ -64,15 +70,25 @@
 
 @page {
   size: A4 landscape;
-  margin: 8mm;
+  margin: 0;
 }
 
 @media print {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 297mm;
+    height: 210mm;
+    background: #e9e3da;
+  }
+
   .toolbar {
     display: none !important;
   }
 
   .page {
-    background: #fff;
+    min-height: 210mm;
+    background: #e9e3da;
   }
 }

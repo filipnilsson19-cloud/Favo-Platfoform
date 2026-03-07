@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   blankRecipe,
   buildRecipeSummary,
-  categoryToneMap,
   cloneRecipe,
   computeAmountSummary,
   contentItems,
   normalizeRecipe,
   recipeStatusOptions,
+  sortRecipeCategories,
 } from "@/lib/recipe-utils";
 import {
   buildStationPayload,
@@ -18,7 +18,9 @@ import {
 } from "@/lib/station-utils";
 import type { EditorMode, Recipe, RecipeCategory, RecipeStatus } from "@/types/recipe";
 import type { StationSource } from "@/types/station";
+import type { AppCategory } from "@/types/category";
 
+import { CategoryManagerDrawer } from "./category-manager-drawer";
 import { RecipeDetailDrawer } from "./recipe-detail-drawer";
 import { RecipeEditorDrawer } from "./recipe-editor-drawer";
 import { StationDrawer } from "./station-drawer";
@@ -26,42 +28,102 @@ import styles from "./recipe-book.module.css";
 
 type RecipeBookProps = {
   canManage: boolean;
+  categories: RecipeCategory[];
   recipes: Recipe[];
 };
 
 type ViewMode = "card" | "table";
-type ActiveCategory = RecipeCategory | "Alla";
+type CategoryOption = RecipeCategory | "Alla";
 type ActiveStatus = RecipeStatus | "Alla";
 
-export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
+export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) {
   const [recipeList, setRecipeList] = useState<Recipe[]>(() =>
     recipes.map((recipe) => cloneRecipe(recipe)),
   );
+  const [categoryList, setCategoryList] = useState<RecipeCategory[]>(() =>
+    sortRecipeCategories(categories),
+  );
   const [view, setView] = useState<ViewMode>("table");
-  const [activeCategory, setActiveCategory] = useState<ActiveCategory>("Alla");
+  const [activeCategories, setActiveCategories] = useState<RecipeCategory[]>([]);
   const [activeStatus, setActiveStatus] = useState<ActiveStatus>("Alla");
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeRecipeId, setActiveRecipeId] = useState<string>("");
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
   const [isStationOpen, setIsStationOpen] = useState(false);
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
-  const [stationSource, setStationSource] = useState<StationSource>("visible");
+  const [stationCategory, setStationCategory] = useState<RecipeCategory | "">("");
   const [editorMode, setEditorMode] = useState<EditorMode>("new");
   const [editorSaveLabel, setEditorSaveLabel] = useState("Inte sparad ännu");
   const [editorDraft, setEditorDraft] = useState<Recipe>(() => blankRecipe());
   const [isSaving, setIsSaving] = useState(false);
+  const [managedCategories, setManagedCategories] = useState<AppCategory[]>([]);
+  const [isManagingCategories, setIsManagingCategories] = useState(false);
+  const visibleSelectionRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setRecipeList(recipes.map((recipe) => cloneRecipe(recipe)));
   }, [recipes]);
 
-  const categories = ["Alla", ...new Set(recipeList.map((recipe) => recipe.category))] as ActiveCategory[];
+  useEffect(() => {
+    setCategoryList(sortRecipeCategories(categories));
+  }, [categories]);
+
+  const availableCategories = sortRecipeCategories(
+    recipeList.map((recipe) => recipe.category),
+  );
+  const editorCategories = sortRecipeCategories([
+    ...categoryList,
+    ...recipeList.map((recipe) => recipe.category),
+  ]);
+  const categoryOptions = ["Alla", ...availableCategories] as CategoryOption[];
+  const activeCategoryLabel =
+    activeCategories.length === 0
+      ? "Alla"
+      : activeCategories.length === 1
+        ? activeCategories[0]
+      : "Flera kategorier";
+  const normalizedSearchQuery = searchQuery.trim().toLowerCase();
+  const matchesSharedRecipeFilters = (recipe: Recipe) => {
+    const statusMatch = activeStatus === "Alla" || recipe.status === activeStatus;
+    const searchHaystack = [
+      recipe.title,
+      recipe.category,
+      recipe.summary,
+      recipe.notes,
+      recipe.allergens,
+      ...recipe.items.map((item) => `${item.info} ${item.name} ${item.amount} ${item.unit}`),
+    ]
+      .join(" ")
+      .toLowerCase();
+    const searchMatch =
+      normalizedSearchQuery.length === 0 ||
+      searchHaystack.includes(normalizedSearchQuery);
+
+    return statusMatch && searchMatch;
+  };
   const visibleRecipes = recipeList.filter((recipe) => {
     const categoryMatch =
-      activeCategory === "Alla" || recipe.category === activeCategory;
-    const statusMatch = activeStatus === "Alla" || recipe.status === activeStatus;
-    return categoryMatch && statusMatch;
+      activeCategories.length === 0 || activeCategories.includes(recipe.category);
+
+    return categoryMatch && matchesSharedRecipeFilters(recipe);
   });
+  const stationBrowseRecipes = recipeList.filter((recipe) =>
+    matchesSharedRecipeFilters(recipe),
+  );
+  const stationCategoryOptions = availableCategories.filter((category) =>
+    stationBrowseRecipes.some((recipe) => recipe.category === category),
+  );
+  const preferredStationCategory =
+    activeCategories.find((category) => stationCategoryOptions.includes(category)) ??
+    stationCategoryOptions[0] ??
+    "";
+  const resolvedStationCategory =
+    stationCategory &&
+    stationCategoryOptions.includes(stationCategory as RecipeCategory)
+      ? stationCategory
+      : preferredStationCategory;
   const resolvedActiveRecipeId =
     visibleRecipes.find((recipe) => recipe.id === activeRecipeId)?.id ??
     recipeList.find((recipe) => recipe.id === activeRecipeId)?.id ??
@@ -75,6 +137,15 @@ export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
   const selectedRecipes = recipeList.filter((recipe) =>
     selectedRecipeIds.includes(recipe.id),
   );
+  const visibleRecipeIds = visibleRecipes.map((recipe) => recipe.id);
+  const selectedVisibleRecipeIds = visibleRecipeIds.filter((id) =>
+    selectedRecipeIds.includes(id),
+  );
+  const allVisibleSelected =
+    visibleRecipeIds.length > 0 &&
+    selectedVisibleRecipeIds.length === visibleRecipeIds.length;
+  const someVisibleSelected =
+    selectedVisibleRecipeIds.length > 0 && !allVisibleSelected;
   const draftContentItems = contentItems(editorDraft.items);
   const canSaveRecipe =
     editorDraft.title.trim().length > 0 &&
@@ -82,30 +153,54 @@ export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
     draftContentItems.every(
       (item) => item.name.trim().length > 0 && item.amount.trim().length > 0,
     );
-  const resolvedStationSource =
-    stationSource === "selected" && selectedRecipes.length === 0
-      ? "visible"
-      : stationSource;
+  const stationSource: StationSource =
+    selectedRecipes.length > 0 ? "selected" : "visible";
+  const stationVisibleRecipes =
+    stationSource === "selected"
+      ? visibleRecipes
+      : stationBrowseRecipes.filter(
+          (recipe) =>
+            resolvedStationCategory.length > 0 &&
+            recipe.category === resolvedStationCategory,
+        );
   const stationPayload =
-    isStationOpen || selectedRecipes.length > 0 || visibleRecipes.length > 0
+    isStationOpen || selectedRecipes.length > 0 || stationBrowseRecipes.length > 0
       ? buildStationPayload({
-          source: resolvedStationSource,
-          visibleRecipes,
+          source: stationSource,
+          visibleRecipes: stationVisibleRecipes,
           selectedRecipes,
-          activeCategory,
+          activeCategory:
+            stationSource === "selected"
+              ? activeCategoryLabel
+              : resolvedStationCategory || "Alla",
         })
       : null;
+  const stationToggleCategories =
+    stationSource === "selected"
+      ? [...new Set(selectedRecipes.map((recipe) => recipe.category))]
+      : resolvedStationCategory
+        ? [resolvedStationCategory]
+        : [];
+  const canOpenStation =
+    selectedRecipes.length > 0 || stationBrowseRecipes.length > 0;
 
   useEffect(() => {
     document.body.classList.toggle(
       "favo-lock-scroll",
-      isDetailOpen || isEditorOpen || isStationOpen,
+      isDetailOpen || isEditorOpen || isCategoryManagerOpen || isStationOpen,
     );
+    document.body.classList.toggle("favo-station-open", isStationOpen);
 
     return () => {
       document.body.classList.remove("favo-lock-scroll");
+      document.body.classList.remove("favo-station-open");
     };
-  }, [isDetailOpen, isEditorOpen, isStationOpen]);
+  }, [isCategoryManagerOpen, isDetailOpen, isEditorOpen, isStationOpen]);
+
+  useEffect(() => {
+    if (!visibleSelectionRef.current) return;
+    visibleSelectionRef.current.indeterminate = someVisibleSelected;
+  }, [someVisibleSelected]);
 
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
@@ -274,8 +369,11 @@ export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
         );
       });
 
-      if (activeCategory !== "Alla" && activeCategory !== savedRecipe.category) {
-        setActiveCategory(savedRecipe.category);
+      if (
+        activeCategories.length > 0 &&
+        !activeCategories.includes(savedRecipe.category)
+      ) {
+        setActiveCategories((current) => [...current, savedRecipe.category]);
       }
 
       setActiveRecipeId(savedRecipe.id);
@@ -299,6 +397,169 @@ export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
       window.alert("Det gick inte att spara receptet. Försök igen.");
     } finally {
       setIsSaving(false);
+    }
+  }
+
+  async function createCategory(name: string) {
+    const normalizedName = name.trim();
+
+    if (!normalizedName) {
+      return null;
+    }
+
+    try {
+      const response = await fetch("/api/categories", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: normalizedName,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create category");
+      }
+
+      const payload = (await response.json()) as { category: RecipeCategory };
+      const createdCategory = payload.category;
+
+      setCategoryList((current) =>
+        sortRecipeCategories([...current, createdCategory]),
+      );
+
+      if (isCategoryManagerOpen) {
+        void loadManagedCategories();
+      }
+
+      return createdCategory;
+    } catch (error) {
+      console.error("Could not create category", error);
+      window.alert("Det gick inte att skapa kategorin. Försök igen.");
+      return null;
+    }
+  }
+
+  async function loadManagedCategories() {
+    try {
+      setIsManagingCategories(true);
+      const response = await fetch("/api/categories?manage=1");
+
+      if (!response.ok) {
+        throw new Error("Failed to load categories");
+      }
+
+      const payload = (await response.json()) as { categories: AppCategory[] };
+      setManagedCategories(payload.categories);
+      setIsCategoryManagerOpen(true);
+    } catch (error) {
+      console.error("Could not load categories", error);
+      window.alert("Det gick inte att läsa kategorierna. Försök igen.");
+    } finally {
+      setIsManagingCategories(false);
+    }
+  }
+
+  async function renameManagedCategory(name: string, nextName: string) {
+    try {
+      setIsManagingCategories(true);
+
+      const response = await fetch("/api/categories", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "rename",
+          name,
+          nextName,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to rename category");
+      }
+
+      const payload = (await response.json()) as {
+        categories: AppCategory[];
+        category: RecipeCategory;
+        previousName: RecipeCategory;
+      };
+
+      setManagedCategories(payload.categories);
+      setCategoryList(
+        sortRecipeCategories(
+          payload.categories
+            .filter((category) => category.isActive)
+            .map((category) => category.name),
+        ),
+      );
+      setRecipeList((current) =>
+        current.map((recipe) =>
+          recipe.category === payload.previousName
+            ? { ...recipe, category: payload.category }
+            : recipe,
+        ),
+      );
+      setActiveCategories((current) =>
+        current.map((category) =>
+          category === payload.previousName ? payload.category : category,
+        ),
+      );
+      setStationCategory((current) =>
+        current === payload.previousName ? payload.category : current,
+      );
+      setEditorDraft((current) =>
+        current.category === payload.previousName
+          ? { ...current, category: payload.category }
+          : current,
+      );
+    } catch (error) {
+      console.error("Could not rename category", error);
+      window.alert("Det gick inte att byta namn på kategorin. Försök igen.");
+    } finally {
+      setIsManagingCategories(false);
+    }
+  }
+
+  async function setManagedCategoryActive(name: string, isActive: boolean) {
+    try {
+      setIsManagingCategories(true);
+
+      const response = await fetch("/api/categories", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "set-active",
+          name,
+          isActive,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update category state");
+      }
+
+      const payload = (await response.json()) as {
+        categories: AppCategory[];
+      };
+
+      setManagedCategories(payload.categories);
+      setCategoryList(
+        sortRecipeCategories(
+          payload.categories
+            .filter((category) => category.isActive)
+            .map((category) => category.name),
+        ),
+      );
+    } catch (error) {
+      console.error("Could not update category state", error);
+      window.alert("Det gick inte att uppdatera kategorin. Försök igen.");
+    } finally {
+      setIsManagingCategories(false);
     }
   }
 
@@ -346,29 +607,44 @@ export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
     );
   }
 
-  function selectVisibleRecipes() {
+  function toggleVisibleRecipesSelection() {
     setSelectedRecipeIds((current) => {
       const next = new Set(current);
-      visibleRecipes.forEach((recipe) => next.add(recipe.id));
+
+      if (allVisibleSelected) {
+        visibleRecipeIds.forEach((id) => next.delete(id));
+      } else {
+        visibleRecipeIds.forEach((id) => next.add(id));
+      }
+
       return [...next];
     });
   }
 
-  function clearSelectedRecipes() {
-    setSelectedRecipeIds([]);
+  function toggleCategory(category: CategoryOption) {
+    if (category === "Alla") {
+      setActiveCategories([]);
+      return;
+    }
+
+    setActiveCategories((current) => {
+      const next = current.includes(category)
+        ? current.filter((entry) => entry !== category)
+        : [...current, category];
+
+      if (next.length === 0 || next.length === availableCategories.length) {
+        return [];
+      }
+
+      return next;
+    });
   }
 
-  function openStation(source: "auto" | StationSource = "auto") {
-    const nextSource =
-      source === "auto"
-        ? selectedRecipes.length > 0
-          ? "selected"
-          : "visible"
-        : source === "selected" && selectedRecipes.length === 0
-          ? "visible"
-          : source;
+  function openStation() {
+    if (selectedRecipes.length === 0 && preferredStationCategory) {
+      setStationCategory(preferredStationCategory);
+    }
 
-    setStationSource(nextSource);
     setIsDetailOpen(false);
     setIsEditorOpen(false);
     setIsStationOpen(true);
@@ -489,122 +765,153 @@ export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
 
         <div className={styles.recipeWorkspace}>
           <div className={styles.recipeToolbar} aria-label="Receptöversikt">
-            <div className={styles.toolbarCluster}>
-              <div className={styles.toolbarGroup}>
-                <span className={`${styles.toolbarPill} ${styles.toolbarPillActive}`}>
-                  {visibleRecipes.length} recept
-                </span>
-                <span className={styles.toolbarPill}>
-                  {selectedRecipes.length} valda
-                </span>
-                <button
-                  className={styles.toolbarButton}
-                  type="button"
-                  onClick={selectVisibleRecipes}
-                >
-                  Markera synliga
-                </button>
-                <button
-                  className={styles.toolbarButton}
-                  type="button"
-                  onClick={clearSelectedRecipes}
-                  disabled={selectedRecipes.length === 0}
-                >
-                  Rensa val
-                </button>
-              </div>
+            <div className={styles.toolbarPrimary}>
+              <div className={styles.toolbarMetaRow}>
+                <div className={styles.toolbarMetrics}>
+                  <span className={styles.toolbarMetric}>
+                    <strong>{visibleRecipes.length}</strong> recept
+                  </span>
+                  <span className={styles.toolbarMetricMuted}>
+                    {selectedRecipes.length} valda
+                  </span>
+                </div>
 
-              <div className={styles.toolbarFilters}>
-                {categories.map((category) => {
-                  const isActive = category === activeCategory;
-
-                  return (
-                    <button
-                      key={category}
-                      className={[
-                        styles.filterChip,
-                        styles[
-                          `filterChip${categoryToneMap[category][0].toUpperCase()}${categoryToneMap[category].slice(1)}`
-                        ],
-                        isActive ? styles.filterChipActive : "",
-                      ].join(" ")}
-                      type="button"
-                      aria-pressed={isActive}
-                      onClick={() => setActiveCategory(category)}
-                    >
-                      {category}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className={styles.toolbarStatusFilters}>
-                {(["Alla", ...recipeStatusOptions] as ActiveStatus[]).map((status) => {
-                  const isActive = status === activeStatus;
-
-                  return (
-                    <button
-                      key={status}
-                      className={[
-                        styles.filterChip,
-                        styles[
-                          `statusChip${
-                            status === "Alla"
-                              ? "All"
-                              : status === "Publicerad"
-                                ? "Published"
-                                : status === "Inaktiv"
-                                  ? "Inactive"
-                                  : "Draft"
-                          }`
-                        ],
-                        isActive ? styles.filterChipActive : "",
-                      ].join(" ")}
-                      type="button"
-                      aria-pressed={isActive}
-                      onClick={() => setActiveStatus(status)}
-                    >
-                      {status}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className={styles.toolbarActions}>
-              <div className={styles.viewToggle} role="group" aria-label="Välj vy">
-                {(["table", "card"] as ViewMode[]).map((mode) => (
+                {canManage ? (
                   <button
-                    key={mode}
-                    className={`${styles.viewToggleButton} ${
-                      view === mode ? styles.viewToggleButtonActive : ""
-                    }`}
+                    className={`${styles.actionButton} ${styles.toolbarActionCompact} ${styles.toolbarTopAction}`}
                     type="button"
-                    aria-pressed={view === mode}
-                    onClick={() => setView(mode)}
+                    onClick={() => openEditor("new")}
                   >
-                    {mode === "card" ? "Kort" : "Tabell"}
+                    Nytt recept
                   </button>
-                ))}
+                ) : null}
               </div>
 
-              <button
-                className={`${styles.actionButton} ${styles.toolbarActionCompact}`}
-                type="button"
-                onClick={() => openStation("auto")}
-                disabled={visibleRecipes.length === 0}
-              >
-                Stationsvy
-              </button>
-              {canManage ? (
-                <button
-                  className={styles.actionButtonGhost}
-                  type="button"
-                  onClick={() => openEditor("new")}
-                >
-                  Nytt recept
-                </button>
-              ) : null}
+              <div className={styles.toolbarFilterStack}>
+                <div className={styles.filterSection}>
+                  <div className={styles.filterSectionHeader}>
+                    <span className={styles.filterSectionLabel}>Kategori</span>
+                    {canManage ? (
+                      <button
+                        className={styles.filterManageButton}
+                        type="button"
+                        onClick={() => void loadManagedCategories()}
+                      >
+                        Hantera kategorier
+                      </button>
+                    ) : null}
+                  </div>
+                  <div className={styles.categoryTabs}>
+                    {categoryOptions.map((category) => {
+                      const isActive =
+                        category === "Alla"
+                          ? activeCategories.length === 0
+                          : activeCategories.includes(category);
+
+                      return (
+                        <button
+                          key={category}
+                          className={[
+                            styles.categoryTab,
+                            isActive ? styles.categoryTabActive : "",
+                          ].join(" ")}
+                          type="button"
+                          aria-pressed={isActive}
+                          onClick={() => toggleCategory(category)}
+                        >
+                          <span>{category}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.toolbarSecondaryRow}>
+                <div className={`${styles.filterSection} ${styles.statusSection}`}>
+                  <span className={styles.filterSectionLabel}>Status</span>
+                  <div className={styles.statusToggle}>
+                    {(["Alla", ...recipeStatusOptions] as ActiveStatus[]).map((status) => {
+                      const isActive = status === activeStatus;
+
+                      return (
+                        <button
+                          key={status}
+                          className={[
+                            styles.statusToggleButton,
+                            styles[
+                              `statusToggle${
+                                status === "Alla"
+                                  ? "All"
+                                  : status === "Publicerad"
+                                    ? "Published"
+                                    : status === "Inaktiv"
+                                      ? "Inactive"
+                                      : "Draft"
+                              }`
+                            ],
+                            isActive ? styles.statusToggleButtonActive : "",
+                          ].join(" ")}
+                          type="button"
+                          aria-pressed={isActive}
+                          onClick={() => setActiveStatus(status)}
+                        >
+                          {status}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className={styles.searchRow}>
+                  <div className={styles.searchSection}>
+                    <label className={styles.filterSectionLabel} htmlFor="recipe-search">
+                      Sök
+                    </label>
+                    <div className={styles.searchFieldWrap}>
+                      <input
+                        id="recipe-search"
+                        className={styles.searchField}
+                        type="search"
+                        value={searchQuery}
+                        placeholder="Sök recept, komponent eller info"
+                        onChange={(event) => setSearchQuery(event.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className={styles.toolbarViewRow}>
+                  <div className={styles.toolbarViewStack}>
+                    <div className={styles.toolbarViewControls}>
+                      <button
+                        className={`${styles.actionButton} ${styles.toolbarActionCompact} ${styles.stationAction}`}
+                        type="button"
+                        onClick={() => openStation()}
+                        disabled={!canOpenStation}
+                      >
+                        Stationsvy
+                      </button>
+
+                      <div className={styles.viewToggle} role="group" aria-label="Välj vy">
+                        {(["table", "card"] as ViewMode[]).map((mode) => (
+                          <button
+                            key={mode}
+                            className={`${styles.viewToggleButton} ${
+                              view === mode ? styles.viewToggleButtonActive : ""
+                            }`}
+                            type="button"
+                            aria-pressed={view === mode}
+                            onClick={() => setView(mode)}
+                          >
+                            {mode === "card" ? "Kort" : "Tabell"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -617,13 +924,33 @@ export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
           >
             {view === "table" ? (
               <div className={styles.recipeListHeader} aria-hidden="true">
-                <span>Val</span>
-                <span>Typ</span>
-                <span>Recept</span>
-                <span>Komponenter</span>
-                <span>Total</span>
-                <span>Status</span>
-                <span>Åtgärder</span>
+                <label
+                  className={`${styles.recipeHeaderCell} ${styles.recipeHeaderSelect}`}
+                >
+                  <input
+                    ref={visibleSelectionRef}
+                    className={styles.recipeCheckbox}
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    disabled={visibleRecipeIds.length === 0}
+                    onChange={toggleVisibleRecipesSelection}
+                  />
+                  <span>Val</span>
+                </label>
+                <span
+                  className={`${styles.recipeHeaderCell} ${styles.recipeHeaderType}`}
+                >
+                  Typ
+                </span>
+                <span className={styles.recipeHeaderCell}>Recept</span>
+                <span className={styles.recipeHeaderCell}>Komponenter</span>
+                <span className={styles.recipeHeaderCell}>Total</span>
+                <span className={styles.recipeHeaderCell}>Status</span>
+                <span
+                  className={`${styles.recipeHeaderCell} ${styles.recipeHeaderActions}`}
+                >
+                  Åtgärder
+                </span>
               </div>
             ) : null}
 
@@ -646,12 +973,14 @@ export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
 
       {canManage ? (
         <RecipeEditorDrawer
-          categories={categories.filter((category): category is RecipeCategory => category !== "Alla")}
+          key={`${editorMode}-${editorDraft.id || "draft"}-${isEditorOpen ? "open" : "closed"}`}
+          categories={editorCategories}
           draft={editorDraft}
           canSave={canSaveRecipe}
           isOpen={isEditorOpen}
           isSaving={isSaving}
           mode={editorMode}
+          onCreateCategory={createCategory}
           saveLabel={editorSaveLabel}
           onAddItem={addDraftItem}
           onClose={() => setIsEditorOpen(false)}
@@ -665,21 +994,30 @@ export function RecipeBook({ canManage, recipes }: RecipeBookProps) {
       ) : null}
 
       <StationDrawer
-        canBuildSelected={selectedRecipes.length > 0}
+        activeCategories={stationToggleCategories}
+        categoriesLocked={selectedRecipes.length > 0}
+        categoryOptions={stationCategoryOptions}
         isOpen={isStationOpen}
         payload={stationPayload}
-        source={resolvedStationSource}
-        onBuildSelected={() => {
-          setStationSource("selected");
-          setIsStationOpen(true);
-        }}
-        onBuildVisible={() => {
-          setStationSource("visible");
-          setIsStationOpen(true);
-        }}
+        onSelectCategory={setStationCategory}
         onClose={() => setIsStationOpen(false)}
         onPrint={openStationPrint}
       />
+
+      {canManage ? (
+        <CategoryManagerDrawer
+          categories={managedCategories}
+          isBusy={isManagingCategories}
+          isOpen={isCategoryManagerOpen}
+          onClose={() => setIsCategoryManagerOpen(false)}
+          onCreate={async (name) => {
+            await createCategory(name);
+            await loadManagedCategories();
+          }}
+          onRename={renameManagedCategory}
+          onSetActive={setManagedCategoryActive}
+        />
+      ) : null}
     </>
   );
 }

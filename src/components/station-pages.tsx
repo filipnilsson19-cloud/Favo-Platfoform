@@ -18,7 +18,7 @@ const packClassMap = {
   compact: styles.packCompact,
 };
 
-const cardToneClassMap = {
+const cardToneClassMap: Record<string, string> = {
   Bowl: styles.cardToneBowl,
   Sallad: styles.cardToneSalad,
   Burger: styles.cardToneBurger,
@@ -77,7 +77,7 @@ export function StationPages({
                   {column.recipes.map((recipe) => (
                     <article
                       key={recipe.id}
-                      className={`${styles.card} ${cardToneClassMap[recipe.category]}`}
+                      className={`${styles.card} ${cardToneClassMap[recipe.category] ?? ""}`}
                     >
                       <header className={styles.cardHeader}>
                         <div className={styles.cardIdentity}>
@@ -103,12 +103,14 @@ export function StationPages({
                                 item.isEmphasis ? styles.rowEmphasis : ""
                               }`}
                             >
-                              <div className={styles.rowLead}>
-                                {item.info ? (
-                                  <span className={styles.rowTag}>{item.info}</span>
-                                ) : null}
-                                <span className={styles.rowName}>{item.name}</span>
-                              </div>
+                              <span
+                                className={`${styles.rowInfo} ${
+                                  item.info ? "" : styles.rowInfoEmpty
+                                }`}
+                              >
+                                {item.info || "Info"}
+                              </span>
+                              <span className={styles.rowName}>{item.name}</span>
                               <span className={styles.rowAmount}>
                                 {formatRecipeItemAmount(item)}
                               </span>
