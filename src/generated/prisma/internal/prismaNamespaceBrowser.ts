@@ -53,6 +53,7 @@ export const AnyNull = runtime.AnyNull
 export const ModelName = {
   Recipe: 'Recipe',
   Category: 'Category',
+  StationView: 'StationView',
   RecipeItem: 'RecipeItem',
   UserProfile: 'UserProfile'
 } as const
@@ -103,6 +104,21 @@ export const CategoryScalarFieldEnum = {
 export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
 
 
+export const StationViewScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  scopeKey: 'scopeKey',
+  scopeLabel: 'scopeLabel',
+  recipeCount: 'recipeCount',
+  isActive: 'isActive',
+  layout: 'layout',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StationViewScalarFieldEnum = (typeof StationViewScalarFieldEnum)[keyof typeof StationViewScalarFieldEnum]
+
+
 export const RecipeItemScalarFieldEnum = {
   id: 'id',
   recipeId: 'recipeId',
@@ -138,10 +154,26 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

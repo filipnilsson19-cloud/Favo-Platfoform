@@ -1,9 +1,10 @@
 import { computeAmountSummary } from "@/lib/recipe-utils";
 import type { Recipe } from "@/types/recipe";
 import type {
+  StationPackPreset,
   StationPackedColumn,
-  StationLayoutPreset,
   StationPagePack,
+  StationPrintBundle,
   StationPrintPayload,
   StationPrintableRecipe,
   StationSource,
@@ -12,8 +13,8 @@ import type {
 export const STATION_PRINT_STORAGE_KEY = "favo.station-print-payload";
 
 const STATION_LAYOUT_PRESETS: Record<
-  StationLayoutPreset["key"],
-  StationLayoutPreset
+  StationPackPreset["key"],
+  StationPackPreset
 > = {
   single: {
     key: "single",
@@ -82,7 +83,7 @@ const STATION_LAYOUT_PRESETS: Record<
   },
 };
 
-function getStationLayoutCandidates(count: number) {
+function getStationPackCandidates(count: number) {
   if (count <= 1) {
     return [STATION_LAYOUT_PRESETS.single];
   }
@@ -114,7 +115,7 @@ function estimateWrappedLines(value: string, maxChars: number) {
 
 function estimateStationRecipeLoad(
   recipe: StationPrintableRecipe,
-  layout: StationLayoutPreset,
+  layout: StationPackPreset,
   showCategoryLabel: boolean,
 ) {
   const titleLines = estimateWrappedLines(recipe.title, layout.titleChars);
@@ -138,7 +139,7 @@ function estimateStationRecipeLoad(
 
 function packStationPage(
   recipes: StationPrintableRecipe[],
-  layout: StationLayoutPreset,
+  layout: StationPackPreset,
   showCategoryLabel: boolean,
 ): StationPagePack {
   const columns: StationPackedColumn[] = Array.from(
@@ -211,7 +212,7 @@ function chooseStationPagePack(
   recipes: StationPrintableRecipe[],
   showCategoryLabel: boolean,
 ) {
-  const candidates = getStationLayoutCandidates(recipes.length);
+  const candidates = getStationPackCandidates(recipes.length);
 
   return candidates.reduce<StationPagePack | null>((bestPack, layout) => {
     const candidatePack = packStationPage(recipes, layout, showCategoryLabel);
@@ -256,6 +257,35 @@ export function paginateStationRecipes(
   }
 
   return pages;
+}
+
+export function serializeStationPrintBundle(bundle: StationPrintBundle) {
+  return JSON.stringify(bundle);
+}
+
+export function buildStationViewScope(params: {
+  source: StationSource;
+  activeCategory: string;
+  selectedRecipeIds: string[];
+}) {
+  if (params.source === "selected") {
+    const sortedIds = [...params.selectedRecipeIds].sort();
+
+    return {
+      key: `selected:${sortedIds.join(",")}`,
+      label:
+        sortedIds.length === 1
+          ? "Valt recept"
+          : `${sortedIds.length} valda recept`,
+    };
+  }
+
+  const categoryLabel = params.activeCategory || "Alla";
+
+  return {
+    key: `category:${categoryLabel}`,
+    label: `Kategori: ${categoryLabel}`,
+  };
 }
 
 export function buildStationMeta(recipeCount: number) {

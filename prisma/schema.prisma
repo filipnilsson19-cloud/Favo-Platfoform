@@ -46,6 +46,22 @@ model Category {
   @@map("categories")
 }
 
+model StationView {
+  id         String   @id @default(cuid())
+  name       String
+  scopeKey   String
+  scopeLabel String
+  recipeCount Int     @default(0)
+  isActive   Boolean  @default(true)
+  layout     Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([scopeKey, name])
+  @@index([scopeKey, isActive])
+  @@map("station_views")
+}
+
 model RecipeItem {
   id         String  @id @default(cuid())
   recipeId   String

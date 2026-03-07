@@ -386,6 +386,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   Recipe: 'Recipe',
   Category: 'Category',
+  StationView: 'StationView',
   RecipeItem: 'RecipeItem',
   UserProfile: 'UserProfile'
 } as const
@@ -403,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "recipe" | "category" | "recipeItem" | "userProfile"
+    modelProps: "recipe" | "category" | "stationView" | "recipeItem" | "userProfile"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -552,6 +553,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.CategoryCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.CategoryCountAggregateOutputType> | number
+        }
+      }
+    }
+    StationView: {
+      payload: Prisma.$StationViewPayload<ExtArgs>
+      fields: Prisma.StationViewFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StationViewFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StationViewFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload>
+        }
+        findFirst: {
+          args: Prisma.StationViewFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StationViewFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload>
+        }
+        findMany: {
+          args: Prisma.StationViewFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload>[]
+        }
+        create: {
+          args: Prisma.StationViewCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload>
+        }
+        createMany: {
+          args: Prisma.StationViewCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StationViewCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload>[]
+        }
+        delete: {
+          args: Prisma.StationViewDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload>
+        }
+        update: {
+          args: Prisma.StationViewUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload>
+        }
+        deleteMany: {
+          args: Prisma.StationViewDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StationViewUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StationViewUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload>[]
+        }
+        upsert: {
+          args: Prisma.StationViewUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StationViewPayload>
+        }
+        aggregate: {
+          args: Prisma.StationViewAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStationView>
+        }
+        groupBy: {
+          args: Prisma.StationViewGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StationViewGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StationViewCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StationViewCountAggregateOutputType> | number
         }
       }
     }
@@ -772,6 +847,21 @@ export const CategoryScalarFieldEnum = {
 export type CategoryScalarFieldEnum = (typeof CategoryScalarFieldEnum)[keyof typeof CategoryScalarFieldEnum]
 
 
+export const StationViewScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  scopeKey: 'scopeKey',
+  scopeLabel: 'scopeLabel',
+  recipeCount: 'recipeCount',
+  isActive: 'isActive',
+  layout: 'layout',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StationViewScalarFieldEnum = (typeof StationViewScalarFieldEnum)[keyof typeof StationViewScalarFieldEnum]
+
+
 export const RecipeItemScalarFieldEnum = {
   id: 'id',
   recipeId: 'recipeId',
@@ -807,12 +897,28 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
 
@@ -867,6 +973,20 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -994,6 +1114,7 @@ export type PrismaClientOptions = ({
 export type GlobalOmitConfig = {
   recipe?: Prisma.RecipeOmit
   category?: Prisma.CategoryOmit
+  stationView?: Prisma.StationViewOmit
   recipeItem?: Prisma.RecipeItemOmit
   userProfile?: Prisma.UserProfileOmit
 }

@@ -8,10 +8,20 @@ const globalForPrisma = globalThis as typeof globalThis & {
 
 export function getPrismaClient() {
   const existingClient = globalForPrisma.prisma as
-    | (PrismaClient & { category?: unknown })
+    | (PrismaClient & {
+        category?: unknown;
+        stationView?: unknown;
+        userProfile?: unknown;
+        recipe?: unknown;
+      })
     | undefined;
 
-  if (existingClient?.category) {
+  if (
+    existingClient?.category &&
+    existingClient?.stationView &&
+    existingClient?.userProfile &&
+    existingClient?.recipe
+  ) {
     return existingClient;
   }
 

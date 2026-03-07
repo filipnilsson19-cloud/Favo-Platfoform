@@ -52,6 +52,11 @@ export type Recipe = Prisma.RecipeModel
  */
 export type Category = Prisma.CategoryModel
 /**
+ * Model StationView
+ * 
+ */
+export type StationView = Prisma.StationViewModel
+/**
  * Model RecipeItem
  * 
  */

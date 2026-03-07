@@ -2,25 +2,27 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { StationPages } from "@/components/station-pages";
+import { StationAutoView } from "@/components/station-auto-view";
+import { StationEditableView } from "@/components/station-editable-view";
 import { STATION_PRINT_STORAGE_KEY } from "@/lib/station-utils";
-import type { StationPrintPayload } from "@/types/station";
+import type { StationPrintBundle } from "@/types/station";
 
 import styles from "./page.module.css";
 
-function readPayload(): StationPrintPayload | null {
+function readBundle(): StationPrintBundle | null {
   if (typeof window === "undefined") return null;
 
   try {
     const raw = window.localStorage.getItem(STATION_PRINT_STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as StationPrintPayload) : null;
+    return raw ? (JSON.parse(raw) as StationPrintBundle) : null;
   } catch {
     return null;
   }
 }
 
 export default function StationPrintPage() {
-  const [payload] = useState<StationPrintPayload | null>(() => readPayload());
+  const [bundle] = useState<StationPrintBundle | null>(() => readBundle());
+  const payload = bundle?.payload ?? null;
   const hasAutoPrinted = useRef(false);
 
   function handleClose() {
@@ -81,11 +83,20 @@ export default function StationPrintPage() {
         </div>
       </header>
 
-      <StationPages
-        payload={payload}
-        variant="print"
-        emptyMessage="Ingen utskriftsdata hittades. Gå tillbaka till stationsvyn och försök igen."
-      />
+      {bundle?.editableLayout ? (
+        <StationEditableView
+          payload={payload}
+          layout={bundle.editableLayout}
+          variant="print"
+          emptyMessage="Ingen utskriftsdata hittades. Gå tillbaka till stationsvyn och försök igen."
+        />
+      ) : (
+        <StationAutoView
+          payload={payload}
+          variant="print"
+          emptyMessage="Ingen utskriftsdata hittades. Gå tillbaka till stationsvyn och försök igen."
+        />
+      )}
     </div>
   );
 }

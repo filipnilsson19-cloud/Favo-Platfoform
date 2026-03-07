@@ -2,6 +2,7 @@ import type { Recipe as DbRecipe, RecipeItem as DbRecipeItem } from "@/generated
 
 import { getPrismaClient } from "@/lib/prisma";
 import { recipes as fallbackRecipes } from "@/lib/recipes";
+import { normalizeEditableLayout } from "@/lib/station-editable-utils";
 import {
   cloneRecipe,
   normalizeItem,
@@ -13,6 +14,8 @@ import {
 } from "@/lib/recipe-utils";
 import type { Recipe, RecipeStatus, RecipeUnit } from "@/types/recipe";
 import type { AppCategory } from "@/types/category";
+import type { StationEditableLayout, StationPrintPayload } from "@/types/station";
+import type { AppStationView } from "@/types/station-view";
 
 const validStatuses = new Set<RecipeStatus>(recipeStatusOptions);
 const validUnits = new Set<RecipeUnit>(
@@ -369,5 +372,186 @@ export async function deleteRecipeForApp(recipeId: string) {
     where: {
       id: recipeId,
     },
+  });
+}
+
+function mapStationView(
+  record: {
+    id: string;
+    name: string;
+    scopeKey: string;
+    scopeLabel: string;
+    recipeCount: number;
+    isActive: boolean;
+    layout: unknown;
+  },
+  payload?: StationPrintPayload,
+): AppStationView {
+  return {
+    id: record.id,
+    name: record.name,
+    scopeKey: record.scopeKey,
+    scopeLabel: record.scopeLabel,
+    recipeCount: record.recipeCount,
+    isActive: record.isActive,
+    layout: payload
+      ? normalizeEditableLayout(payload, record.layout as StationEditableLayout)
+      : undefined,
+  };
+}
+
+export async function getStationViewEntriesForApp(): Promise<AppStationView[]> {
+  if (!hasDatabaseConfig()) {
+    return [];
+  }
+
+  const records = await getPrismaClient().stationView.findMany({
+    orderBy: [{ scopeLabel: "asc" }, { name: "asc" }],
+  });
+
+  return records.map((record) => mapStationView(record));
+}
+
+export async function getStationViewsForScopeForApp(
+  scopeKey: string,
+  payload: StationPrintPayload,
+): Promise<AppStationView[]> {
+  if (!hasDatabaseConfig()) {
+    return [];
+  }
+
+  const records = await getPrismaClient().stationView.findMany({
+    where: {
+      scopeKey,
+      isActive: true,
+    },
+    orderBy: [{ name: "asc" }],
+  });
+
+  return records.map((record) => mapStationView(record, payload));
+}
+
+export async function saveStationViewForApp(input: {
+  id?: string;
+  name: string;
+  scopeKey: string;
+  scopeLabel: string;
+  recipeCount: number;
+  payload: StationPrintPayload;
+  layout: StationEditableLayout;
+}) {
+  const normalizedName = input.name.trim();
+
+  if (!normalizedName) {
+    throw new Error("Station view name is required.");
+  }
+
+  const normalizedLayout = normalizeEditableLayout(input.payload, input.layout);
+  const prisma = getPrismaClient();
+
+  let record;
+
+  if (input.id) {
+    record = await prisma.stationView.update({
+      where: {
+        id: input.id,
+      },
+      data: {
+        name: normalizedName,
+        scopeKey: input.scopeKey,
+        scopeLabel: input.scopeLabel,
+        recipeCount: input.recipeCount,
+        isActive: true,
+        layout: normalizedLayout,
+      },
+    });
+  } else {
+    record = await prisma.stationView.upsert({
+      where: {
+        scopeKey_name: {
+          scopeKey: input.scopeKey,
+          name: normalizedName,
+        },
+      },
+      create: {
+        name: normalizedName,
+        scopeKey: input.scopeKey,
+        scopeLabel: input.scopeLabel,
+        recipeCount: input.recipeCount,
+        isActive: true,
+        layout: normalizedLayout,
+      },
+      update: {
+        scopeLabel: input.scopeLabel,
+        recipeCount: input.recipeCount,
+        isActive: true,
+        layout: normalizedLayout,
+      },
+    });
+  }
+
+  return mapStationView(record, input.payload);
+}
+
+export async function renameStationViewForApp(id: string, nextName: string) {
+  const normalizedName = nextName.trim();
+
+  if (!id || !normalizedName) {
+    throw new Error("Station view id and next name are required.");
+  }
+
+  const existing = await getPrismaClient().stationView.findUnique({
+    where: { id },
+  });
+
+  if (!existing) {
+    throw new Error("Station view not found.");
+  }
+
+  const duplicate = await getPrismaClient().stationView.findFirst({
+    where: {
+      scopeKey: existing.scopeKey,
+      name: normalizedName,
+      NOT: {
+        id,
+      },
+    },
+  });
+
+  if (duplicate) {
+    throw new Error("A station view with that name already exists.");
+  }
+
+  const updated = await getPrismaClient().stationView.update({
+    where: { id },
+    data: { name: normalizedName },
+  });
+
+  return mapStationView(updated);
+}
+
+export async function setStationViewActiveStateForApp(
+  id: string,
+  isActive: boolean,
+) {
+  if (!id) {
+    throw new Error("Station view id is required.");
+  }
+
+  const updated = await getPrismaClient().stationView.update({
+    where: { id },
+    data: { isActive },
+  });
+
+  return mapStationView(updated);
+}
+
+export async function deleteStationViewForApp(id: string) {
+  if (!id) {
+    throw new Error("Station view id is required.");
+  }
+
+  await getPrismaClient().stationView.delete({
+    where: { id },
   });
 }

@@ -1,0 +1,84 @@
+.canvas {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 0.78rem;
+}
+
+.object {
+  position: absolute;
+  user-select: none;
+  touch-action: none;
+  cursor: grab;
+  overflow: hidden;
+}
+
+.objectDragging {
+  cursor: grabbing;
+}
+
+.objectSelected {
+  z-index: 999 !important;
+}
+
+.objectSelected::before {
+  content: "";
+  position: absolute;
+  inset: -0.22rem;
+  border: 2px solid rgba(20, 20, 20, 0.78);
+  border-radius: 0.98rem;
+  pointer-events: none;
+}
+
+.objectCard {
+  height: 100%;
+  pointer-events: none;
+}
+
+.resizeHandle {
+  position: absolute;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.resizeHandleWidth {
+  top: 50%;
+  right: -0.28rem;
+  width: 1rem;
+  height: 2rem;
+  transform: translateY(-50%);
+  cursor: ew-resize;
+}
+
+.resizeHandleHeight {
+  left: 50%;
+  bottom: -0.28rem;
+  width: 2rem;
+  height: 1rem;
+  transform: translateX(-50%);
+  cursor: ns-resize;
+}
+
+.resizeHandleCorner {
+  right: -0.28rem;
+  bottom: -0.28rem;
+  width: 1.18rem;
+  height: 1.18rem;
+  cursor: nwse-resize;
+}
+
+@media print {
+  .canvas {
+    border-radius: 0;
+  }
+
+  .objectSelected::before,
+  .resizeHandle {
+    display: none !important;
+  }
+}

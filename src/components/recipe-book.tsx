@@ -14,16 +14,24 @@ import {
 } from "@/lib/recipe-utils";
 import {
   buildStationPayload,
+  buildStationViewScope,
+  serializeStationPrintBundle,
   STATION_PRINT_STORAGE_KEY,
 } from "@/lib/station-utils";
 import type { EditorMode, Recipe, RecipeCategory, RecipeStatus } from "@/types/recipe";
-import type { StationSource } from "@/types/station";
+import type {
+  StationEditableLayout,
+  StationPrintPayload,
+  StationSource,
+} from "@/types/station";
 import type { AppCategory } from "@/types/category";
+import type { AppStationView } from "@/types/station-view";
 
 import { CategoryManagerDrawer } from "./category-manager-drawer";
 import { RecipeDetailDrawer } from "./recipe-detail-drawer";
 import { RecipeEditorDrawer } from "./recipe-editor-drawer";
 import { StationDrawer } from "./station-drawer";
+import { StationViewManagerDrawer } from "./station-view-manager-drawer";
 import styles from "./recipe-book.module.css";
 
 type RecipeBookProps = {
@@ -51,6 +59,7 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+  const [isStationViewManagerOpen, setIsStationViewManagerOpen] = useState(false);
   const [isStationOpen, setIsStationOpen] = useState(false);
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
   const [stationCategory, setStationCategory] = useState<RecipeCategory | "">("");
@@ -59,7 +68,9 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
   const [editorDraft, setEditorDraft] = useState<Recipe>(() => blankRecipe());
   const [isSaving, setIsSaving] = useState(false);
   const [managedCategories, setManagedCategories] = useState<AppCategory[]>([]);
+  const [managedStationViews, setManagedStationViews] = useState<AppStationView[]>([]);
   const [isManagingCategories, setIsManagingCategories] = useState(false);
+  const [isManagingStationViews, setIsManagingStationViews] = useState(false);
   const visibleSelectionRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -175,6 +186,14 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
               : resolvedStationCategory || "Alla",
         })
       : null;
+  const stationViewScope = buildStationViewScope({
+    source: stationSource,
+    activeCategory:
+      stationSource === "selected"
+        ? activeCategoryLabel
+        : resolvedStationCategory || "Alla",
+    selectedRecipeIds,
+  });
   const stationToggleCategories =
     stationSource === "selected"
       ? [...new Set(selectedRecipes.map((recipe) => recipe.category))]
@@ -187,7 +206,11 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
   useEffect(() => {
     document.body.classList.toggle(
       "favo-lock-scroll",
-      isDetailOpen || isEditorOpen || isCategoryManagerOpen || isStationOpen,
+      isDetailOpen ||
+        isEditorOpen ||
+        isCategoryManagerOpen ||
+        isStationViewManagerOpen ||
+        isStationOpen,
     );
     document.body.classList.toggle("favo-station-open", isStationOpen);
 
@@ -195,7 +218,13 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
       document.body.classList.remove("favo-lock-scroll");
       document.body.classList.remove("favo-station-open");
     };
-  }, [isCategoryManagerOpen, isDetailOpen, isEditorOpen, isStationOpen]);
+  }, [
+    isCategoryManagerOpen,
+    isDetailOpen,
+    isEditorOpen,
+    isStationOpen,
+    isStationViewManagerOpen,
+  ]);
 
   useEffect(() => {
     if (!visibleSelectionRef.current) return;
@@ -207,6 +236,7 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
       if (event.key !== "Escape") return;
       setIsDetailOpen(false);
       setIsEditorOpen(false);
+      setIsStationViewManagerOpen(false);
       setIsStationOpen(false);
     }
 
@@ -461,6 +491,26 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
     }
   }
 
+  async function loadManagedStationViews() {
+    try {
+      setIsManagingStationViews(true);
+      const response = await fetch("/api/station-views?manage=1");
+
+      if (!response.ok) {
+        throw new Error("Failed to load station views");
+      }
+
+      const payload = (await response.json()) as { views: AppStationView[] };
+      setManagedStationViews(payload.views);
+      setIsStationViewManagerOpen(true);
+    } catch (error) {
+      console.error("Could not load station views", error);
+      window.alert("Det gick inte att läsa vyerna. Försök igen.");
+    } finally {
+      setIsManagingStationViews(false);
+    }
+  }
+
   async function renameManagedCategory(name: string, nextName: string) {
     try {
       setIsManagingCategories(true);
@@ -563,6 +613,100 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
     }
   }
 
+  async function renameManagedStationView(viewId: string, nextName: string) {
+    try {
+      setIsManagingStationViews(true);
+
+      const response = await fetch("/api/station-views", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "rename",
+          id: viewId,
+          nextName,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to rename station view");
+      }
+
+      const payload = (await response.json()) as { views: AppStationView[] };
+      setManagedStationViews(payload.views);
+    } catch (error) {
+      console.error("Could not rename station view", error);
+      window.alert("Det gick inte att byta namn på vyn. Försök igen.");
+    } finally {
+      setIsManagingStationViews(false);
+    }
+  }
+
+  async function setManagedStationViewActive(viewId: string, isActive: boolean) {
+    try {
+      setIsManagingStationViews(true);
+
+      const response = await fetch("/api/station-views", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "set-active",
+          id: viewId,
+          isActive,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update station view state");
+      }
+
+      const payload = (await response.json()) as { views: AppStationView[] };
+      setManagedStationViews(payload.views);
+    } catch (error) {
+      console.error("Could not update station view state", error);
+      window.alert("Det gick inte att uppdatera vyn. Försök igen.");
+    } finally {
+      setIsManagingStationViews(false);
+    }
+  }
+
+  async function deleteManagedStationView(viewId: string, viewName: string) {
+    const shouldDelete = window.confirm(
+      `Vill du radera vyn "${viewName}"? Detta går inte att ångra.`,
+    );
+
+    if (!shouldDelete) return;
+
+    try {
+      setIsManagingStationViews(true);
+
+      const response = await fetch("/api/station-views", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          viewId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete station view");
+      }
+
+      const payload = (await response.json()) as { views: AppStationView[] };
+      setManagedStationViews(payload.views);
+    } catch (error) {
+      console.error("Could not delete station view", error);
+      window.alert("Det gick inte att radera vyn. Försök igen.");
+    } finally {
+      setIsManagingStationViews(false);
+    }
+  }
+
   async function deleteRecipe(recipeId: string) {
     const recipe = recipeList.find((entry) => entry.id === recipeId);
     const shouldDelete = window.confirm(
@@ -650,12 +794,18 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
     setIsStationOpen(true);
   }
 
-  function openStationPrint() {
-    if (!stationPayload) return;
+  function openStationPrint(
+    payload: StationPrintPayload | null,
+    editableLayout?: StationEditableLayout | null,
+  ) {
+    if (!payload) return;
 
     window.localStorage.setItem(
       STATION_PRINT_STORAGE_KEY,
-      JSON.stringify(stationPayload),
+      serializeStationPrintBundle({
+        payload,
+        editableLayout: editableLayout ?? null,
+      }),
     );
 
     const printUrl = "/station-print";
@@ -792,13 +942,22 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
                   <div className={styles.filterSectionHeader}>
                     <span className={styles.filterSectionLabel}>Kategori</span>
                     {canManage ? (
-                      <button
-                        className={styles.filterManageButton}
-                        type="button"
-                        onClick={() => void loadManagedCategories()}
-                      >
-                        Hantera kategorier
-                      </button>
+                      <div className={styles.filterManageStack}>
+                        <button
+                          className={styles.filterManageButton}
+                          type="button"
+                          onClick={() => void loadManagedCategories()}
+                        >
+                          Hantera kategorier
+                        </button>
+                        <button
+                          className={styles.filterManageButton}
+                          type="button"
+                          onClick={() => void loadManagedStationViews()}
+                        >
+                          Hantera vyer
+                        </button>
+                      </div>
                     ) : null}
                   </div>
                   <div className={styles.categoryTabs}>
@@ -994,11 +1153,21 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
       ) : null}
 
       <StationDrawer
+        key={
+          stationPayload
+            ? `${stationPayload.title}-${stationPayload.source}-${stationPayload.recipes
+                .map((recipe) => recipe.id)
+                .join("-")}`
+            : "station-empty"
+        }
         activeCategories={stationToggleCategories}
         categoriesLocked={selectedRecipes.length > 0}
         categoryOptions={stationCategoryOptions}
+        canManage={canManage}
         isOpen={isStationOpen}
         payload={stationPayload}
+        scopeKey={stationViewScope.key}
+        scopeLabel={stationViewScope.label}
         onSelectCategory={setStationCategory}
         onClose={() => setIsStationOpen(false)}
         onPrint={openStationPrint}
@@ -1016,6 +1185,18 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
           }}
           onRename={renameManagedCategory}
           onSetActive={setManagedCategoryActive}
+        />
+      ) : null}
+
+      {canManage ? (
+        <StationViewManagerDrawer
+          isBusy={isManagingStationViews}
+          isOpen={isStationViewManagerOpen}
+          views={managedStationViews}
+          onClose={() => setIsStationViewManagerOpen(false)}
+          onDelete={deleteManagedStationView}
+          onRename={renameManagedStationView}
+          onSetActive={setManagedStationViewActive}
         />
       ) : null}
     </>

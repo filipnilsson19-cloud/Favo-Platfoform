@@ -19,7 +19,34 @@ export type StationPrintPayload = {
   recipes: StationPrintableRecipe[];
 };
 
-export type StationLayoutPreset = {
+export type StationPrintBundle = {
+  payload: StationPrintPayload;
+  editableLayout?: StationEditableLayout | null;
+};
+
+export type StationViewMode = "static" | "editable";
+
+export type StationEditableLayoutItem = {
+  recipeId: string;
+  page: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  zIndex: number;
+};
+
+export type StationEditableLayout = {
+  version: 1;
+  pageCount: number;
+  pagePresets: Array<{
+    page: number;
+    packKey: StationPackPreset["key"];
+  }>;
+  items: StationEditableLayoutItem[];
+};
+
+export type StationPackPreset = {
   key: "single" | "duo" | "spread" | "dense" | "compact";
   columns: number;
   maxCards: number;
@@ -39,7 +66,7 @@ export type StationPackedColumn = {
 };
 
 export type StationPagePack = {
-  layout: StationLayoutPreset;
+  layout: StationPackPreset;
   columns: StationPackedColumn[];
   usedCount: number;
   balanceGap: number;

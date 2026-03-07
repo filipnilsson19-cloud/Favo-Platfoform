@@ -127,6 +127,14 @@
   gap: 0.6rem;
 }
 
+.filterManageStack {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .filterSectionLabel {
   color: rgba(17, 17, 17, 0.48);
   font-size: 0.67rem;
@@ -1154,6 +1162,15 @@
 .categoryManagerList {
   display: grid;
   gap: 0.5rem;
+}
+
+.categoryManagerEmpty {
+  padding: 1rem 1.1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.72);
+  color: rgba(20, 20, 20, 0.6);
+  font-size: 0.82rem;
+  line-height: 1.45;
 }
 
 .categoryManagerRow {

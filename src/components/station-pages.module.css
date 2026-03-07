@@ -61,6 +61,11 @@
   white-space: nowrap;
 }
 
+.pageCanvas {
+  min-height: 0;
+  height: 100%;
+}
+
 .pack {
   --columns: 3;
   --pack-gap: 0.34rem;
@@ -127,6 +132,15 @@
   overflow: hidden;
 }
 
+.cardCanvas {
+  height: 100%;
+}
+
+.cardCanvas .list {
+  overflow: hidden;
+  padding-right: 0;
+}
+
 .card::before {
   content: "";
   position: absolute;
@@ -179,6 +193,8 @@
   align-content: start;
   gap: var(--row-gap);
   min-height: 0;
+  overflow: auto;
+  padding-right: 0.08rem;
 }
 
 .row {
@@ -492,6 +508,111 @@
   --spacer-size: 0.26rem;
 }
 
+.packEditable {
+  height: 100%;
+}
+
+.cardShell {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.cardEditing {
+  cursor: grab;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.54),
+    0 10px 20px rgba(20, 20, 20, 0.08);
+}
+
+.cardEditing:active {
+  cursor: grabbing;
+}
+
+.cardTools {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.16rem;
+  flex-shrink: 0;
+}
+
+.cardDragLabel {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.22rem;
+  padding: 0 0.38rem;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.08);
+  color: rgba(20, 20, 20, 0.62);
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.cardToolButton {
+  min-width: 1.22rem;
+  min-height: 1.22rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(20, 20, 20, 0.08);
+  color: #141414;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cardToolButton:hover {
+  background: rgba(20, 20, 20, 0.14);
+}
+
+.columnDropZone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.9rem;
+  width: 100%;
+  border: 1px dashed rgba(20, 20, 20, 0.18);
+  border-radius: 0.72rem;
+  background: rgba(255, 255, 255, 0.42);
+  color: rgba(20, 20, 20, 0.54);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: default;
+}
+
+.cardScaleCompact {
+  --card-padding: calc(var(--card-padding) * 0.82);
+  --card-gap: calc(var(--card-gap) * 0.82);
+  --title-size: calc(var(--title-size) * 0.84);
+  --category-size: calc(var(--category-size) * 0.92);
+  --row-gap: calc(var(--row-gap) * 0.84);
+  --row-padding-y: calc(var(--row-padding-y) * 0.8);
+  --row-padding-x: calc(var(--row-padding-x) * 0.84);
+  --row-size: calc(var(--row-size) * 0.92);
+  --tag-size: calc(var(--tag-size) * 0.9);
+  --tag-height: calc(var(--tag-height) * 0.9);
+  --amount-size: calc(var(--amount-size) * 0.92);
+  --footer-size: calc(var(--footer-size) * 0.92);
+}
+
+.cardScaleExpanded {
+  --card-padding: calc(var(--card-padding) * 1.12);
+  --card-gap: calc(var(--card-gap) * 1.14);
+  --title-size: calc(var(--title-size) * 1.14);
+  --category-size: calc(var(--category-size) * 1.06);
+  --row-gap: calc(var(--row-gap) * 1.14);
+  --row-padding-y: calc(var(--row-padding-y) * 1.12);
+  --row-padding-x: calc(var(--row-padding-x) * 1.1);
+  --row-size: calc(var(--row-size) * 1.08);
+  --tag-size: calc(var(--tag-size) * 1.05);
+  --tag-height: calc(var(--tag-height) * 1.06);
+  --amount-size: calc(var(--amount-size) * 1.08);
+  --footer-size: calc(var(--footer-size) * 1.06);
+}
+
 .emptyPage {
   min-height: 18rem;
   aspect-ratio: auto;
@@ -590,6 +711,12 @@
 
   .pagesPrint .rowSpacer {
     min-height: var(--spacer-size);
+  }
+
+  .pagesPrint .cardTools,
+  .pagesPrint .columnDropZone,
+  .pagesPrint .columnDropZone {
+    display: none !important;
   }
 
   .pagesPrint .packSingle {
