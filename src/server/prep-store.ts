@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 import { getPrismaClient } from "@/lib/prisma";
 import { prepStatusOptions } from "@/lib/prep-utils";
 import type { AppPrepCategory, PrepBatch, PrepRecipe, PrepStatus } from "@/types/prep";
@@ -64,36 +66,47 @@ function mapPrepBatch(record: DbPrepBatch): PrepBatch {
   };
 }
 
-export async function getPrepRecipesForApp(): Promise<PrepRecipe[]> {
-  const records = await getPrismaClient().prepRecipe.findMany({
-    include: {
-      ingredients: true,
-      steps: true,
-    },
-    orderBy: [{ category: "asc" }, { title: "asc" }],
-  });
+const fetchPrepRecipesFromDb = unstable_cache(
+  async () => {
+    return getPrismaClient().prepRecipe.findMany({
+      include: { ingredients: true, steps: true },
+      orderBy: [{ category: "asc" }, { title: "asc" }],
+    });
+  },
+  ["prep-recipes"],
+  { revalidate: 30, tags: ["prep-recipes"] },
+);
 
+export async function getPrepRecipesForApp(): Promise<PrepRecipe[]> {
+  const records = await fetchPrepRecipesFromDb();
   return records.map(mapPrepRecipe);
 }
 
-export async function getPrepCategoriesForApp(): Promise<string[]> {
-  const prisma = getPrismaClient();
-  const [categories, recipeCategories] = await Promise.all([
-    prisma.prepCategory.findMany({
-      where: { isActive: true },
-      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-    }),
-    prisma.prepRecipe.findMany({
-      select: { category: true },
-      distinct: ["category"],
-    }),
-  ]);
+const fetchPrepCategoriesFromDb = unstable_cache(
+  async () => {
+    const prisma = getPrismaClient();
+    const [categories, recipeCategories] = await Promise.all([
+      prisma.prepCategory.findMany({
+        where: { isActive: true },
+        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      }),
+      prisma.prepRecipe.findMany({
+        select: { category: true },
+        distinct: ["category"],
+      }),
+    ]);
+    return { categories, recipeCategories };
+  },
+  ["prep-categories"],
+  { revalidate: 30, tags: ["prep-recipes"] },
+);
 
+export async function getPrepCategoriesForApp(): Promise<string[]> {
+  const { categories, recipeCategories } = await fetchPrepCategoriesFromDb();
   const names = new Set([
     ...categories.map((c) => c.name),
     ...recipeCategories.map((r) => r.category),
   ]);
-
   return [...names].sort();
 }
 

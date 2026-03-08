@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import type { User } from "@supabase/supabase-js";
 
 import { getPrismaClient } from "@/lib/prisma";
@@ -73,7 +75,7 @@ export async function ensureUserProfileForUser(user: Pick<User, "id" | "email" |
   });
 }
 
-export async function getCurrentAppUser(): Promise<AppUser | null> {
+export const getCurrentAppUser = cache(async (): Promise<AppUser | null> => {
   if (!hasSupabaseAuthEnv()) {
     return null;
   }
@@ -96,4 +98,4 @@ export async function getCurrentAppUser(): Promise<AppUser | null> {
     displayName: profile.displayName || deriveDisplayName(user),
     role: mapRole(profile.role),
   };
-}
+});

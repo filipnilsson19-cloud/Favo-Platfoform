@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { hasSupabaseAuthEnv } from "@/lib/supabase/config";
@@ -69,7 +69,7 @@ export async function PATCH(request: Request) {
       }
       const category = await renamePrepCategoryForApp(body.name, body.nextName);
       const categories = await getPrepCategoryEntriesForApp();
-      revalidatePath("/prep");
+      revalidateTag("prep-recipes");
       return NextResponse.json({ category, previousName: body.name, categories });
     }
 
@@ -79,7 +79,7 @@ export async function PATCH(request: Request) {
       }
       await setPrepCategoryActiveForApp(body.name, body.isActive);
       const categories = await getPrepCategoryEntriesForApp();
-      revalidatePath("/prep");
+      revalidateTag("prep-recipes");
       return NextResponse.json({ categories });
     }
 

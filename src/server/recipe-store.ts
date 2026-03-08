@@ -1,3 +1,5 @@
+import { unstable_cache } from "next/cache";
+
 import type { Recipe as DbRecipe, RecipeItem as DbRecipeItem } from "@/generated/prisma/client";
 
 import { getPrismaClient } from "@/lib/prisma";
@@ -142,27 +144,25 @@ async function syncCategoriesFromRecipes() {
   return categoryNames;
 }
 
+const fetchRecipesFromDb = unstable_cache(
+  async () => {
+    return getPrismaClient().recipe.findMany({
+      include: { items: { orderBy: { sortOrder: "asc" } } },
+      orderBy: [{ category: "asc" }, { title: "asc" }],
+    });
+  },
+  ["recipes"],
+  { revalidate: 30, tags: ["recipes"] },
+);
+
 export async function getRecipesForApp() {
   if (!hasDatabaseConfig()) {
     return fallbackRecipes;
   }
 
   try {
-    const databaseRecipes = await getPrismaClient().recipe.findMany({
-      include: {
-        items: {
-          orderBy: {
-            sortOrder: "asc",
-          },
-        },
-      },
-      orderBy: [{ category: "asc" }, { title: "asc" }],
-    });
-
-    if (databaseRecipes.length === 0) {
-      return fallbackRecipes;
-    }
-
+    const databaseRecipes = await fetchRecipesFromDb();
+    if (databaseRecipes.length === 0) return fallbackRecipes;
     return databaseRecipes.map(mapRecipe);
   } catch (error) {
     console.error("Failed to load recipes from Supabase. Falling back to local data.", error);
@@ -170,19 +170,23 @@ export async function getRecipesForApp() {
   }
 }
 
+const fetchCategoriesFromDb = unstable_cache(
+  async () => {
+    const stored = await getStoredCategories();
+    if (stored.length > 0) return stored;
+    return syncCategoriesFromRecipes();
+  },
+  ["recipe-categories"],
+  { revalidate: 30, tags: ["recipes"] },
+);
+
 export async function getCategoriesForApp() {
   if (!hasDatabaseConfig()) {
     return recipeCategories;
   }
 
   try {
-    const storedCategories = await getStoredCategories();
-
-    if (storedCategories.length > 0) {
-      return storedCategories;
-    }
-
-    return await syncCategoriesFromRecipes();
+    return await fetchCategoriesFromDb();
   } catch (error) {
     console.error(
       "Failed to load categories from Supabase. Falling back to defaults.",

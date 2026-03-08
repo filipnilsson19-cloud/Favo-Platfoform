@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { hasSupabaseAuthEnv } from "@/lib/supabase/config";
@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     }
 
     const recipe = await upsertPrepRecipeForApp(body.recipe);
-    revalidatePath("/prep");
+    revalidateTag("prep-recipes");
     return NextResponse.json({ recipe });
   } catch (error) {
     console.error("Failed to save prep recipe", error);
@@ -56,7 +56,7 @@ export async function DELETE(request: Request) {
     }
 
     await deletePrepRecipeForApp(body.recipeId);
-    revalidatePath("/prep");
+    revalidateTag("prep-recipes");
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Failed to delete prep recipe", error);

@@ -1,4 +1,4 @@
-import { revalidatePath } from "next/cache";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 import { hasSupabaseAuthEnv } from "@/lib/supabase/config";
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
     const recipe = await upsertRecipeForApp(body.recipe);
 
-    revalidatePath("/");
+    revalidateTag("recipes");
 
     return NextResponse.json({ recipe });
   } catch (error) {
@@ -86,7 +86,7 @@ export async function DELETE(request: Request) {
 
     await deleteRecipeForApp(body.recipeId);
 
-    revalidatePath("/");
+    revalidateTag("recipes");
 
     return NextResponse.json({ ok: true });
   } catch (error) {
