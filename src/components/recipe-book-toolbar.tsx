@@ -52,7 +52,7 @@ export function RecipeBookToolbar({
         <div className={styles.toolbarMetaRow}>
           <div className={styles.toolbarMetrics}>
             <span className={styles.toolbarMetric}>
-              <strong>{visibleRecipesCount}</strong> recept
+              <strong>{visibleRecipesCount}</strong> rätter
             </span>
             <span className={styles.toolbarMetricMuted}>
               {selectedRecipesCount} valda
@@ -65,7 +65,7 @@ export function RecipeBookToolbar({
               type="button"
               onClick={onOpenNewRecipe}
             >
-              Nytt recept
+              Ny maträtt
             </button>
           ) : null}
         </div>
@@ -81,14 +81,14 @@ export function RecipeBookToolbar({
                     type="button"
                     onClick={onOpenCategoryManager}
                   >
-                    Hantera kategorier
+                    Hantera menykategorier
                   </button>
                   <button
                     className={styles.filterManageButton}
                     type="button"
                     onClick={onOpenStationViewManager}
                   >
-                    Hantera vyer
+                    Hantera lägglistor
                   </button>
                 </div>
               ) : null}
@@ -166,7 +166,7 @@ export function RecipeBookToolbar({
                   className={styles.searchField}
                   type="search"
                   value={searchQuery}
-                  placeholder="Sök recept, komponent eller info"
+                  placeholder="Sök rätt, komponent eller info"
                   onChange={(event) => onSearchQueryChange(event.target.value)}
                 />
               </div>
@@ -182,7 +182,7 @@ export function RecipeBookToolbar({
                   onClick={onOpenStation}
                   disabled={!canOpenStation}
                 >
-                  Stationsvy
+                  Lägglista
                 </button>
 
                 <div className={styles.viewToggle} role="group" aria-label="Välj vy">

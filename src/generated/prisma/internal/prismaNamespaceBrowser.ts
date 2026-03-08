@@ -55,7 +55,12 @@ export const ModelName = {
   Category: 'Category',
   StationView: 'StationView',
   RecipeItem: 'RecipeItem',
-  UserProfile: 'UserProfile'
+  UserProfile: 'UserProfile',
+  PrepCategory: 'PrepCategory',
+  PrepRecipe: 'PrepRecipe',
+  PrepIngredient: 'PrepIngredient',
+  PrepStep: 'PrepStep',
+  PrepBatch: 'PrepBatch'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -144,6 +149,71 @@ export const UserProfileScalarFieldEnum = {
 } as const
 
 export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[keyof typeof UserProfileScalarFieldEnum]
+
+
+export const PrepCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrepCategoryScalarFieldEnum = (typeof PrepCategoryScalarFieldEnum)[keyof typeof PrepCategoryScalarFieldEnum]
+
+
+export const PrepRecipeScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  category: 'category',
+  status: 'status',
+  shelfLifeDays: 'shelfLifeDays',
+  defaultYield: 'defaultYield',
+  yieldUnit: 'yieldUnit',
+  allergens: 'allergens',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrepRecipeScalarFieldEnum = (typeof PrepRecipeScalarFieldEnum)[keyof typeof PrepRecipeScalarFieldEnum]
+
+
+export const PrepIngredientScalarFieldEnum = {
+  id: 'id',
+  prepRecipeId: 'prepRecipeId',
+  sortOrder: 'sortOrder',
+  info: 'info',
+  name: 'name',
+  amount: 'amount',
+  unit: 'unit'
+} as const
+
+export type PrepIngredientScalarFieldEnum = (typeof PrepIngredientScalarFieldEnum)[keyof typeof PrepIngredientScalarFieldEnum]
+
+
+export const PrepStepScalarFieldEnum = {
+  id: 'id',
+  prepRecipeId: 'prepRecipeId',
+  sortOrder: 'sortOrder',
+  description: 'description'
+} as const
+
+export type PrepStepScalarFieldEnum = (typeof PrepStepScalarFieldEnum)[keyof typeof PrepStepScalarFieldEnum]
+
+
+export const PrepBatchScalarFieldEnum = {
+  id: 'id',
+  prepRecipeId: 'prepRecipeId',
+  madeById: 'madeById',
+  madeAt: 'madeAt',
+  bestBefore: 'bestBefore',
+  batchYield: 'batchYield',
+  notes: 'notes'
+} as const
+
+export type PrepBatchScalarFieldEnum = (typeof PrepBatchScalarFieldEnum)[keyof typeof PrepBatchScalarFieldEnum]
 
 
 export const SortOrder = {

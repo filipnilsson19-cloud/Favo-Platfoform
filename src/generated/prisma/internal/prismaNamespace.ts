@@ -388,7 +388,12 @@ export const ModelName = {
   Category: 'Category',
   StationView: 'StationView',
   RecipeItem: 'RecipeItem',
-  UserProfile: 'UserProfile'
+  UserProfile: 'UserProfile',
+  PrepCategory: 'PrepCategory',
+  PrepRecipe: 'PrepRecipe',
+  PrepIngredient: 'PrepIngredient',
+  PrepStep: 'PrepStep',
+  PrepBatch: 'PrepBatch'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -404,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "recipe" | "category" | "stationView" | "recipeItem" | "userProfile"
+    modelProps: "recipe" | "category" | "stationView" | "recipeItem" | "userProfile" | "prepCategory" | "prepRecipe" | "prepIngredient" | "prepStep" | "prepBatch"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -778,6 +783,376 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PrepCategory: {
+      payload: Prisma.$PrepCategoryPayload<ExtArgs>
+      fields: Prisma.PrepCategoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrepCategoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrepCategoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload>
+        }
+        findFirst: {
+          args: Prisma.PrepCategoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrepCategoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload>
+        }
+        findMany: {
+          args: Prisma.PrepCategoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload>[]
+        }
+        create: {
+          args: Prisma.PrepCategoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload>
+        }
+        createMany: {
+          args: Prisma.PrepCategoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrepCategoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload>[]
+        }
+        delete: {
+          args: Prisma.PrepCategoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload>
+        }
+        update: {
+          args: Prisma.PrepCategoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrepCategoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrepCategoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrepCategoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrepCategoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepCategoryPayload>
+        }
+        aggregate: {
+          args: Prisma.PrepCategoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrepCategory>
+        }
+        groupBy: {
+          args: Prisma.PrepCategoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepCategoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrepCategoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepCategoryCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrepRecipe: {
+      payload: Prisma.$PrepRecipePayload<ExtArgs>
+      fields: Prisma.PrepRecipeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrepRecipeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrepRecipeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload>
+        }
+        findFirst: {
+          args: Prisma.PrepRecipeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrepRecipeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload>
+        }
+        findMany: {
+          args: Prisma.PrepRecipeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload>[]
+        }
+        create: {
+          args: Prisma.PrepRecipeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload>
+        }
+        createMany: {
+          args: Prisma.PrepRecipeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrepRecipeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload>[]
+        }
+        delete: {
+          args: Prisma.PrepRecipeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload>
+        }
+        update: {
+          args: Prisma.PrepRecipeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload>
+        }
+        deleteMany: {
+          args: Prisma.PrepRecipeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrepRecipeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrepRecipeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload>[]
+        }
+        upsert: {
+          args: Prisma.PrepRecipeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepRecipePayload>
+        }
+        aggregate: {
+          args: Prisma.PrepRecipeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrepRecipe>
+        }
+        groupBy: {
+          args: Prisma.PrepRecipeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepRecipeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrepRecipeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepRecipeCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrepIngredient: {
+      payload: Prisma.$PrepIngredientPayload<ExtArgs>
+      fields: Prisma.PrepIngredientFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrepIngredientFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrepIngredientFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload>
+        }
+        findFirst: {
+          args: Prisma.PrepIngredientFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrepIngredientFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload>
+        }
+        findMany: {
+          args: Prisma.PrepIngredientFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload>[]
+        }
+        create: {
+          args: Prisma.PrepIngredientCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload>
+        }
+        createMany: {
+          args: Prisma.PrepIngredientCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrepIngredientCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload>[]
+        }
+        delete: {
+          args: Prisma.PrepIngredientDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload>
+        }
+        update: {
+          args: Prisma.PrepIngredientUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrepIngredientDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrepIngredientUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrepIngredientUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrepIngredientUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepIngredientPayload>
+        }
+        aggregate: {
+          args: Prisma.PrepIngredientAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrepIngredient>
+        }
+        groupBy: {
+          args: Prisma.PrepIngredientGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepIngredientGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrepIngredientCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepIngredientCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrepStep: {
+      payload: Prisma.$PrepStepPayload<ExtArgs>
+      fields: Prisma.PrepStepFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrepStepFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrepStepFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload>
+        }
+        findFirst: {
+          args: Prisma.PrepStepFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrepStepFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload>
+        }
+        findMany: {
+          args: Prisma.PrepStepFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload>[]
+        }
+        create: {
+          args: Prisma.PrepStepCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload>
+        }
+        createMany: {
+          args: Prisma.PrepStepCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrepStepCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload>[]
+        }
+        delete: {
+          args: Prisma.PrepStepDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload>
+        }
+        update: {
+          args: Prisma.PrepStepUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrepStepDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrepStepUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrepStepUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrepStepUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStepPayload>
+        }
+        aggregate: {
+          args: Prisma.PrepStepAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrepStep>
+        }
+        groupBy: {
+          args: Prisma.PrepStepGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepStepGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrepStepCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepStepCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrepBatch: {
+      payload: Prisma.$PrepBatchPayload<ExtArgs>
+      fields: Prisma.PrepBatchFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrepBatchFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrepBatchFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload>
+        }
+        findFirst: {
+          args: Prisma.PrepBatchFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrepBatchFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload>
+        }
+        findMany: {
+          args: Prisma.PrepBatchFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload>[]
+        }
+        create: {
+          args: Prisma.PrepBatchCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload>
+        }
+        createMany: {
+          args: Prisma.PrepBatchCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrepBatchCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload>[]
+        }
+        delete: {
+          args: Prisma.PrepBatchDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload>
+        }
+        update: {
+          args: Prisma.PrepBatchUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrepBatchDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrepBatchUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrepBatchUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrepBatchUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepBatchPayload>
+        }
+        aggregate: {
+          args: Prisma.PrepBatchAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrepBatch>
+        }
+        groupBy: {
+          args: Prisma.PrepBatchGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepBatchGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrepBatchCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepBatchCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -887,6 +1262,71 @@ export const UserProfileScalarFieldEnum = {
 } as const
 
 export type UserProfileScalarFieldEnum = (typeof UserProfileScalarFieldEnum)[keyof typeof UserProfileScalarFieldEnum]
+
+
+export const PrepCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrepCategoryScalarFieldEnum = (typeof PrepCategoryScalarFieldEnum)[keyof typeof PrepCategoryScalarFieldEnum]
+
+
+export const PrepRecipeScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  category: 'category',
+  status: 'status',
+  shelfLifeDays: 'shelfLifeDays',
+  defaultYield: 'defaultYield',
+  yieldUnit: 'yieldUnit',
+  allergens: 'allergens',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrepRecipeScalarFieldEnum = (typeof PrepRecipeScalarFieldEnum)[keyof typeof PrepRecipeScalarFieldEnum]
+
+
+export const PrepIngredientScalarFieldEnum = {
+  id: 'id',
+  prepRecipeId: 'prepRecipeId',
+  sortOrder: 'sortOrder',
+  info: 'info',
+  name: 'name',
+  amount: 'amount',
+  unit: 'unit'
+} as const
+
+export type PrepIngredientScalarFieldEnum = (typeof PrepIngredientScalarFieldEnum)[keyof typeof PrepIngredientScalarFieldEnum]
+
+
+export const PrepStepScalarFieldEnum = {
+  id: 'id',
+  prepRecipeId: 'prepRecipeId',
+  sortOrder: 'sortOrder',
+  description: 'description'
+} as const
+
+export type PrepStepScalarFieldEnum = (typeof PrepStepScalarFieldEnum)[keyof typeof PrepStepScalarFieldEnum]
+
+
+export const PrepBatchScalarFieldEnum = {
+  id: 'id',
+  prepRecipeId: 'prepRecipeId',
+  madeById: 'madeById',
+  madeAt: 'madeAt',
+  bestBefore: 'bestBefore',
+  batchYield: 'batchYield',
+  notes: 'notes'
+} as const
+
+export type PrepBatchScalarFieldEnum = (typeof PrepBatchScalarFieldEnum)[keyof typeof PrepBatchScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1117,6 +1557,11 @@ export type GlobalOmitConfig = {
   stationView?: Prisma.StationViewOmit
   recipeItem?: Prisma.RecipeItemOmit
   userProfile?: Prisma.UserProfileOmit
+  prepCategory?: Prisma.PrepCategoryOmit
+  prepRecipe?: Prisma.PrepRecipeOmit
+  prepIngredient?: Prisma.PrepIngredientOmit
+  prepStep?: Prisma.PrepStepOmit
+  prepBatch?: Prisma.PrepBatchOmit
 }
 
 /* Types for Logging */

@@ -32,7 +32,7 @@ export function RecipeDetailDrawer({
       <button
         className={styles.drawerBackdrop}
         type="button"
-        aria-label="Stäng receptpanel"
+        aria-label="Stäng panel"
         onClick={onClose}
       />
 
@@ -45,7 +45,7 @@ export function RecipeDetailDrawer({
         >
           <header className={styles.sheetHeader}>
             <div>
-              <p className={styles.pageEyebrow}>Exempelrecept</p>
+              <p className={styles.pageEyebrow}>Maträtt</p>
               <h2 id="recipe-sheet-title">{recipe.title}</h2>
               <p className={styles.sheetIntro}>{recipe.intro}</p>
             </div>

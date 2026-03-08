@@ -51,7 +51,7 @@ export function StationViewManagerDrawer({
       <button
         className={styles.drawerBackdrop}
         type="button"
-        aria-label="Stäng vyhantering"
+        aria-label="Stäng lägglisthantering"
         onClick={onClose}
       />
 
@@ -63,10 +63,10 @@ export function StationViewManagerDrawer({
       >
         <header className={styles.sheetHeader}>
           <div>
-            <p className={styles.pageEyebrow}>Stationsvyer</p>
-            <h2 id="station-view-manager-title">Hantera vyer</h2>
+            <p className={styles.pageEyebrow}>Lägglistor</p>
+            <h2 id="station-view-manager-title">Hantera lägglistor</h2>
             <p className={styles.sheetIntro}>
-              Byt namn, aktivera, inaktivera eller radera sparade stationsvyer.
+              Byt namn, aktivera, inaktivera eller radera sparade lägglistor.
             </p>
           </div>
 
@@ -84,7 +84,7 @@ export function StationViewManagerDrawer({
         <section className={`${styles.sheetPanel} ${styles.categoryPanel}`}>
           <div className={styles.sectionHeading}>
             <p>Översikt</p>
-            <h3>Sparade vyer</h3>
+            <h3>Sparade lägglistor</h3>
           </div>
 
           <div className={styles.categoryManagerList}>
@@ -116,7 +116,7 @@ export function StationViewManagerDrawer({
                     <div className={styles.categoryManagerMeta}>
                       <span className={styles.categoryUsage}>{view.scopeLabel}</span>
                       <span className={styles.categoryUsage}>
-                        {view.recipeCount} recept
+                        {view.recipeCount} rätter
                       </span>
                       <span
                         className={`${styles.recipeStatus} ${

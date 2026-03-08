@@ -26,7 +26,7 @@
 
 .pageHeader h1 {
   margin: 0;
-  max-width: 10ch;
+  white-space: nowrap;
   font-size: clamp(1.85rem, 3.2vw, 2.75rem);
   line-height: 0.92;
   letter-spacing: -0.06em;
@@ -523,8 +523,8 @@
 }
 
 .recipeHeaderActions {
-  justify-content: flex-end;
-  padding-right: 0.1rem;
+  justify-content: flex-start;
+  padding-left: 0.38rem;
 }
 
 .recipeListBody {
@@ -662,7 +662,7 @@
 
 .recipeActions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 0.35rem;
 }
 
@@ -770,7 +770,7 @@
 
 .recipeListTable .recipeListHeader,
 .recipeListTable .recipeCard {
-  grid-template-columns: 4rem 5.2rem minmax(0, 2fr) 6.2rem 5.8rem 6.8rem 7rem;
+  grid-template-columns: 4rem 5.2rem minmax(0, 2fr) 6.2rem 5.8rem 7.5rem 10rem;
 }
 
 .recipeListTable .recipeCard {

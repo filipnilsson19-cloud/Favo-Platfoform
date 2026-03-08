@@ -76,7 +76,7 @@
 }
 
 .sidebar:hover,
-.sidebar:focus-within {
+.sidebar:has(:focus-visible) {
   width: 17rem;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(252, 250, 246, 0.96));
   box-shadow:
@@ -105,7 +105,7 @@
 }
 
 .sidebar:hover .brandCrop,
-.sidebar:focus-within .brandCrop {
+.sidebar:has(:focus-visible) .brandCrop {
   width: 7.4rem;
   transform: translateX(0);
 }
@@ -120,13 +120,13 @@
 }
 
 .sidebar:hover .brand,
-.sidebar:focus-within .brand {
+.sidebar:has(:focus-visible) .brand {
   justify-content: flex-start;
   padding-inline: 0.14rem 0;
 }
 
 .sidebar:hover .brandLogo,
-.sidebar:focus-within .brandLogo {
+.sidebar:has(:focus-visible) .brandLogo {
   transform: translateX(0);
 }
 
@@ -250,7 +250,7 @@
 }
 
 .sidebar:hover .navLink,
-.sidebar:focus-within .navLink {
+.sidebar:has(:focus-visible) .navLink {
   justify-content: flex-start;
   gap: 0.66rem;
   padding-inline: 0.54rem;
@@ -297,7 +297,7 @@
 }
 
 .sidebar:hover .label,
-.sidebar:focus-within .label {
+.sidebar:has(:focus-visible) .label {
   max-width: 11rem;
   opacity: 1;
   transform: translateX(0);
@@ -305,15 +305,15 @@
 
 .sidebar:hover .sessionMeta strong,
 .sidebar:hover .sessionMeta span,
-.sidebar:focus-within .sessionMeta strong,
-.sidebar:focus-within .sessionMeta span {
+.sidebar:has(:focus-visible) .sessionMeta strong,
+.sidebar:has(:focus-visible) .sessionMeta span {
   max-width: 11rem;
   opacity: 1;
   transform: translateX(0);
 }
 
 .sidebar:hover .sessionButton,
-.sidebar:focus-within .sessionButton {
+.sidebar:has(:focus-visible) .sessionButton {
   opacity: 1;
   pointer-events: auto;
 }
@@ -337,7 +337,7 @@
   }
 
   .sidebar:hover,
-  .sidebar:focus-within {
+  .sidebar:has(:focus-visible) {
     width: auto;
   }
 
@@ -347,7 +347,7 @@
 
   .brandCrop,
   .sidebar:hover .brandCrop,
-  .sidebar:focus-within .brandCrop {
+  .sidebar:has(:focus-visible) .brandCrop {
     width: 7.4rem;
   }
 
@@ -359,7 +359,7 @@
 
   .navLink,
   .sidebar:hover .navLink,
-  .sidebar:focus-within .navLink {
+  .sidebar:has(:focus-visible) .navLink {
     justify-content: center;
     gap: 0;
     padding-inline: 0;
@@ -371,9 +371,9 @@
   .sidebar:hover .label,
   .sidebar:hover .sessionMeta strong,
   .sidebar:hover .sessionMeta span,
-  .sidebar:focus-within .label,
-  .sidebar:focus-within .sessionMeta strong,
-  .sidebar:focus-within .sessionMeta span {
+  .sidebar:has(:focus-visible) .label,
+  .sidebar:has(:focus-visible) .sessionMeta strong,
+  .sidebar:has(:focus-visible) .sessionMeta span {
     display: none;
   }
 

@@ -190,6 +190,7 @@ export type UserProfileWhereInput = {
   role?: Prisma.EnumUserRoleFilter<"UserProfile"> | $Enums.UserRole
   createdAt?: Prisma.DateTimeFilter<"UserProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserProfile"> | Date | string
+  prepBatches?: Prisma.PrepBatchListRelationFilter
 }
 
 export type UserProfileOrderByWithRelationInput = {
@@ -199,6 +200,7 @@ export type UserProfileOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  prepBatches?: Prisma.PrepBatchOrderByRelationAggregateInput
 }
 
 export type UserProfileWhereUniqueInput = Prisma.AtLeast<{
@@ -211,6 +213,7 @@ export type UserProfileWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.EnumUserRoleFilter<"UserProfile"> | $Enums.UserRole
   createdAt?: Prisma.DateTimeFilter<"UserProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"UserProfile"> | Date | string
+  prepBatches?: Prisma.PrepBatchListRelationFilter
 }, "id" | "email">
 
 export type UserProfileOrderByWithAggregationInput = {
@@ -244,6 +247,7 @@ export type UserProfileCreateInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
+  prepBatches?: Prisma.PrepBatchCreateNestedManyWithoutMadeByInput
 }
 
 export type UserProfileUncheckedCreateInput = {
@@ -253,6 +257,7 @@ export type UserProfileUncheckedCreateInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
+  prepBatches?: Prisma.PrepBatchUncheckedCreateNestedManyWithoutMadeByInput
 }
 
 export type UserProfileUpdateInput = {
@@ -262,6 +267,7 @@ export type UserProfileUpdateInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prepBatches?: Prisma.PrepBatchUpdateManyWithoutMadeByNestedInput
 }
 
 export type UserProfileUncheckedUpdateInput = {
@@ -271,6 +277,7 @@ export type UserProfileUncheckedUpdateInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  prepBatches?: Prisma.PrepBatchUncheckedUpdateManyWithoutMadeByNestedInput
 }
 
 export type UserProfileCreateManyInput = {
@@ -327,10 +334,110 @@ export type UserProfileMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type UserProfileScalarRelationFilter = {
+  is?: Prisma.UserProfileWhereInput
+  isNot?: Prisma.UserProfileWhereInput
+}
+
 export type EnumUserRoleFieldUpdateOperationsInput = {
   set?: $Enums.UserRole
 }
 
+export type UserProfileCreateNestedOneWithoutPrepBatchesInput = {
+  create?: Prisma.XOR<Prisma.UserProfileCreateWithoutPrepBatchesInput, Prisma.UserProfileUncheckedCreateWithoutPrepBatchesInput>
+  connectOrCreate?: Prisma.UserProfileCreateOrConnectWithoutPrepBatchesInput
+  connect?: Prisma.UserProfileWhereUniqueInput
+}
+
+export type UserProfileUpdateOneRequiredWithoutPrepBatchesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserProfileCreateWithoutPrepBatchesInput, Prisma.UserProfileUncheckedCreateWithoutPrepBatchesInput>
+  connectOrCreate?: Prisma.UserProfileCreateOrConnectWithoutPrepBatchesInput
+  upsert?: Prisma.UserProfileUpsertWithoutPrepBatchesInput
+  connect?: Prisma.UserProfileWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserProfileUpdateToOneWithWhereWithoutPrepBatchesInput, Prisma.UserProfileUpdateWithoutPrepBatchesInput>, Prisma.UserProfileUncheckedUpdateWithoutPrepBatchesInput>
+}
+
+export type UserProfileCreateWithoutPrepBatchesInput = {
+  id: string
+  email: string
+  displayName?: string
+  role?: $Enums.UserRole
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserProfileUncheckedCreateWithoutPrepBatchesInput = {
+  id: string
+  email: string
+  displayName?: string
+  role?: $Enums.UserRole
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type UserProfileCreateOrConnectWithoutPrepBatchesInput = {
+  where: Prisma.UserProfileWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserProfileCreateWithoutPrepBatchesInput, Prisma.UserProfileUncheckedCreateWithoutPrepBatchesInput>
+}
+
+export type UserProfileUpsertWithoutPrepBatchesInput = {
+  update: Prisma.XOR<Prisma.UserProfileUpdateWithoutPrepBatchesInput, Prisma.UserProfileUncheckedUpdateWithoutPrepBatchesInput>
+  create: Prisma.XOR<Prisma.UserProfileCreateWithoutPrepBatchesInput, Prisma.UserProfileUncheckedCreateWithoutPrepBatchesInput>
+  where?: Prisma.UserProfileWhereInput
+}
+
+export type UserProfileUpdateToOneWithWhereWithoutPrepBatchesInput = {
+  where?: Prisma.UserProfileWhereInput
+  data: Prisma.XOR<Prisma.UserProfileUpdateWithoutPrepBatchesInput, Prisma.UserProfileUncheckedUpdateWithoutPrepBatchesInput>
+}
+
+export type UserProfileUpdateWithoutPrepBatchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type UserProfileUncheckedUpdateWithoutPrepBatchesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  displayName?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type UserProfileCountOutputType
+ */
+
+export type UserProfileCountOutputType = {
+  prepBatches: number
+}
+
+export type UserProfileCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  prepBatches?: boolean | UserProfileCountOutputTypeCountPrepBatchesArgs
+}
+
+/**
+ * UserProfileCountOutputType without action
+ */
+export type UserProfileCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserProfileCountOutputType
+   */
+  select?: Prisma.UserProfileCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserProfileCountOutputType without action
+ */
+export type UserProfileCountOutputTypeCountPrepBatchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PrepBatchWhereInput
+}
 
 
 export type UserProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -340,6 +447,8 @@ export type UserProfileSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  prepBatches?: boolean | Prisma.UserProfile$prepBatchesArgs<ExtArgs>
+  _count?: boolean | Prisma.UserProfileCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["userProfile"]>
 
 export type UserProfileSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -370,10 +479,18 @@ export type UserProfileSelectScalar = {
 }
 
 export type UserProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "displayName" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["userProfile"]>
+export type UserProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  prepBatches?: boolean | Prisma.UserProfile$prepBatchesArgs<ExtArgs>
+  _count?: boolean | Prisma.UserProfileCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type UserProfileIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type UserProfileIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $UserProfilePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "UserProfile"
-  objects: {}
+  objects: {
+    prepBatches: Prisma.$PrepBatchPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     email: string
@@ -775,6 +892,7 @@ readonly fields: UserProfileFieldRefs;
  */
 export interface Prisma__UserProfileClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  prepBatches<T extends Prisma.UserProfile$prepBatchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserProfile$prepBatchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrepBatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -827,6 +945,10 @@ export type UserProfileFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.UserProfileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserProfileInclude<ExtArgs> | null
+  /**
    * Filter, which UserProfile to fetch.
    */
   where: Prisma.UserProfileWhereUniqueInput
@@ -845,6 +967,10 @@ export type UserProfileFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Exten
    */
   omit?: Prisma.UserProfileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserProfileInclude<ExtArgs> | null
+  /**
    * Filter, which UserProfile to fetch.
    */
   where: Prisma.UserProfileWhereUniqueInput
@@ -862,6 +988,10 @@ export type UserProfileFindFirstArgs<ExtArgs extends runtime.Types.Extensions.In
    * Omit specific fields from the UserProfile
    */
   omit?: Prisma.UserProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserProfileInclude<ExtArgs> | null
   /**
    * Filter, which UserProfile to fetch.
    */
@@ -911,6 +1041,10 @@ export type UserProfileFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extens
    */
   omit?: Prisma.UserProfileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserProfileInclude<ExtArgs> | null
+  /**
    * Filter, which UserProfile to fetch.
    */
   where?: Prisma.UserProfileWhereInput
@@ -959,6 +1093,10 @@ export type UserProfileFindManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.UserProfileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserProfileInclude<ExtArgs> | null
+  /**
    * Filter, which UserProfiles to fetch.
    */
   where?: Prisma.UserProfileWhereInput
@@ -1001,6 +1139,10 @@ export type UserProfileCreateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the UserProfile
    */
   omit?: Prisma.UserProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserProfileInclude<ExtArgs> | null
   /**
    * The data needed to create a UserProfile.
    */
@@ -1049,6 +1191,10 @@ export type UserProfileUpdateArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the UserProfile
    */
   omit?: Prisma.UserProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserProfileInclude<ExtArgs> | null
   /**
    * The data needed to update a UserProfile.
    */
@@ -1116,6 +1262,10 @@ export type UserProfileUpsertArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.UserProfileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserProfileInclude<ExtArgs> | null
+  /**
    * The filter to search for the UserProfile to update in case it exists.
    */
   where: Prisma.UserProfileWhereUniqueInput
@@ -1142,6 +1292,10 @@ export type UserProfileDeleteArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   omit?: Prisma.UserProfileOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserProfileInclude<ExtArgs> | null
+  /**
    * Filter which UserProfile to delete.
    */
   where: Prisma.UserProfileWhereUniqueInput
@@ -1162,6 +1316,30 @@ export type UserProfileDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 /**
+ * UserProfile.prepBatches
+ */
+export type UserProfile$prepBatchesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PrepBatch
+   */
+  select?: Prisma.PrepBatchSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PrepBatch
+   */
+  omit?: Prisma.PrepBatchOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PrepBatchInclude<ExtArgs> | null
+  where?: Prisma.PrepBatchWhereInput
+  orderBy?: Prisma.PrepBatchOrderByWithRelationInput | Prisma.PrepBatchOrderByWithRelationInput[]
+  cursor?: Prisma.PrepBatchWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PrepBatchScalarFieldEnum | Prisma.PrepBatchScalarFieldEnum[]
+}
+
+/**
  * UserProfile without action
  */
 export type UserProfileDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1173,4 +1351,8 @@ export type UserProfileDefaultArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Omit specific fields from the UserProfile
    */
   omit?: Prisma.UserProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserProfileInclude<ExtArgs> | null
 }

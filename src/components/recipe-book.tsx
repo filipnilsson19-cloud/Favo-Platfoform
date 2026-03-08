@@ -738,11 +738,10 @@ export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) 
     <>
       <section className={styles.recipePage} aria-labelledby="recipe-page-title">
         <header className={styles.pageHeader}>
-          <p className={styles.pageEyebrow}>Recept</p>
-          <h1 id="recipe-page-title">Receptbok</h1>
+          <p className={styles.pageEyebrow}>Meny</p>
+          <h1 id="recipe-page-title">Meny & lägglistor</h1>
           <p className={styles.pageIntro}>
-            En enkel och tydlig översikt där personalen snabbt hittar rätt recept,
-            öppnar detaljer och skriver ut vid behov.
+            Alla rätter på menyn med ingredienser, läggning och stationsvyer för köket.
           </p>
         </header>
 

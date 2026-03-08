@@ -42,3 +42,28 @@ export type RecipeItem = Prisma.RecipeItemModel
  * 
  */
 export type UserProfile = Prisma.UserProfileModel
+/**
+ * Model PrepCategory
+ * 
+ */
+export type PrepCategory = Prisma.PrepCategoryModel
+/**
+ * Model PrepRecipe
+ * 
+ */
+export type PrepRecipe = Prisma.PrepRecipeModel
+/**
+ * Model PrepIngredient
+ * 
+ */
+export type PrepIngredient = Prisma.PrepIngredientModel
+/**
+ * Model PrepStep
+ * 
+ */
+export type PrepStep = Prisma.PrepStepModel
+/**
+ * Model PrepBatch
+ * 
+ */
+export type PrepBatch = Prisma.PrepBatchModel

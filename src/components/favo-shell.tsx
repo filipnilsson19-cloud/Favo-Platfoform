@@ -1,26 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { logoutAction } from "@/app/login/actions";
-import {
-  BookIcon,
-  DocumentIcon,
-  HomeIcon,
-  PrepIcon,
-  SearchIcon,
-  ShieldIcon,
-  StarIcon,
-} from "@/components/navigation-icons";
+import { SearchIcon, StarIcon } from "@/components/navigation-icons";
 import type { AppUser } from "@/types/auth";
 
+import { FavoNav } from "./favo-nav";
 import styles from "./favo-shell.module.css";
-
-const primaryNav = [
-  { label: "Hem", icon: HomeIcon, active: false },
-  { label: "Recept", icon: BookIcon, active: true },
-  { label: "Produktionsprepp", icon: PrepIcon, active: false },
-  { label: "Rutiner", icon: ShieldIcon, active: false },
-  { label: "Handbok", icon: DocumentIcon, active: false },
-];
 
 const secondaryNav = [
   { label: "Utbildning", icon: StarIcon },
@@ -37,7 +23,7 @@ export function FavoShell({ authEnabled, children, user }: FavoShellProps) {
   return (
     <div className={styles.shell}>
       <aside className={styles.sidebar} aria-label="Huvudmeny">
-        <a className={styles.brand} href="#" aria-label="FAVO">
+        <Link className={styles.brand} href="/" aria-label="FAVO">
           <span className={styles.brandCrop}>
             <Image
               src="/favo-logotype.png"
@@ -48,27 +34,9 @@ export function FavoShell({ authEnabled, children, user }: FavoShellProps) {
               priority
             />
           </span>
-        </a>
+        </Link>
 
-        <nav className={styles.nav} aria-label="Primär navigation">
-          {primaryNav.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <a
-                key={item.label}
-                className={`${styles.navLink} ${item.active ? styles.navLinkActive : ""}`}
-                href="#"
-                aria-current={item.active ? "page" : undefined}
-              >
-                <span className={styles.iconWrap} aria-hidden="true">
-                  <Icon />
-                </span>
-                <span className={styles.label}>{item.label}</span>
-              </a>
-            );
-          })}
-        </nav>
+        <FavoNav />
 
         <div className={styles.footer}>
           {secondaryNav.map((item) => {

@@ -64,11 +64,11 @@ export function CategoryManagerDrawer({
       >
         <header className={styles.sheetHeader}>
           <div>
-            <p className={styles.pageEyebrow}>Kategorier</p>
-            <h2 id="category-manager-title">Hantera kategorier</h2>
+            <p className={styles.pageEyebrow}>Menykategorier</p>
+            <h2 id="category-manager-title">Hantera menykategorier</h2>
             <p className={styles.sheetIntro}>
               Byt namn, skapa nya och aktivera eller inaktivera kategorier utan
-              att lämna receptboken.
+              att lämna menyn.
             </p>
           </div>
 
@@ -135,7 +135,7 @@ export function CategoryManagerDrawer({
 
                     <div className={styles.categoryManagerMeta}>
                       <span className={styles.categoryUsage}>
-                        {category.recipeCount} recept
+                        {category.recipeCount} rätter
                       </span>
                       <span
                         className={`${styles.recipeStatus} ${

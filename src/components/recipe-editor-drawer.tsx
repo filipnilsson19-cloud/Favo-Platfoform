@@ -61,10 +61,10 @@ export function RecipeEditorDrawer({
 }: RecipeEditorDrawerProps) {
   const editorTitle =
     mode === "new"
-      ? "Nytt recept"
+      ? "Ny maträtt"
       : mode === "duplicate"
-        ? "Duplicera recept"
-        : "Redigera recept";
+        ? "Duplicera rätt"
+        : "Redigera rätt";
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [categoryDraft, setCategoryDraft] = useState("");
   const [isCreatingCategoryPending, setIsCreatingCategoryPending] = useState(false);
@@ -116,9 +116,9 @@ export function RecipeEditorDrawer({
           <header className={styles.sheetHeader}>
             <div>
               <p className={styles.pageEyebrow}>{editorTitle}</p>
-              <h2 id="recipe-editor-title">{draft.title.trim() || "Nytt recept"}</h2>
+              <h2 id="recipe-editor-title">{draft.title.trim() || "Ny maträtt"}</h2>
             <p className={styles.sheetIntro}>
-              Skapa, ändra och publicera recept direkt i den riktiga appen.
+              Skapa, ändra och publicera rätter direkt i den riktiga appen.
             </p>
           </div>
 
@@ -134,12 +134,12 @@ export function RecipeEditorDrawer({
           <section className={styles.sheetPanel}>
             <div className={styles.sectionHeading}>
               <p>Grundinfo</p>
-              <h3>Receptdata</h3>
+              <h3>Maträttsdata</h3>
             </div>
 
             <div className={styles.editorFields}>
               <label className={styles.fieldGroup}>
-                <span>Receptnamn</span>
+                <span>Namn</span>
                 <input
                   className={styles.editorInput}
                   type="text"

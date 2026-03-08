@@ -79,13 +79,89 @@ model RecipeItem {
 }
 
 model UserProfile {
-  id          String   @id
-  email       String   @unique
-  displayName String   @default("")
-  role        UserRole @default(personal)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String      @id
+  email       String      @unique
+  displayName String      @default("")
+  role        UserRole    @default(personal)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  prepBatches PrepBatch[]
 
   @@index([role])
   @@map("user_profiles")
+}
+
+model PrepCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([isActive])
+  @@map("prep_categories")
+}
+
+model PrepRecipe {
+  id            String           @id @default(cuid())
+  title         String
+  category      String
+  status        String           @default("Utkast")
+  shelfLifeDays Int              @default(3)
+  defaultYield  String           @default("")
+  yieldUnit     String           @default("")
+  allergens     String           @default("")
+  notes         String           @default("")
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  ingredients   PrepIngredient[]
+  steps         PrepStep[]
+  batches       PrepBatch[]
+
+  @@index([category])
+  @@index([status])
+  @@map("prep_recipes")
+}
+
+model PrepIngredient {
+  id           String     @id @default(cuid())
+  prepRecipeId String
+  sortOrder    Int
+  info         String     @default("")
+  name         String
+  amount       String
+  unit         String     @default("g")
+  prepRecipe   PrepRecipe @relation(fields: [prepRecipeId], references: [id], onDelete: Cascade)
+
+  @@index([prepRecipeId, sortOrder])
+  @@map("prep_ingredients")
+}
+
+model PrepStep {
+  id           String     @id @default(cuid())
+  prepRecipeId String
+  sortOrder    Int
+  description  String
+  prepRecipe   PrepRecipe @relation(fields: [prepRecipeId], references: [id], onDelete: Cascade)
+
+  @@index([prepRecipeId, sortOrder])
+  @@map("prep_steps")
+}
+
+model PrepBatch {
+  id           String      @id @default(cuid())
+  prepRecipeId String
+  madeById     String
+  madeAt       DateTime    @default(now())
+  bestBefore   DateTime
+  batchYield   String      @default("")
+  notes        String      @default("")
+  prepRecipe   PrepRecipe  @relation(fields: [prepRecipeId], references: [id])
+  madeBy       UserProfile @relation(fields: [madeById], references: [id])
+
+  @@index([prepRecipeId])
+  @@index([bestBefore])
+  @@map("prep_batches")
 }

@@ -145,7 +145,7 @@ export function RecipeBookList({
           <span className={`${styles.recipeHeaderCell} ${styles.recipeHeaderType}`}>
             Typ
           </span>
-          <span className={styles.recipeHeaderCell}>Recept</span>
+          <span className={styles.recipeHeaderCell}>Maträtt</span>
           <span className={styles.recipeHeaderCell}>Komponenter</span>
           <span className={styles.recipeHeaderCell}>Total</span>
           <span className={styles.recipeHeaderCell}>Status</span>
