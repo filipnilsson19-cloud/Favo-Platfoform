@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     }
 
     const recipe = await upsertPrepRecipeForApp(body.recipe);
-    revalidateTag("prep-recipes");
+    revalidateTag("prep-recipes", "max");
     return NextResponse.json({ recipe });
   } catch (error) {
     console.error("Failed to save prep recipe", error);
@@ -56,7 +56,7 @@ export async function DELETE(request: Request) {
     }
 
     await deletePrepRecipeForApp(body.recipeId);
-    revalidateTag("prep-recipes");
+    revalidateTag("prep-recipes", "max");
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Failed to delete prep recipe", error);

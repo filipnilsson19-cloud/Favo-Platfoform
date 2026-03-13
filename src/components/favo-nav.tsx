@@ -34,6 +34,7 @@ export function FavoNav() {
             key={item.label}
             className={`${styles.navLink} ${isActive ? styles.navLinkActive : ""}`}
             href={item.href}
+            prefetch
             aria-current={isActive ? "page" : undefined}
           >
             <span className={styles.iconWrap} aria-hidden="true">

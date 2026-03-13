@@ -43,7 +43,7 @@ export async function POST(request: Request) {
     }
 
     const category = await createPrepCategoryForApp(body.name);
-    revalidatePath("/prep");
+    revalidateTag("prep-recipes", "max");
     return NextResponse.json({ category });
   } catch (error) {
     console.error("Failed to create prep category", error);
@@ -69,7 +69,7 @@ export async function PATCH(request: Request) {
       }
       const category = await renamePrepCategoryForApp(body.name, body.nextName);
       const categories = await getPrepCategoryEntriesForApp();
-      revalidateTag("prep-recipes");
+      revalidateTag("prep-recipes", "max");
       return NextResponse.json({ category, previousName: body.name, categories });
     }
 
@@ -79,7 +79,7 @@ export async function PATCH(request: Request) {
       }
       await setPrepCategoryActiveForApp(body.name, body.isActive);
       const categories = await getPrepCategoryEntriesForApp();
-      revalidateTag("prep-recipes");
+      revalidateTag("prep-recipes", "max");
       return NextResponse.json({ categories });
     }
 

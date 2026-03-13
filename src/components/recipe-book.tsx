@@ -38,6 +38,7 @@ import type {
 import type { AppCategory } from "@/types/category";
 import type { AppStationView } from "@/types/station-view";
 import styles from "./recipe-book.module.css";
+import { useAppUser } from "./app-user-provider";
 import { RecipeBookList } from "./recipe-book-list";
 import { RecipeBookToolbar } from "./recipe-book-toolbar";
 import type {
@@ -47,7 +48,6 @@ import type {
 } from "./recipe-book-types";
 
 type RecipeBookProps = {
-  canManage: boolean;
   categories: RecipeCategory[];
   recipes: Recipe[];
 };
@@ -102,7 +102,9 @@ const StationViewManagerDrawer = dynamic(
   },
 );
 
-export function RecipeBook({ canManage, categories, recipes }: RecipeBookProps) {
+export function RecipeBook({ categories, recipes }: RecipeBookProps) {
+  const { role } = useAppUser();
+  const canManage = role === "admin";
   const [recipeList, setRecipeList] = useState<Recipe[]>(() =>
     recipes.map((recipe) => cloneRecipe(recipe)),
   );

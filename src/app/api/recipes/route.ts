@@ -48,7 +48,7 @@ export async function POST(request: Request) {
 
     const recipe = await upsertRecipeForApp(body.recipe);
 
-    revalidateTag("recipes");
+    revalidateTag("recipes", "max");
 
     return NextResponse.json({ recipe });
   } catch (error) {
@@ -86,7 +86,7 @@ export async function DELETE(request: Request) {
 
     await deleteRecipeForApp(body.recipeId);
 
-    revalidateTag("recipes");
+    revalidateTag("recipes", "max");
 
     return NextResponse.json({ ok: true });
   } catch (error) {

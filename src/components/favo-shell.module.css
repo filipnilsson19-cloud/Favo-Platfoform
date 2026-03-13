@@ -40,6 +40,151 @@
   padding: 1.9rem 1.9rem 2.4rem;
 }
 
+.appLoadingPage {
+  display: grid;
+  gap: 1.35rem;
+}
+
+.appLoadingHeader {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 44rem;
+}
+
+.appLoadingPanel {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem 1rem 1.1rem;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  border-radius: 1.35rem;
+  background: rgba(250, 248, 244, 0.72);
+  box-shadow: 0 18px 40px rgba(17, 17, 17, 0.05);
+}
+
+.appLoadingToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.appLoadingMetrics,
+.appLoadingActions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.appLoadingRows {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.appLoadingRow {
+  display: grid;
+  grid-template-columns: 1.35rem minmax(12rem, 2.1fr) minmax(6rem, 0.85fr) minmax(5rem, 0.7fr);
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.6rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(17, 17, 17, 0.06);
+}
+
+.appLoadingEyebrow,
+.appLoadingHeading,
+.appLoadingCopy,
+.appLoadingMetric,
+.appLoadingMetricSmall,
+.appLoadingChip,
+.appLoadingButton,
+.appLoadingBadge,
+.appLoadingTitle,
+.appLoadingMeta,
+.appLoadingMetaShort {
+  display: block;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    rgba(17, 17, 17, 0.06),
+    rgba(17, 17, 17, 0.1),
+    rgba(17, 17, 17, 0.06)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.appLoadingEyebrow {
+  width: 5.3rem;
+  height: 0.7rem;
+}
+
+.appLoadingHeading {
+  width: min(18rem, 45vw);
+  height: 2.2rem;
+  border-radius: 0.95rem;
+}
+
+.appLoadingCopy {
+  width: min(28rem, 70vw);
+  height: 1rem;
+}
+
+.appLoadingMetric {
+  width: 6.4rem;
+  height: 2rem;
+}
+
+.appLoadingMetricSmall {
+  width: 4.8rem;
+  height: 1.65rem;
+}
+
+.appLoadingChip {
+  width: 6rem;
+  height: 2rem;
+}
+
+.appLoadingButton {
+  width: 7.4rem;
+  height: 2.2rem;
+}
+
+.appLoadingBadge {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+}
+
+.appLoadingTitle {
+  width: 100%;
+  max-width: 18rem;
+  height: 1rem;
+}
+
+.appLoadingMeta {
+  width: 100%;
+  max-width: 6.5rem;
+  height: 0.9rem;
+}
+
+.appLoadingMetaShort {
+  width: 100%;
+  max-width: 5rem;
+  height: 0.9rem;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .sidebar {
   position: fixed;
   top: 0;
@@ -322,6 +467,24 @@
   .canvas {
     margin-left: 0;
     padding-top: 7rem;
+  }
+
+  .appLoadingToolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .appLoadingActions {
+    flex-wrap: wrap;
+  }
+
+  .appLoadingRow {
+    grid-template-columns: 1.1rem 1fr;
+  }
+
+  .appLoadingMeta,
+  .appLoadingMetaShort {
+    display: none;
   }
 
   .sidebar {

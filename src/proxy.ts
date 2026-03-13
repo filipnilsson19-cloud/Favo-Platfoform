@@ -13,9 +13,10 @@ export async function proxy(request: NextRequest) {
   }
 
   const pathname = request.nextUrl.pathname;
-  const { response, user } = await updateSession(request);
 
   if (isPublicPath(pathname)) {
+    const { response, user } = await updateSession(request);
+
     if (user && pathname === "/login") {
       return NextResponse.redirect(new URL("/", request.url));
     }
@@ -23,13 +24,7 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  if (!user) {
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("next", `${pathname}${request.nextUrl.search}`);
-    return NextResponse.redirect(loginUrl);
-  }
-
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {

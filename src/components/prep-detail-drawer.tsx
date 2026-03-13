@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   formatSwedishDateTime,
@@ -34,6 +34,12 @@ export function PrepDetailDrawer({
   newBatch,
 }: PrepDetailDrawerProps) {
   const [batches, setBatches] = useState<PrepBatch[]>([]);
+  const visibleBatches = useMemo(() => {
+    if (!newBatch) return batches;
+
+    const without = batches.filter((batch) => batch.id !== newBatch.id);
+    return [newBatch, ...without].slice(0, 5);
+  }, [batches, newBatch]);
 
   useEffect(() => {
     if (!isOpen || !recipe) return;
@@ -41,14 +47,6 @@ export function PrepDetailDrawer({
       .then((data) => setBatches(data.batches))
       .catch(console.error);
   }, [isOpen, recipe]);
-
-  useEffect(() => {
-    if (!newBatch) return;
-    setBatches((current) => {
-      const without = current.filter((b) => b.id !== newBatch.id);
-      return [newBatch, ...without].slice(0, 5);
-    });
-  }, [newBatch]);
 
   if (!recipe) return null;
 
@@ -164,11 +162,11 @@ export function PrepDetailDrawer({
               <p>Senaste batchar</p>
               <h3>Batchlogg</h3>
             </div>
-            {batches.length === 0 ? (
+            {visibleBatches.length === 0 ? (
               <p className={styles.batchEmpty}>Ingen batch loggad ännu.</p>
             ) : (
               <div className={styles.batchList}>
-                {batches.map((batch) => {
+                {visibleBatches.map((batch) => {
                   const expired = isBatchExpired(batch.bestBefore);
                   const soon = !expired && isBatchExpiringSoon(batch.bestBefore);
                   return (

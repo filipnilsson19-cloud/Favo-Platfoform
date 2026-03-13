@@ -1,7 +1,7 @@
 "use client";
 
 import { prepStatusOptions, prepUnitOptions, yieldUnitOptions } from "@/lib/prep-utils";
-import type { PrepEditorMode, PrepIngredient, PrepRecipe, PrepStatus, PrepStep } from "@/types/prep";
+import type { PrepEditorMode, PrepIngredient, PrepRecipe, PrepStatus } from "@/types/prep";
 import styles from "./prep-book.module.css";
 
 type PrepEditorDrawerProps = {

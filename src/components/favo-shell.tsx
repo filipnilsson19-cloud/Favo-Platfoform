@@ -5,6 +5,7 @@ import { logoutAction } from "@/app/login/actions";
 import { SearchIcon, StarIcon } from "@/components/navigation-icons";
 import type { AppUser } from "@/types/auth";
 
+import { AppUserProvider } from "./app-user-provider";
 import { FavoNav } from "./favo-nav";
 import styles from "./favo-shell.module.css";
 
@@ -21,61 +22,63 @@ type FavoShellProps = {
 
 export function FavoShell({ authEnabled, children, user }: FavoShellProps) {
   return (
-    <div className={styles.shell}>
-      <aside className={styles.sidebar} aria-label="Huvudmeny">
-        <Link className={styles.brand} href="/" aria-label="FAVO">
-          <span className={styles.brandCrop}>
-            <Image
-              src="/favo-logotype.png"
-              alt="FAVO"
-              width={178}
-              height={41}
-              className={styles.brandLogo}
-              priority
-            />
-          </span>
-        </Link>
+    <AppUserProvider user={user}>
+      <div className={styles.shell}>
+        <aside className={styles.sidebar} aria-label="Huvudmeny">
+          <Link className={styles.brand} href="/" aria-label="FAVO">
+            <span className={styles.brandCrop}>
+              <Image
+                src="/favo-logotype.png"
+                alt="FAVO"
+                width={178}
+                height={41}
+                className={styles.brandLogo}
+                priority
+              />
+            </span>
+          </Link>
 
-        <FavoNav />
+          <FavoNav />
 
-        <div className={styles.footer}>
-          {secondaryNav.map((item) => {
-            const Icon = item.icon;
+          <div className={styles.footer}>
+            {secondaryNav.map((item) => {
+              const Icon = item.icon;
 
-            return (
-              <a key={item.label} className={styles.navLink} href="#">
-                <span className={styles.iconWrap} aria-hidden="true">
-                  <Icon />
+              return (
+                <a key={item.label} className={styles.navLink} href="#">
+                  <span className={styles.iconWrap} aria-hidden="true">
+                    <Icon />
+                  </span>
+                  <span className={styles.label}>{item.label}</span>
+                </a>
+              );
+            })}
+
+            <div className={styles.sessionCard}>
+              <div className={styles.sessionMeta}>
+                <strong>{user.displayName}</strong>
+                <span>
+                  {authEnabled
+                    ? user.role === "admin"
+                      ? "Admin"
+                      : "Personal"
+                    : "Lokalt förhandsläge"}
                 </span>
-                <span className={styles.label}>{item.label}</span>
-              </a>
-            );
-          })}
+              </div>
 
-          <div className={styles.sessionCard}>
-            <div className={styles.sessionMeta}>
-              <strong>{user.displayName}</strong>
-              <span>
-                {authEnabled
-                  ? user.role === "admin"
-                    ? "Admin"
-                    : "Personal"
-                  : "Lokalt förhandsläge"}
-              </span>
+              {authEnabled ? (
+                <form action={logoutAction}>
+                  <button className={styles.sessionButton} type="submit">
+                    Logga ut
+                  </button>
+                </form>
+              ) : null}
             </div>
-
-            {authEnabled ? (
-              <form action={logoutAction}>
-                <button className={styles.sessionButton} type="submit">
-                  Logga ut
-                </button>
-              </form>
-            ) : null}
           </div>
-        </div>
-      </aside>
+        </aside>
 
-      <main className={styles.canvas}>{children}</main>
-    </div>
+        <main className={styles.canvas}>{children}</main>
+      </div>
+    </AppUserProvider>
   );
 }

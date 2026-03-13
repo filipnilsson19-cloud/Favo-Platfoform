@@ -17,6 +17,7 @@ import {
 } from "@/lib/prep-api";
 import type { AppPrepCategory, PrepBatch, PrepEditorMode, PrepIngredient, PrepRecipe } from "@/types/prep";
 import styles from "./prep-book.module.css";
+import { useAppUser } from "./app-user-provider";
 import { PrepBookList } from "./prep-book-list";
 import { PrepBookToolbar } from "./prep-book-toolbar";
 import { PrepCategoryManager } from "./prep-category-manager";
@@ -37,12 +38,13 @@ const PrepBatchModal = dynamic(
 );
 
 type PrepBookProps = {
-  canManage: boolean;
   recipes: PrepRecipe[];
   categories: string[];
 };
 
-export function PrepBook({ canManage, recipes: initialRecipes, categories: initialCategories }: PrepBookProps) {
+export function PrepBook({ recipes: initialRecipes, categories: initialCategories }: PrepBookProps) {
+  const { role } = useAppUser();
+  const canManage = role === "admin";
   const [recipeList, setRecipeList] = useState<PrepRecipe[]>(initialRecipes);
   const [categoryList, setCategoryList] = useState<string[]>(initialCategories);
   const [activeCategories, setActiveCategories] = useState<string[]>([]);
