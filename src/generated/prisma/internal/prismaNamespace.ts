@@ -390,6 +390,8 @@ export const ModelName = {
   RecipeItem: 'RecipeItem',
   UserProfile: 'UserProfile',
   PrepCategory: 'PrepCategory',
+  PrepUnitOption: 'PrepUnitOption',
+  PrepStorageOption: 'PrepStorageOption',
   PrepRecipe: 'PrepRecipe',
   PrepIngredient: 'PrepIngredient',
   PrepStep: 'PrepStep',
@@ -409,7 +411,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "recipe" | "category" | "stationView" | "recipeItem" | "userProfile" | "prepCategory" | "prepRecipe" | "prepIngredient" | "prepStep" | "prepBatch"
+    modelProps: "recipe" | "category" | "stationView" | "recipeItem" | "userProfile" | "prepCategory" | "prepUnitOption" | "prepStorageOption" | "prepRecipe" | "prepIngredient" | "prepStep" | "prepBatch"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -857,6 +859,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PrepUnitOption: {
+      payload: Prisma.$PrepUnitOptionPayload<ExtArgs>
+      fields: Prisma.PrepUnitOptionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrepUnitOptionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrepUnitOptionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload>
+        }
+        findFirst: {
+          args: Prisma.PrepUnitOptionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrepUnitOptionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload>
+        }
+        findMany: {
+          args: Prisma.PrepUnitOptionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload>[]
+        }
+        create: {
+          args: Prisma.PrepUnitOptionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload>
+        }
+        createMany: {
+          args: Prisma.PrepUnitOptionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrepUnitOptionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload>[]
+        }
+        delete: {
+          args: Prisma.PrepUnitOptionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload>
+        }
+        update: {
+          args: Prisma.PrepUnitOptionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrepUnitOptionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrepUnitOptionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrepUnitOptionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrepUnitOptionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepUnitOptionPayload>
+        }
+        aggregate: {
+          args: Prisma.PrepUnitOptionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrepUnitOption>
+        }
+        groupBy: {
+          args: Prisma.PrepUnitOptionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepUnitOptionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrepUnitOptionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepUnitOptionCountAggregateOutputType> | number
+        }
+      }
+    }
+    PrepStorageOption: {
+      payload: Prisma.$PrepStorageOptionPayload<ExtArgs>
+      fields: Prisma.PrepStorageOptionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PrepStorageOptionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PrepStorageOptionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload>
+        }
+        findFirst: {
+          args: Prisma.PrepStorageOptionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PrepStorageOptionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload>
+        }
+        findMany: {
+          args: Prisma.PrepStorageOptionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload>[]
+        }
+        create: {
+          args: Prisma.PrepStorageOptionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload>
+        }
+        createMany: {
+          args: Prisma.PrepStorageOptionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PrepStorageOptionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload>[]
+        }
+        delete: {
+          args: Prisma.PrepStorageOptionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload>
+        }
+        update: {
+          args: Prisma.PrepStorageOptionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload>
+        }
+        deleteMany: {
+          args: Prisma.PrepStorageOptionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PrepStorageOptionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PrepStorageOptionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload>[]
+        }
+        upsert: {
+          args: Prisma.PrepStorageOptionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PrepStorageOptionPayload>
+        }
+        aggregate: {
+          args: Prisma.PrepStorageOptionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePrepStorageOption>
+        }
+        groupBy: {
+          args: Prisma.PrepStorageOptionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepStorageOptionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PrepStorageOptionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PrepStorageOptionCountAggregateOutputType> | number
+        }
+      }
+    }
     PrepRecipe: {
       payload: Prisma.$PrepRecipePayload<ExtArgs>
       fields: Prisma.PrepRecipeFieldRefs
@@ -1276,11 +1426,36 @@ export const PrepCategoryScalarFieldEnum = {
 export type PrepCategoryScalarFieldEnum = (typeof PrepCategoryScalarFieldEnum)[keyof typeof PrepCategoryScalarFieldEnum]
 
 
+export const PrepUnitOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrepUnitOptionScalarFieldEnum = (typeof PrepUnitOptionScalarFieldEnum)[keyof typeof PrepUnitOptionScalarFieldEnum]
+
+
+export const PrepStorageOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrepStorageOptionScalarFieldEnum = (typeof PrepStorageOptionScalarFieldEnum)[keyof typeof PrepStorageOptionScalarFieldEnum]
+
+
 export const PrepRecipeScalarFieldEnum = {
   id: 'id',
   title: 'title',
   category: 'category',
   status: 'status',
+  storage: 'storage',
   shelfLifeDays: 'shelfLifeDays',
   defaultYield: 'defaultYield',
   yieldUnit: 'yieldUnit',
@@ -1558,6 +1733,8 @@ export type GlobalOmitConfig = {
   recipeItem?: Prisma.RecipeItemOmit
   userProfile?: Prisma.UserProfileOmit
   prepCategory?: Prisma.PrepCategoryOmit
+  prepUnitOption?: Prisma.PrepUnitOptionOmit
+  prepStorageOption?: Prisma.PrepStorageOptionOmit
   prepRecipe?: Prisma.PrepRecipeOmit
   prepIngredient?: Prisma.PrepIngredientOmit
   prepStep?: Prisma.PrepStepOmit

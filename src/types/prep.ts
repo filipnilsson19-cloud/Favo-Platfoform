@@ -16,6 +16,7 @@ export type PrepRecipe = {
   title: string;
   category: string;
   status: PrepStatus;
+  storage: string;
   shelfLifeDays: number;
   defaultYield: string;
   yieldUnit: string;
@@ -40,6 +41,13 @@ export type AppPrepCategory = {
   name: string;
   isActive: boolean;
   recipeCount: number;
+};
+
+export type AppPrepOption = {
+  id: string;
+  name: string;
+  isActive: boolean;
+  usageCount: number;
 };
 
 export type PrepEditorMode = "new" | "edit";

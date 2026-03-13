@@ -104,11 +104,38 @@ model PrepCategory {
   @@map("prep_categories")
 }
 
+model PrepUnitOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([isActive])
+  @@map("prep_unit_options")
+}
+
+model PrepStorageOption {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sortOrder])
+  @@index([isActive])
+  @@map("prep_storage_options")
+}
+
 model PrepRecipe {
   id            String           @id @default(cuid())
   title         String
   category      String
   status        String           @default("Utkast")
+  storage       String           @default("Kyl")
   shelfLifeDays Int              @default(3)
   defaultYield  String           @default("")
   yieldUnit     String           @default("")

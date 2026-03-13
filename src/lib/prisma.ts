@@ -13,6 +13,9 @@ export function getPrismaClient() {
         stationView?: unknown;
         userProfile?: unknown;
         recipe?: unknown;
+        prepCategory?: unknown;
+        prepUnitOption?: unknown;
+        prepStorageOption?: unknown;
       })
     | undefined;
 
@@ -20,7 +23,10 @@ export function getPrismaClient() {
     existingClient?.category &&
     existingClient?.stationView &&
     existingClient?.userProfile &&
-    existingClient?.recipe
+    existingClient?.recipe &&
+    existingClient?.prepCategory &&
+    existingClient?.prepUnitOption &&
+    existingClient?.prepStorageOption
   ) {
     return existingClient;
   }

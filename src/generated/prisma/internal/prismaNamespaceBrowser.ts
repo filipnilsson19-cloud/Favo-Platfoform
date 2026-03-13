@@ -57,6 +57,8 @@ export const ModelName = {
   RecipeItem: 'RecipeItem',
   UserProfile: 'UserProfile',
   PrepCategory: 'PrepCategory',
+  PrepUnitOption: 'PrepUnitOption',
+  PrepStorageOption: 'PrepStorageOption',
   PrepRecipe: 'PrepRecipe',
   PrepIngredient: 'PrepIngredient',
   PrepStep: 'PrepStep',
@@ -163,11 +165,36 @@ export const PrepCategoryScalarFieldEnum = {
 export type PrepCategoryScalarFieldEnum = (typeof PrepCategoryScalarFieldEnum)[keyof typeof PrepCategoryScalarFieldEnum]
 
 
+export const PrepUnitOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrepUnitOptionScalarFieldEnum = (typeof PrepUnitOptionScalarFieldEnum)[keyof typeof PrepUnitOptionScalarFieldEnum]
+
+
+export const PrepStorageOptionScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrepStorageOptionScalarFieldEnum = (typeof PrepStorageOptionScalarFieldEnum)[keyof typeof PrepStorageOptionScalarFieldEnum]
+
+
 export const PrepRecipeScalarFieldEnum = {
   id: 'id',
   title: 'title',
   category: 'category',
   status: 'status',
+  storage: 'storage',
   shelfLifeDays: 'shelfLifeDays',
   defaultYield: 'defaultYield',
   yieldUnit: 'yieldUnit',

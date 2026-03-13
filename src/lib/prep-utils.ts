@@ -27,12 +27,29 @@ export const prepUnitOptions = [
   { label: "msk", value: "msk" },
 ];
 
+export const prepManagedUnitDefaults = [
+  ...new Map(
+    [...prepUnitOptions, ...yieldUnitOptions].map((option) => [option.value, option]),
+  ).values(),
+].map((option) => ({
+  label: option.label,
+  value: option.value,
+}));
+
+export const prepStorageOptions = [
+  { label: "Kyl", value: "Kyl" },
+  { label: "Frys", value: "Frys" },
+  { label: "Torr", value: "Torr" },
+  { label: "Rumstemperatur", value: "Rumstemperatur" },
+];
+
 export function blankPrepRecipe(): PrepRecipe {
   return {
     id: "",
     title: "",
     category: "",
     status: "Utkast",
+    storage: "Kyl",
     shelfLifeDays: 3,
     defaultYield: "",
     yieldUnit: "liter",
@@ -93,9 +110,22 @@ export function batchYieldLabel(multiplier: number, defaultYield: string, yieldU
   return `${result} ${yieldUnit}`.trim();
 }
 
+export function scalePrepAmount(amount: string, multiplier: number): string {
+  const normalized = amount.trim().replace(",", ".");
+  const value = Number.parseFloat(normalized);
+
+  if (Number.isNaN(value)) return amount;
+
+  const scaled = value * multiplier;
+  if (Number.isInteger(scaled)) return String(scaled);
+  if (Number.isInteger(scaled * 10)) return scaled.toFixed(1);
+  return scaled.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+}
+
 export const batchMultipliers = [
-  { label: "½ sats", value: 0.5 },
-  { label: "1 sats", value: 1 },
-  { label: "1½ satser", value: 1.5 },
-  { label: "2 satser", value: 2 },
+  { label: "1/2 batch", value: 0.5 },
+  { label: "1 batch", value: 1 },
+  { label: "2 batcher", value: 2 },
+  { label: "5 batcher", value: 5 },
+  { label: "10 batcher", value: 10 },
 ];

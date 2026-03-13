@@ -1,45 +1,67 @@
 import type { PrepRecipe } from "@/types/prep";
 import styles from "./prep-book.module.css";
+import type { PrepViewMode } from "./prep-book-types";
 
 type PrepBookListProps = {
   activeRecipeId: string;
   canManage: boolean;
   recipes: PrepRecipe[];
+  view: PrepViewMode;
   onOpenRecipe: (id: string) => void;
   onOpenEditor: (id: string) => void;
-  onOpenBatch: (id: string) => void;
 };
 
 export function PrepBookList({
   activeRecipeId,
   canManage,
   recipes,
+  view,
   onOpenRecipe,
   onOpenEditor,
-  onOpenBatch,
 }: PrepBookListProps) {
   return (
-    <div className={styles.prepList}>
+    <div
+      className={[
+        styles.prepList,
+        view === "card" ? styles.prepListCard : "",
+        view === "table" ? styles.prepListTable : "",
+      ].join(" ")}
+    >
+      {view === "table" ? (
       <div className={styles.listHeader} aria-hidden="true">
-        <span className={styles.listHeaderCell}>Kategori</span>
+        <span className={`${styles.listHeaderCell} ${styles.listHeaderCategory}`}>Kategori</span>
         <span className={styles.listHeaderCell}>Prepprecept</span>
-        <span className={styles.listHeaderCell}>Hållbarhet</span>
-        <span className={styles.listHeaderCell}>Status</span>
+        <span className={`${styles.listHeaderCell} ${styles.listHeaderContent}`}>Innehåll</span>
+        <span className={`${styles.listHeaderCell} ${styles.listHeaderShelf}`}>Hållbarhet</span>
+        <span className={`${styles.listHeaderCell} ${styles.listHeaderStatus}`}>Status</span>
         <span className={[styles.listHeaderCell, styles.listHeaderActions].join(" ")}>
           Åtgärder
         </span>
       </div>
+      ) : null}
 
       <div className={styles.listBody}>
         {recipes.map((recipe) => {
           const isActive = recipe.id === activeRecipeId;
+          const ingredientNames = recipe.ingredients
+            .map((ingredient) => ingredient.name.trim())
+            .filter(Boolean);
+          const contentPreview = ingredientNames.slice(0, 4).join(", ");
+          const hiddenCount = Math.max(ingredientNames.length - 4, 0);
           return (
             <article
               key={recipe.id}
-              className={[styles.prepCard, isActive ? styles.prepCardActive : ""].join(" ")}
+              className={[
+                styles.prepCard,
+                view === "card" ? styles.prepCardCard : "",
+                view === "table" ? styles.prepCardTable : "",
+                isActive ? styles.prepCardActive : "",
+              ].join(" ")}
               onClick={() => onOpenRecipe(recipe.id)}
             >
-              <span className={styles.prepCategory}>{recipe.category}</span>
+              <span className={styles.prepCategoryCell}>
+                <span className={styles.prepCategory}>{recipe.category}</span>
+              </span>
 
               <div className={styles.prepMain}>
                 <strong className={styles.prepTitle}>{recipe.title}</strong>
@@ -51,24 +73,30 @@ export function PrepBookList({
                 </span>
               </div>
 
-              <span className={styles.prepShelf}>
-                {recipe.shelfLifeDays} dagar
+              <span className={styles.prepContentCell}>
+                {contentPreview}
+                {hiddenCount > 0 ? `, +${hiddenCount}` : "."}
               </span>
 
-              <span
-                className={[
-                  styles.prepStatus,
-                  recipe.status === "Publicerad"
-                    ? styles.prepStatusPublished
-                    : recipe.status === "Inaktiv"
-                      ? styles.prepStatusInactive
-                      : styles.prepStatusDraft,
-                ].join(" ")}
-              >
-                {recipe.status}
+              <span className={styles.prepShelfCell}>{recipe.shelfLifeDays} dagar</span>
+
+              <span className={styles.prepStatusCell}>
+                <span
+                  className={[
+                    styles.prepStatus,
+                    recipe.status === "Publicerad"
+                      ? styles.prepStatusPublished
+                      : recipe.status === "Inaktiv"
+                        ? styles.prepStatusInactive
+                        : styles.prepStatusDraft,
+                  ].join(" ")}
+                >
+                  {recipe.status}
+                </span>
               </span>
 
-              <div className={styles.prepActions}>
+              <div className={styles.prepActionsCell}>
+                <div className={styles.prepActions}>
                 <button
                   className={styles.rowAction}
                   type="button"
@@ -76,19 +104,9 @@ export function PrepBookList({
                     e.stopPropagation();
                     onOpenRecipe(recipe.id);
                   }}
-                >
-                  Visa
-                </button>
-                <button
-                  className={[styles.rowAction, styles.rowActionPrepp].join(" ")}
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onOpenBatch(recipe.id);
-                  }}
-                >
-                  Prepp klar
-                </button>
+                  >
+                    Visa
+                  </button>
                 {canManage ? (
                   <button
                     className={[styles.rowAction, styles.rowActionStrong].join(" ")}
@@ -97,10 +115,11 @@ export function PrepBookList({
                       e.stopPropagation();
                       onOpenEditor(recipe.id);
                     }}
-                  >
-                    Redigera
-                  </button>
-                ) : null}
+                    >
+                      Redigera
+                    </button>
+                  ) : null}
+                </div>
               </div>
             </article>
           );

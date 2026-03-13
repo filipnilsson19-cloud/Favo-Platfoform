@@ -1,11 +1,25 @@
 import { PrepBook } from "@/components/prep-book";
-import { getPrepCategoriesForApp, getPrepRecipesForApp } from "@/server/prep-store";
+import {
+  getPrepCategoriesForApp,
+  getPrepRecipesForApp,
+  getPrepStorageOptionsForApp,
+  getPrepUnitOptionsForApp,
+} from "@/server/prep-store";
 
 export default async function PrepPage() {
-  const [recipes, categories] = await Promise.all([
+  const [recipes, categories, unitOptions, storageOptions] = await Promise.all([
     getPrepRecipesForApp(),
     getPrepCategoriesForApp(),
+    getPrepUnitOptionsForApp(),
+    getPrepStorageOptionsForApp(),
   ]);
 
-  return <PrepBook recipes={recipes} categories={categories} />;
+  return (
+    <PrepBook
+      recipes={recipes}
+      categories={categories}
+      unitOptions={unitOptions}
+      storageOptions={storageOptions}
+    />
+  );
 }

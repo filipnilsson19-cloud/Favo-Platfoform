@@ -39,6 +39,7 @@ export type PrepRecipeMinAggregateOutputType = {
   title: string | null
   category: string | null
   status: string | null
+  storage: string | null
   shelfLifeDays: number | null
   defaultYield: string | null
   yieldUnit: string | null
@@ -53,6 +54,7 @@ export type PrepRecipeMaxAggregateOutputType = {
   title: string | null
   category: string | null
   status: string | null
+  storage: string | null
   shelfLifeDays: number | null
   defaultYield: string | null
   yieldUnit: string | null
@@ -67,6 +69,7 @@ export type PrepRecipeCountAggregateOutputType = {
   title: number
   category: number
   status: number
+  storage: number
   shelfLifeDays: number
   defaultYield: number
   yieldUnit: number
@@ -91,6 +94,7 @@ export type PrepRecipeMinAggregateInputType = {
   title?: true
   category?: true
   status?: true
+  storage?: true
   shelfLifeDays?: true
   defaultYield?: true
   yieldUnit?: true
@@ -105,6 +109,7 @@ export type PrepRecipeMaxAggregateInputType = {
   title?: true
   category?: true
   status?: true
+  storage?: true
   shelfLifeDays?: true
   defaultYield?: true
   yieldUnit?: true
@@ -119,6 +124,7 @@ export type PrepRecipeCountAggregateInputType = {
   title?: true
   category?: true
   status?: true
+  storage?: true
   shelfLifeDays?: true
   defaultYield?: true
   yieldUnit?: true
@@ -220,6 +226,7 @@ export type PrepRecipeGroupByOutputType = {
   title: string
   category: string
   status: string
+  storage: string
   shelfLifeDays: number
   defaultYield: string
   yieldUnit: string
@@ -257,6 +264,7 @@ export type PrepRecipeWhereInput = {
   title?: Prisma.StringFilter<"PrepRecipe"> | string
   category?: Prisma.StringFilter<"PrepRecipe"> | string
   status?: Prisma.StringFilter<"PrepRecipe"> | string
+  storage?: Prisma.StringFilter<"PrepRecipe"> | string
   shelfLifeDays?: Prisma.IntFilter<"PrepRecipe"> | number
   defaultYield?: Prisma.StringFilter<"PrepRecipe"> | string
   yieldUnit?: Prisma.StringFilter<"PrepRecipe"> | string
@@ -274,6 +282,7 @@ export type PrepRecipeOrderByWithRelationInput = {
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  storage?: Prisma.SortOrder
   shelfLifeDays?: Prisma.SortOrder
   defaultYield?: Prisma.SortOrder
   yieldUnit?: Prisma.SortOrder
@@ -294,6 +303,7 @@ export type PrepRecipeWhereUniqueInput = Prisma.AtLeast<{
   title?: Prisma.StringFilter<"PrepRecipe"> | string
   category?: Prisma.StringFilter<"PrepRecipe"> | string
   status?: Prisma.StringFilter<"PrepRecipe"> | string
+  storage?: Prisma.StringFilter<"PrepRecipe"> | string
   shelfLifeDays?: Prisma.IntFilter<"PrepRecipe"> | number
   defaultYield?: Prisma.StringFilter<"PrepRecipe"> | string
   yieldUnit?: Prisma.StringFilter<"PrepRecipe"> | string
@@ -311,6 +321,7 @@ export type PrepRecipeOrderByWithAggregationInput = {
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  storage?: Prisma.SortOrder
   shelfLifeDays?: Prisma.SortOrder
   defaultYield?: Prisma.SortOrder
   yieldUnit?: Prisma.SortOrder
@@ -333,6 +344,7 @@ export type PrepRecipeScalarWhereWithAggregatesInput = {
   title?: Prisma.StringWithAggregatesFilter<"PrepRecipe"> | string
   category?: Prisma.StringWithAggregatesFilter<"PrepRecipe"> | string
   status?: Prisma.StringWithAggregatesFilter<"PrepRecipe"> | string
+  storage?: Prisma.StringWithAggregatesFilter<"PrepRecipe"> | string
   shelfLifeDays?: Prisma.IntWithAggregatesFilter<"PrepRecipe"> | number
   defaultYield?: Prisma.StringWithAggregatesFilter<"PrepRecipe"> | string
   yieldUnit?: Prisma.StringWithAggregatesFilter<"PrepRecipe"> | string
@@ -347,6 +359,7 @@ export type PrepRecipeCreateInput = {
   title: string
   category: string
   status?: string
+  storage?: string
   shelfLifeDays?: number
   defaultYield?: string
   yieldUnit?: string
@@ -364,6 +377,7 @@ export type PrepRecipeUncheckedCreateInput = {
   title: string
   category: string
   status?: string
+  storage?: string
   shelfLifeDays?: number
   defaultYield?: string
   yieldUnit?: string
@@ -381,6 +395,7 @@ export type PrepRecipeUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
   shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
   defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
   yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
@@ -398,6 +413,7 @@ export type PrepRecipeUncheckedUpdateInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
   shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
   defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
   yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
@@ -415,6 +431,7 @@ export type PrepRecipeCreateManyInput = {
   title: string
   category: string
   status?: string
+  storage?: string
   shelfLifeDays?: number
   defaultYield?: string
   yieldUnit?: string
@@ -429,6 +446,7 @@ export type PrepRecipeUpdateManyMutationInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
   shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
   defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
   yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
@@ -443,6 +461,7 @@ export type PrepRecipeUncheckedUpdateManyInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
   shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
   defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
   yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
@@ -457,6 +476,7 @@ export type PrepRecipeCountOrderByAggregateInput = {
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  storage?: Prisma.SortOrder
   shelfLifeDays?: Prisma.SortOrder
   defaultYield?: Prisma.SortOrder
   yieldUnit?: Prisma.SortOrder
@@ -475,6 +495,7 @@ export type PrepRecipeMaxOrderByAggregateInput = {
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  storage?: Prisma.SortOrder
   shelfLifeDays?: Prisma.SortOrder
   defaultYield?: Prisma.SortOrder
   yieldUnit?: Prisma.SortOrder
@@ -489,6 +510,7 @@ export type PrepRecipeMinOrderByAggregateInput = {
   title?: Prisma.SortOrder
   category?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  storage?: Prisma.SortOrder
   shelfLifeDays?: Prisma.SortOrder
   defaultYield?: Prisma.SortOrder
   yieldUnit?: Prisma.SortOrder
@@ -554,6 +576,7 @@ export type PrepRecipeCreateWithoutIngredientsInput = {
   title: string
   category: string
   status?: string
+  storage?: string
   shelfLifeDays?: number
   defaultYield?: string
   yieldUnit?: string
@@ -570,6 +593,7 @@ export type PrepRecipeUncheckedCreateWithoutIngredientsInput = {
   title: string
   category: string
   status?: string
+  storage?: string
   shelfLifeDays?: number
   defaultYield?: string
   yieldUnit?: string
@@ -602,6 +626,7 @@ export type PrepRecipeUpdateWithoutIngredientsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
   shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
   defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
   yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
@@ -618,6 +643,7 @@ export type PrepRecipeUncheckedUpdateWithoutIngredientsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
   shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
   defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
   yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
@@ -634,6 +660,7 @@ export type PrepRecipeCreateWithoutStepsInput = {
   title: string
   category: string
   status?: string
+  storage?: string
   shelfLifeDays?: number
   defaultYield?: string
   yieldUnit?: string
@@ -650,6 +677,7 @@ export type PrepRecipeUncheckedCreateWithoutStepsInput = {
   title: string
   category: string
   status?: string
+  storage?: string
   shelfLifeDays?: number
   defaultYield?: string
   yieldUnit?: string
@@ -682,6 +710,7 @@ export type PrepRecipeUpdateWithoutStepsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
   shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
   defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
   yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
@@ -698,6 +727,7 @@ export type PrepRecipeUncheckedUpdateWithoutStepsInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
   shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
   defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
   yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
@@ -714,6 +744,7 @@ export type PrepRecipeCreateWithoutBatchesInput = {
   title: string
   category: string
   status?: string
+  storage?: string
   shelfLifeDays?: number
   defaultYield?: string
   yieldUnit?: string
@@ -730,6 +761,7 @@ export type PrepRecipeUncheckedCreateWithoutBatchesInput = {
   title: string
   category: string
   status?: string
+  storage?: string
   shelfLifeDays?: number
   defaultYield?: string
   yieldUnit?: string
@@ -762,6 +794,7 @@ export type PrepRecipeUpdateWithoutBatchesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
   shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
   defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
   yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
@@ -778,6 +811,7 @@ export type PrepRecipeUncheckedUpdateWithoutBatchesInput = {
   title?: Prisma.StringFieldUpdateOperationsInput | string
   category?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
   shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
   defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
   yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
@@ -843,6 +877,7 @@ export type PrepRecipeSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   title?: boolean
   category?: boolean
   status?: boolean
+  storage?: boolean
   shelfLifeDays?: boolean
   defaultYield?: boolean
   yieldUnit?: boolean
@@ -861,6 +896,7 @@ export type PrepRecipeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   title?: boolean
   category?: boolean
   status?: boolean
+  storage?: boolean
   shelfLifeDays?: boolean
   defaultYield?: boolean
   yieldUnit?: boolean
@@ -875,6 +911,7 @@ export type PrepRecipeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   title?: boolean
   category?: boolean
   status?: boolean
+  storage?: boolean
   shelfLifeDays?: boolean
   defaultYield?: boolean
   yieldUnit?: boolean
@@ -889,6 +926,7 @@ export type PrepRecipeSelectScalar = {
   title?: boolean
   category?: boolean
   status?: boolean
+  storage?: boolean
   shelfLifeDays?: boolean
   defaultYield?: boolean
   yieldUnit?: boolean
@@ -898,7 +936,7 @@ export type PrepRecipeSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PrepRecipeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "status" | "shelfLifeDays" | "defaultYield" | "yieldUnit" | "allergens" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["prepRecipe"]>
+export type PrepRecipeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "category" | "status" | "storage" | "shelfLifeDays" | "defaultYield" | "yieldUnit" | "allergens" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["prepRecipe"]>
 export type PrepRecipeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ingredients?: boolean | Prisma.PrepRecipe$ingredientsArgs<ExtArgs>
   steps?: boolean | Prisma.PrepRecipe$stepsArgs<ExtArgs>
@@ -920,6 +958,7 @@ export type $PrepRecipePayload<ExtArgs extends runtime.Types.Extensions.Internal
     title: string
     category: string
     status: string
+    storage: string
     shelfLifeDays: number
     defaultYield: string
     yieldUnit: string
@@ -1357,6 +1396,7 @@ export interface PrepRecipeFieldRefs {
   readonly title: Prisma.FieldRef<"PrepRecipe", 'String'>
   readonly category: Prisma.FieldRef<"PrepRecipe", 'String'>
   readonly status: Prisma.FieldRef<"PrepRecipe", 'String'>
+  readonly storage: Prisma.FieldRef<"PrepRecipe", 'String'>
   readonly shelfLifeDays: Prisma.FieldRef<"PrepRecipe", 'Int'>
   readonly defaultYield: Prisma.FieldRef<"PrepRecipe", 'String'>
   readonly yieldUnit: Prisma.FieldRef<"PrepRecipe", 'String'>

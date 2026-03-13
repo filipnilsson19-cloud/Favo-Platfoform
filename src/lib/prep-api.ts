@@ -1,4 +1,4 @@
-import type { AppPrepCategory, PrepBatch, PrepRecipe } from "@/types/prep";
+import type { AppPrepCategory, AppPrepOption, PrepBatch, PrepRecipe } from "@/types/prep";
 
 async function readJson<T>(response: Response, errorMessage: string): Promise<T> {
   if (!response.ok) throw new Error(errorMessage);
@@ -56,6 +56,79 @@ export async function setManagedPrepCategoryActiveRequest(name: string, isActive
     body: JSON.stringify({ action: "set-active", name, isActive }),
   });
   return readJson<{ categories: AppPrepCategory[] }>(response, "Failed to update prep category");
+}
+
+export async function createPrepUnitRequest(name: string) {
+  const response = await fetch("/api/prep/units", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name }),
+  });
+  return readJson<{ option: string; options: AppPrepOption[] }>(response, "Failed to create prep unit");
+}
+
+export async function loadManagedPrepUnitsRequest() {
+  const response = await fetch("/api/prep/units");
+  return readJson<{ options: AppPrepOption[] }>(response, "Failed to load prep units");
+}
+
+export async function renameManagedPrepUnitRequest(name: string, nextName: string) {
+  const response = await fetch("/api/prep/units", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "rename", name, nextName }),
+  });
+  return readJson<{ options: AppPrepOption[]; option: string; previousName: string }>(
+    response,
+    "Failed to rename prep unit",
+  );
+}
+
+export async function setManagedPrepUnitActiveRequest(name: string, isActive: boolean) {
+  const response = await fetch("/api/prep/units", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "set-active", name, isActive }),
+  });
+  return readJson<{ options: AppPrepOption[] }>(response, "Failed to update prep unit");
+}
+
+export async function createPrepStorageOptionRequest(name: string) {
+  const response = await fetch("/api/prep/storage-options", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name }),
+  });
+  return readJson<{ option: string; options: AppPrepOption[] }>(
+    response,
+    "Failed to create prep storage option",
+  );
+}
+
+export async function loadManagedPrepStorageOptionsRequest() {
+  const response = await fetch("/api/prep/storage-options");
+  return readJson<{ options: AppPrepOption[] }>(response, "Failed to load prep storage options");
+}
+
+export async function renameManagedPrepStorageOptionRequest(name: string, nextName: string) {
+  const response = await fetch("/api/prep/storage-options", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "rename", name, nextName }),
+  });
+  return readJson<{ options: AppPrepOption[]; option: string; previousName: string }>(
+    response,
+    "Failed to rename prep storage option",
+  );
+}
+
+export async function setManagedPrepStorageOptionActiveRequest(name: string, isActive: boolean) {
+  const response = await fetch("/api/prep/storage-options", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "set-active", name, isActive }),
+  });
+  return readJson<{ options: AppPrepOption[] }>(response, "Failed to update prep storage option");
 }
 
 export async function loadPrepBatchesRequest(prepRecipeId: string) {

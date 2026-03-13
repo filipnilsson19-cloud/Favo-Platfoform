@@ -72,6 +72,16 @@ export type UserProfile = Prisma.UserProfileModel
  */
 export type PrepCategory = Prisma.PrepCategoryModel
 /**
+ * Model PrepUnitOption
+ * 
+ */
+export type PrepUnitOption = Prisma.PrepUnitOptionModel
+/**
+ * Model PrepStorageOption
+ * 
+ */
+export type PrepStorageOption = Prisma.PrepStorageOptionModel
+/**
  * Model PrepRecipe
  * 
  */

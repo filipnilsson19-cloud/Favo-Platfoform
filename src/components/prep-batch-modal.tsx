@@ -9,16 +9,32 @@ import styles from "./prep-book.module.css";
 
 type PrepBatchModalProps = {
   recipe: PrepRecipe;
+  initialMultiplier?: number;
   onClose: () => void;
   onLogged: (batch: PrepBatch) => void;
 };
 
-export function PrepBatchModal({ recipe, onClose, onLogged }: PrepBatchModalProps) {
-  const [multiplier, setMultiplier] = useState(1);
+export function PrepBatchModal({
+  recipe,
+  initialMultiplier = 1,
+  onClose,
+  onLogged,
+}: PrepBatchModalProps) {
+  const initialIsCustom = !batchMultipliers.some((m) => m.value === initialMultiplier);
+  const [multiplier, setMultiplier] = useState(initialIsCustom ? 1 : initialMultiplier);
+  const [isCustomMultiplier, setIsCustomMultiplier] = useState(initialIsCustom);
+  const [customMultiplierInput, setCustomMultiplierInput] = useState(
+    initialIsCustom ? String(initialMultiplier) : "",
+  );
   const [isSaving, setIsSaving] = useState(false);
+  const parsedCustomMultiplier = Number.parseFloat(customMultiplierInput.replace(",", "."));
+  const activeMultiplier =
+    isCustomMultiplier && Number.isFinite(parsedCustomMultiplier) && parsedCustomMultiplier > 0
+      ? parsedCustomMultiplier
+      : multiplier;
 
   const bestBefore = addDaysToDate(new Date(), recipe.shelfLifeDays);
-  const yieldLabel = batchYieldLabel(multiplier, recipe.defaultYield, recipe.yieldUnit);
+  const yieldLabel = batchYieldLabel(activeMultiplier, recipe.defaultYield, recipe.yieldUnit);
 
   async function handleConfirm() {
     if (isSaving) return;
@@ -55,10 +71,13 @@ export function PrepBatchModal({ recipe, onClose, onLogged }: PrepBatchModalProp
                 key={m.value}
                 className={[
                   styles.batchMultiplierButton,
-                  multiplier === m.value ? styles.batchMultiplierActive : "",
+                  !isCustomMultiplier && multiplier === m.value ? styles.batchMultiplierActive : "",
                 ].join(" ")}
                 type="button"
-                onClick={() => setMultiplier(m.value)}
+                onClick={() => {
+                  setIsCustomMultiplier(false);
+                  setMultiplier(m.value);
+                }}
               >
                 <span className={styles.batchMultiplierLabel}>{m.label}</span>
                 {recipe.defaultYield ? (
@@ -68,7 +87,36 @@ export function PrepBatchModal({ recipe, onClose, onLogged }: PrepBatchModalProp
                 ) : null}
               </button>
             ))}
+            <button
+              className={[
+                styles.batchMultiplierButton,
+                isCustomMultiplier ? styles.batchMultiplierActive : "",
+              ].join(" ")}
+              type="button"
+              onClick={() => {
+                setIsCustomMultiplier(true);
+                setCustomMultiplierInput((current) =>
+                  current || (multiplier === 1 ? "" : String(multiplier)),
+                );
+              }}
+            >
+              <span className={styles.batchMultiplierLabel}>Egen</span>
+            </button>
           </div>
+          {isCustomMultiplier ? (
+            <label className={styles.batchCustomField}>
+              <span className={styles.batchCustomLabel}>Egen batchskala</span>
+              <input
+                className={styles.batchCustomInput}
+                type="number"
+                min="0.1"
+                step="0.1"
+                value={customMultiplierInput}
+                onChange={(event) => setCustomMultiplierInput(event.target.value)}
+                placeholder="2.5"
+              />
+            </label>
+          ) : null}
         </div>
 
         <div className={styles.batchModalSection}>

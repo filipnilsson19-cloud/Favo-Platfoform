@@ -9,18 +9,35 @@ import {
 } from "@/lib/prep-utils";
 import {
   createPrepCategoryRequest,
+  createPrepStorageOptionRequest,
+  createPrepUnitRequest,
   deletePrepRecipeRequest,
   loadManagedPrepCategoriesRequest,
+  loadManagedPrepStorageOptionsRequest,
+  loadManagedPrepUnitsRequest,
+  renameManagedPrepStorageOptionRequest,
+  renameManagedPrepUnitRequest,
   renameManagedPrepCategoryRequest,
   savePrepRecipeRequest,
   setManagedPrepCategoryActiveRequest,
+  setManagedPrepStorageOptionActiveRequest,
+  setManagedPrepUnitActiveRequest,
 } from "@/lib/prep-api";
-import type { AppPrepCategory, PrepBatch, PrepEditorMode, PrepIngredient, PrepRecipe } from "@/types/prep";
+import type {
+  AppPrepCategory,
+  AppPrepOption,
+  PrepBatch,
+  PrepEditorMode,
+  PrepIngredient,
+  PrepRecipe,
+} from "@/types/prep";
 import styles from "./prep-book.module.css";
 import { useAppUser } from "./app-user-provider";
 import { PrepBookList } from "./prep-book-list";
 import { PrepBookToolbar } from "./prep-book-toolbar";
 import { PrepCategoryManager } from "./prep-category-manager";
+import { PrepOptionManager } from "./prep-option-manager";
+import type { PrepActiveStatus, PrepViewMode } from "./prep-book-types";
 
 const PrepDetailDrawer = dynamic(
   () => import("./prep-detail-drawer").then((m) => ({ default: m.PrepDetailDrawer })),
@@ -40,25 +57,60 @@ const PrepBatchModal = dynamic(
 type PrepBookProps = {
   recipes: PrepRecipe[];
   categories: string[];
+  unitOptions: string[];
+  storageOptions: string[];
 };
 
-export function PrepBook({ recipes: initialRecipes, categories: initialCategories }: PrepBookProps) {
+function sortSv(values: Iterable<string>) {
+  return [...new Set(values)].sort((a, b) => a.localeCompare(b, "sv"));
+}
+
+function derivePrepUnitOptions(recipes: PrepRecipe[], managedOptions: AppPrepOption[]) {
+  return sortSv([
+    ...managedOptions.filter((option) => option.isActive).map((option) => option.name),
+    ...recipes.map((recipe) => recipe.yieldUnit).filter(Boolean),
+    ...recipes.flatMap((recipe) => recipe.ingredients.map((ingredient) => ingredient.unit)).filter(Boolean),
+  ]);
+}
+
+function derivePrepStorageOptions(recipes: PrepRecipe[], managedOptions: AppPrepOption[]) {
+  return sortSv([
+    ...managedOptions.filter((option) => option.isActive).map((option) => option.name),
+    ...recipes.map((recipe) => recipe.storage).filter(Boolean),
+  ]);
+}
+
+export function PrepBook({
+  recipes: initialRecipes,
+  categories: initialCategories,
+  unitOptions: initialUnitOptions,
+  storageOptions: initialStorageOptions,
+}: PrepBookProps) {
   const { role } = useAppUser();
   const canManage = role === "admin";
   const [recipeList, setRecipeList] = useState<PrepRecipe[]>(initialRecipes);
   const [categoryList, setCategoryList] = useState<string[]>(initialCategories);
-  const [activeCategories, setActiveCategories] = useState<string[]>([]);
+  const [unitOptionList, setUnitOptionList] = useState<string[]>(initialUnitOptions);
+  const [storageOptionList, setStorageOptionList] = useState<string[]>(initialStorageOptions);
+  const [activeCategory, setActiveCategory] = useState<string>("Alla");
+  const [activeStatus, setActiveStatus] = useState<PrepActiveStatus>("Alla");
   const [searchQuery, setSearchQuery] = useState("");
+  const [view, setView] = useState<PrepViewMode>("table");
   const [activeRecipeId, setActiveRecipeId] = useState("");
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isBatchOpen, setIsBatchOpen] = useState(false);
   const [batchRecipeId, setBatchRecipeId] = useState("");
+  const [batchMultiplier, setBatchMultiplier] = useState(1);
   const [editorMode, setEditorMode] = useState<PrepEditorMode>("new");
   const [editorDraft, setEditorDraft] = useState<PrepRecipe>(() => blankPrepRecipe());
   const [isSaving, setIsSaving] = useState(false);
   const [managedCategories, setManagedCategories] = useState<AppPrepCategory[]>([]);
+  const [managedUnits, setManagedUnits] = useState<AppPrepOption[]>([]);
+  const [managedStorageOptions, setManagedStorageOptions] = useState<AppPrepOption[]>([]);
   const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+  const [isUnitManagerOpen, setIsUnitManagerOpen] = useState(false);
+  const [isStorageManagerOpen, setIsStorageManagerOpen] = useState(false);
   const [newBatch, setNewBatch] = useState<PrepBatch | null>(null);
 
   const deferredSearch = useDeferredValue(searchQuery);
@@ -68,8 +120,9 @@ export function PrepBook({ recipes: initialRecipes, categories: initialCategorie
 
   const visibleRecipes = recipeList.filter((recipe) => {
     if (recipe.status === "Inaktiv" && !canManage) return false;
+    if (activeStatus !== "Alla" && recipe.status !== activeStatus) return false;
     const categoryMatch =
-      activeCategories.length === 0 || activeCategories.includes(recipe.category);
+      activeCategory === "Alla" || recipe.category === activeCategory;
     if (!categoryMatch) return false;
     if (!normalized) return true;
     const haystack = [recipe.title, recipe.category, recipe.allergens, recipe.notes,
@@ -100,11 +153,7 @@ export function PrepBook({ recipes: initialRecipes, categories: initialCategorie
   }, []);
 
   function toggleCategory(cat: string) {
-    if (cat === "Alla") { setActiveCategories([]); return; }
-    setActiveCategories((cur) => {
-      const next = cur.includes(cat) ? cur.filter((c) => c !== cat) : [...cur, cat];
-      return next.length === availableCategories.length ? [] : next;
-    });
+    setActiveCategory(cat);
   }
 
   function openRecipe(id: string) {
@@ -113,8 +162,9 @@ export function PrepBook({ recipes: initialRecipes, categories: initialCategorie
     setIsDetailOpen(true);
   }
 
-  function openBatch(id: string) {
+  function openBatch(id: string, multiplier = 1) {
     setBatchRecipeId(id);
+    setBatchMultiplier(multiplier);
     setIsBatchOpen(true);
   }
 
@@ -241,10 +291,10 @@ export function PrepBook({ recipes: initialRecipes, categories: initialCategorie
   }
 
   async function openCategoryManager() {
+    setIsCategoryManagerOpen(true);
     try {
       const payload = await loadManagedPrepCategoriesRequest();
       setManagedCategories(payload.categories);
-      setIsCategoryManagerOpen(true);
     } catch {
       window.alert("Det gick inte att läsa kategorier.");
     }
@@ -267,6 +317,115 @@ export function PrepBook({ recipes: initialRecipes, categories: initialCategorie
     }
   }
 
+  async function createUnitOption(name: string): Promise<string | null> {
+    try {
+      const payload = await createPrepUnitRequest(name);
+      setManagedUnits(payload.options);
+      setUnitOptionList(derivePrepUnitOptions(recipeList, payload.options));
+      return payload.option;
+    } catch {
+      window.alert("Det gick inte att skapa mått/enhet.");
+      return null;
+    }
+  }
+
+  async function openUnitManager() {
+    setIsUnitManagerOpen(true);
+    try {
+      const payload = await loadManagedPrepUnitsRequest();
+      setManagedUnits(payload.options);
+      setUnitOptionList(derivePrepUnitOptions(recipeList, payload.options));
+    } catch {
+      window.alert("Det gick inte att läsa mått/enheter.");
+    }
+  }
+
+  async function renameUnitOption(name: string, nextName: string) {
+    const payload = await renameManagedPrepUnitRequest(name, nextName);
+    setManagedUnits(payload.options);
+    setRecipeList((cur) =>
+      cur.map((recipe) => ({
+        ...recipe,
+        yieldUnit: recipe.yieldUnit === name ? nextName : recipe.yieldUnit,
+        ingredients: recipe.ingredients.map((ingredient) =>
+          ingredient.unit === name ? { ...ingredient, unit: nextName } : ingredient,
+        ),
+      })),
+    );
+    setEditorDraft((cur) => ({
+      ...cur,
+      yieldUnit: cur.yieldUnit === name ? nextName : cur.yieldUnit,
+      ingredients: cur.ingredients.map((ingredient) =>
+        ingredient.unit === name ? { ...ingredient, unit: nextName } : ingredient,
+      ),
+    }));
+    setUnitOptionList(
+      derivePrepUnitOptions(
+        recipeList.map((recipe) => ({
+          ...recipe,
+          yieldUnit: recipe.yieldUnit === name ? nextName : recipe.yieldUnit,
+          ingredients: recipe.ingredients.map((ingredient) =>
+            ingredient.unit === name ? { ...ingredient, unit: nextName } : ingredient,
+          ),
+        })),
+        payload.options,
+      ),
+    );
+  }
+
+  async function toggleUnitOptionActive(name: string, isActive: boolean) {
+    const payload = await setManagedPrepUnitActiveRequest(name, isActive);
+    setManagedUnits(payload.options);
+    setUnitOptionList(derivePrepUnitOptions(recipeList, payload.options));
+  }
+
+  async function createStorageOption(name: string): Promise<string | null> {
+    try {
+      const payload = await createPrepStorageOptionRequest(name);
+      setManagedStorageOptions(payload.options);
+      setStorageOptionList(derivePrepStorageOptions(recipeList, payload.options));
+      return payload.option;
+    } catch {
+      window.alert("Det gick inte att skapa förvaring.");
+      return null;
+    }
+  }
+
+  async function openStorageManager() {
+    setIsStorageManagerOpen(true);
+    try {
+      const payload = await loadManagedPrepStorageOptionsRequest();
+      setManagedStorageOptions(payload.options);
+      setStorageOptionList(derivePrepStorageOptions(recipeList, payload.options));
+    } catch {
+      window.alert("Det gick inte att läsa förvaringsalternativ.");
+    }
+  }
+
+  async function renameStorageOption(name: string, nextName: string) {
+    const payload = await renameManagedPrepStorageOptionRequest(name, nextName);
+    setManagedStorageOptions(payload.options);
+    setRecipeList((cur) =>
+      cur.map((recipe) => (recipe.storage === name ? { ...recipe, storage: nextName } : recipe)),
+    );
+    setEditorDraft((cur) => ({
+      ...cur,
+      storage: cur.storage === name ? nextName : cur.storage,
+    }));
+    setStorageOptionList(
+      derivePrepStorageOptions(
+        recipeList.map((recipe) => (recipe.storage === name ? { ...recipe, storage: nextName } : recipe)),
+        payload.options,
+      ),
+    );
+  }
+
+  async function toggleStorageOptionActive(name: string, isActive: boolean) {
+    const payload = await setManagedPrepStorageOptionActiveRequest(name, isActive);
+    setManagedStorageOptions(payload.options);
+    setStorageOptionList(derivePrepStorageOptions(recipeList, payload.options));
+  }
+
   return (
     <>
       <section className={styles.prepPage} aria-labelledby="prep-page-title">
@@ -279,28 +438,35 @@ export function PrepBook({ recipes: initialRecipes, categories: initialCategorie
         </header>
 
         <PrepBookToolbar
-          activeCategories={activeCategories}
+          activeCategory={activeCategory}
+          activeStatus={activeStatus}
           categoryOptions={availableCategories}
           searchQuery={searchQuery}
           visibleCount={visibleRecipes.length}
+          view={view}
           canManage={canManage}
           onToggleCategory={toggleCategory}
+          onSetActiveStatus={setActiveStatus}
           onSearchChange={setSearchQuery}
+          onViewChange={setView}
           onOpenNewRecipe={() => openEditor("new")}
           onOpenCategoryManager={() => void openCategoryManager()}
+          onOpenUnitManager={() => void openUnitManager()}
+          onOpenStorageManager={() => void openStorageManager()}
         />
 
         <PrepBookList
           activeRecipeId={activeRecipeId}
           canManage={canManage}
           recipes={visibleRecipes}
+          view={view}
           onOpenRecipe={openRecipe}
           onOpenEditor={(id) => openEditor("edit", id)}
-          onOpenBatch={openBatch}
         />
       </section>
 
       <PrepDetailDrawer
+        key={activeRecipe?.id || "prep-detail"}
         recipe={activeRecipe}
         isOpen={isDetailOpen}
         canManage={canManage}
@@ -320,6 +486,8 @@ export function PrepBook({ recipes: initialRecipes, categories: initialCategorie
           mode={editorMode}
           canSave={canSave}
           categoryOptions={categoryList}
+          unitOptions={unitOptionList}
+          storageOptions={storageOptionList}
           onClose={() => setIsEditorOpen(false)}
           onFieldChange={updateDraftField}
           onIngredientChange={updateIngredient}
@@ -336,6 +504,7 @@ export function PrepBook({ recipes: initialRecipes, categories: initialCategorie
       {isBatchOpen && batchRecipe ? (
         <PrepBatchModal
           recipe={batchRecipe}
+          initialMultiplier={batchMultiplier}
           onClose={() => setIsBatchOpen(false)}
           onLogged={(batch) => {
             setNewBatch(batch);
@@ -351,6 +520,32 @@ export function PrepBook({ recipes: initialRecipes, categories: initialCategorie
           onRename={renameCategory}
           onToggleActive={toggleCategoryActive}
           onCreateCategory={createCategory}
+        />
+      ) : null}
+
+      {canManage && isUnitManagerOpen ? (
+        <PrepOptionManager
+          items={managedUnits}
+          title="Hantera mått/enhet"
+          emptyLabel="Inga mått eller enheter ännu."
+          createPlaceholder="Ny enhet eller nytt mått..."
+          onClose={() => setIsUnitManagerOpen(false)}
+          onRename={renameUnitOption}
+          onToggleActive={toggleUnitOptionActive}
+          onCreate={createUnitOption}
+        />
+      ) : null}
+
+      {canManage && isStorageManagerOpen ? (
+        <PrepOptionManager
+          items={managedStorageOptions}
+          title="Hantera förvaring"
+          emptyLabel="Inga förvaringsalternativ ännu."
+          createPlaceholder="Ny förvaring..."
+          onClose={() => setIsStorageManagerOpen(false)}
+          onRename={renameStorageOption}
+          onToggleActive={toggleStorageOptionActive}
+          onCreate={createStorageOption}
         />
       ) : null}
     </>

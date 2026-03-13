@@ -1,6 +1,6 @@
 "use client";
 
-import { prepStatusOptions, prepUnitOptions, yieldUnitOptions } from "@/lib/prep-utils";
+import { prepStatusOptions } from "@/lib/prep-utils";
 import type { PrepEditorMode, PrepIngredient, PrepRecipe, PrepStatus } from "@/types/prep";
 import styles from "./prep-book.module.css";
 
@@ -11,6 +11,8 @@ type PrepEditorDrawerProps = {
   mode: PrepEditorMode;
   canSave: boolean;
   categoryOptions: string[];
+  unitOptions: string[];
+  storageOptions: string[];
   onClose: () => void;
   onFieldChange: <K extends keyof PrepRecipe>(field: K, value: PrepRecipe[K]) => void;
   onIngredientChange: (index: number, field: keyof PrepIngredient, value: string) => void;
@@ -30,6 +32,8 @@ export function PrepEditorDrawer({
   mode,
   canSave,
   categoryOptions,
+  unitOptions,
+  storageOptions,
   onClose,
   onFieldChange,
   onIngredientChange,
@@ -129,6 +133,19 @@ export function PrepEditorDrawer({
               </div>
 
               <div className={styles.fieldGroup}>
+                <span>Förvaring</span>
+                <select
+                  className={styles.editorSelect}
+                  value={draft.storage}
+                  onChange={(e) => onFieldChange("storage", e.target.value)}
+                >
+                  {storageOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.fieldGroup}>
                 <span>Hållbarhet (dagar)</span>
                 <input
                   className={styles.editorInput}
@@ -158,8 +175,8 @@ export function PrepEditorDrawer({
                   value={draft.yieldUnit}
                   onChange={(e) => onFieldChange("yieldUnit", e.target.value)}
                 >
-                  {yieldUnitOptions.map((u) => (
-                    <option key={u.value} value={u.value}>{u.label}</option>
+                  {unitOptions.map((unit) => (
+                    <option key={unit} value={unit}>{unit}</option>
                   ))}
                 </select>
               </div>
@@ -223,8 +240,8 @@ export function PrepEditorDrawer({
                       value={ing.unit}
                       onChange={(e) => onIngredientChange(idx, "unit", e.target.value)}
                     >
-                      {prepUnitOptions.map((u) => (
-                        <option key={u.value} value={u.value}>{u.label}</option>
+                      {unitOptions.map((unit) => (
+                        <option key={unit} value={unit}>{unit}</option>
                       ))}
                     </select>
                     <input
