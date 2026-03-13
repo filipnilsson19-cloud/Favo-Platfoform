@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useDeferredValue, useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 
 import {
   blankPrepRecipe,
@@ -53,6 +53,10 @@ const PrepBatchModal = dynamic(
   () => import("./prep-batch-modal").then((m) => ({ default: m.PrepBatchModal })),
   { ssr: false },
 );
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
 
 type PrepBookProps = {
   recipes: PrepRecipe[];
@@ -116,24 +120,43 @@ export function PrepBook({
   const deferredSearch = useDeferredValue(searchQuery);
   const normalized = deferredSearch.trim().toLowerCase();
 
-  const availableCategories = [...new Set(recipeList.map((r) => r.category))].sort();
+  const availableCategories = useMemo(
+    () => [...new Set(recipeList.map((r) => r.category))].sort((a, b) => a.localeCompare(b, "sv")),
+    [recipeList],
+  );
 
-  const visibleRecipes = recipeList.filter((recipe) => {
-    if (recipe.status === "Inaktiv" && !canManage) return false;
-    if (activeStatus !== "Alla" && recipe.status !== activeStatus) return false;
-    const categoryMatch =
-      activeCategory === "Alla" || recipe.category === activeCategory;
-    if (!categoryMatch) return false;
-    if (!normalized) return true;
-    const haystack = [recipe.title, recipe.category, recipe.allergens, recipe.notes,
-      ...recipe.ingredients.map((i) => `${i.name} ${i.info}`),
-      ...recipe.steps.map((s) => s.description),
-    ].join(" ").toLowerCase();
-    return haystack.includes(normalized);
-  });
+  const visibleRecipes = useMemo(
+    () =>
+      recipeList.filter((recipe) => {
+        if (recipe.status === "Inaktiv" && !canManage) return false;
+        if (activeStatus !== "Alla" && recipe.status !== activeStatus) return false;
+        const categoryMatch =
+          activeCategory === "Alla" || recipe.category === activeCategory;
+        if (!categoryMatch) return false;
+        if (!normalized) return true;
+        const haystack = [
+          recipe.title,
+          recipe.category,
+          recipe.allergens,
+          recipe.notes,
+          ...recipe.ingredients.map((i) => `${i.name} ${i.info}`),
+          ...recipe.steps.map((s) => s.description),
+        ]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(normalized);
+      }),
+    [activeCategory, activeStatus, canManage, normalized, recipeList],
+  );
 
-  const activeRecipe = recipeList.find((r) => r.id === activeRecipeId) ?? visibleRecipes[0];
-  const batchRecipe = recipeList.find((r) => r.id === batchRecipeId);
+  const activeRecipe = useMemo(
+    () => recipeList.find((r) => r.id === activeRecipeId) ?? visibleRecipes[0],
+    [activeRecipeId, recipeList, visibleRecipes],
+  );
+  const batchRecipe = useMemo(
+    () => recipeList.find((r) => r.id === batchRecipeId),
+    [batchRecipeId, recipeList],
+  );
 
   useEffect(() => {
     document.body.classList.toggle("favo-lock-scroll", isDetailOpen || isEditorOpen);
@@ -256,7 +279,7 @@ export function PrepBook({
       setIsDetailOpen(true);
     } catch (error) {
       console.error("Failed to save prep recipe", error);
-      window.alert("Det gick inte att spara. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att spara. Försök igen."));
     } finally {
       setIsSaving(false);
     }
@@ -269,8 +292,8 @@ export function PrepBook({
       await deletePrepRecipeRequest(id);
       setRecipeList((cur) => cur.filter((r) => r.id !== id));
       setIsDetailOpen(false);
-    } catch {
-      window.alert("Det gick inte att radera. Försök igen.");
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att radera. Försök igen."));
     }
   }
 
@@ -295,25 +318,33 @@ export function PrepBook({
     try {
       const payload = await loadManagedPrepCategoriesRequest();
       setManagedCategories(payload.categories);
-    } catch {
-      window.alert("Det gick inte att läsa kategorier.");
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att läsa kategorier."));
     }
   }
 
   async function renameCategory(name: string, nextName: string) {
-    const payload = await renameManagedPrepCategoryRequest(name, nextName);
-    setManagedCategories(payload.categories);
-    setCategoryList((cur) => cur.map((c) => (c === name ? nextName : c)).sort());
-    setRecipeList((cur) => cur.map((r) => r.category === name ? { ...r, category: nextName } : r));
+    try {
+      const payload = await renameManagedPrepCategoryRequest(name, nextName);
+      setManagedCategories(payload.categories);
+      setCategoryList((cur) => cur.map((c) => (c === name ? nextName : c)).sort());
+      setRecipeList((cur) => cur.map((r) => r.category === name ? { ...r, category: nextName } : r));
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att byta namn på kategorin."));
+    }
   }
 
   async function toggleCategoryActive(name: string, isActive: boolean) {
-    const payload = await setManagedPrepCategoryActiveRequest(name, isActive);
-    setManagedCategories(payload.categories);
-    if (!isActive) {
-      setCategoryList((cur) => cur.filter((c) => c !== name));
-    } else {
-      setCategoryList((cur) => [...cur, name].sort());
+    try {
+      const payload = await setManagedPrepCategoryActiveRequest(name, isActive);
+      setManagedCategories(payload.categories);
+      if (!isActive) {
+        setCategoryList((cur) => cur.filter((c) => c !== name));
+      } else {
+        setCategoryList((cur) => [...cur, name].sort());
+      }
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att uppdatera kategorin."));
     }
   }
 
@@ -323,8 +354,8 @@ export function PrepBook({
       setManagedUnits(payload.options);
       setUnitOptionList(derivePrepUnitOptions(recipeList, payload.options));
       return payload.option;
-    } catch {
-      window.alert("Det gick inte att skapa mått/enhet.");
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att skapa mått/enhet."));
       return null;
     }
   }
@@ -335,48 +366,56 @@ export function PrepBook({
       const payload = await loadManagedPrepUnitsRequest();
       setManagedUnits(payload.options);
       setUnitOptionList(derivePrepUnitOptions(recipeList, payload.options));
-    } catch {
-      window.alert("Det gick inte att läsa mått/enheter.");
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att läsa mått/enheter."));
     }
   }
 
   async function renameUnitOption(name: string, nextName: string) {
-    const payload = await renameManagedPrepUnitRequest(name, nextName);
-    setManagedUnits(payload.options);
-    setRecipeList((cur) =>
-      cur.map((recipe) => ({
-        ...recipe,
-        yieldUnit: recipe.yieldUnit === name ? nextName : recipe.yieldUnit,
-        ingredients: recipe.ingredients.map((ingredient) =>
-          ingredient.unit === name ? { ...ingredient, unit: nextName } : ingredient,
-        ),
-      })),
-    );
-    setEditorDraft((cur) => ({
-      ...cur,
-      yieldUnit: cur.yieldUnit === name ? nextName : cur.yieldUnit,
-      ingredients: cur.ingredients.map((ingredient) =>
-        ingredient.unit === name ? { ...ingredient, unit: nextName } : ingredient,
-      ),
-    }));
-    setUnitOptionList(
-      derivePrepUnitOptions(
-        recipeList.map((recipe) => ({
+    try {
+      const payload = await renameManagedPrepUnitRequest(name, nextName);
+      setManagedUnits(payload.options);
+      setRecipeList((cur) =>
+        cur.map((recipe) => ({
           ...recipe,
           yieldUnit: recipe.yieldUnit === name ? nextName : recipe.yieldUnit,
           ingredients: recipe.ingredients.map((ingredient) =>
             ingredient.unit === name ? { ...ingredient, unit: nextName } : ingredient,
           ),
         })),
-        payload.options,
-      ),
-    );
+      );
+      setEditorDraft((cur) => ({
+        ...cur,
+        yieldUnit: cur.yieldUnit === name ? nextName : cur.yieldUnit,
+        ingredients: cur.ingredients.map((ingredient) =>
+          ingredient.unit === name ? { ...ingredient, unit: nextName } : ingredient,
+        ),
+      }));
+      setUnitOptionList(
+        derivePrepUnitOptions(
+          recipeList.map((recipe) => ({
+            ...recipe,
+            yieldUnit: recipe.yieldUnit === name ? nextName : recipe.yieldUnit,
+            ingredients: recipe.ingredients.map((ingredient) =>
+              ingredient.unit === name ? { ...ingredient, unit: nextName } : ingredient,
+            ),
+          })),
+          payload.options,
+        ),
+      );
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att byta namn på mått/enhet."));
+    }
   }
 
   async function toggleUnitOptionActive(name: string, isActive: boolean) {
-    const payload = await setManagedPrepUnitActiveRequest(name, isActive);
-    setManagedUnits(payload.options);
-    setUnitOptionList(derivePrepUnitOptions(recipeList, payload.options));
+    try {
+      const payload = await setManagedPrepUnitActiveRequest(name, isActive);
+      setManagedUnits(payload.options);
+      setUnitOptionList(derivePrepUnitOptions(recipeList, payload.options));
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att uppdatera mått/enhet."));
+    }
   }
 
   async function createStorageOption(name: string): Promise<string | null> {
@@ -385,8 +424,8 @@ export function PrepBook({
       setManagedStorageOptions(payload.options);
       setStorageOptionList(derivePrepStorageOptions(recipeList, payload.options));
       return payload.option;
-    } catch {
-      window.alert("Det gick inte att skapa förvaring.");
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att skapa förvaring."));
       return null;
     }
   }
@@ -397,33 +436,41 @@ export function PrepBook({
       const payload = await loadManagedPrepStorageOptionsRequest();
       setManagedStorageOptions(payload.options);
       setStorageOptionList(derivePrepStorageOptions(recipeList, payload.options));
-    } catch {
-      window.alert("Det gick inte att läsa förvaringsalternativ.");
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att läsa förvaringsalternativ."));
     }
   }
 
   async function renameStorageOption(name: string, nextName: string) {
-    const payload = await renameManagedPrepStorageOptionRequest(name, nextName);
-    setManagedStorageOptions(payload.options);
-    setRecipeList((cur) =>
-      cur.map((recipe) => (recipe.storage === name ? { ...recipe, storage: nextName } : recipe)),
-    );
-    setEditorDraft((cur) => ({
-      ...cur,
-      storage: cur.storage === name ? nextName : cur.storage,
-    }));
-    setStorageOptionList(
-      derivePrepStorageOptions(
-        recipeList.map((recipe) => (recipe.storage === name ? { ...recipe, storage: nextName } : recipe)),
-        payload.options,
-      ),
-    );
+    try {
+      const payload = await renameManagedPrepStorageOptionRequest(name, nextName);
+      setManagedStorageOptions(payload.options);
+      setRecipeList((cur) =>
+        cur.map((recipe) => (recipe.storage === name ? { ...recipe, storage: nextName } : recipe)),
+      );
+      setEditorDraft((cur) => ({
+        ...cur,
+        storage: cur.storage === name ? nextName : cur.storage,
+      }));
+      setStorageOptionList(
+        derivePrepStorageOptions(
+          recipeList.map((recipe) => (recipe.storage === name ? { ...recipe, storage: nextName } : recipe)),
+          payload.options,
+        ),
+      );
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att byta namn på förvaring."));
+    }
   }
 
   async function toggleStorageOptionActive(name: string, isActive: boolean) {
-    const payload = await setManagedPrepStorageOptionActiveRequest(name, isActive);
-    setManagedStorageOptions(payload.options);
-    setStorageOptionList(derivePrepStorageOptions(recipeList, payload.options));
+    try {
+      const payload = await setManagedPrepStorageOptionActiveRequest(name, isActive);
+      setManagedStorageOptions(payload.options);
+      setStorageOptionList(derivePrepStorageOptions(recipeList, payload.options));
+    } catch (error) {
+      window.alert(getErrorMessage(error, "Det gick inte att uppdatera förvaring."));
+    }
   }
 
   return (

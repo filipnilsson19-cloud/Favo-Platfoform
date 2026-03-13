@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 
 import {
   BookIcon,
+  CalculatorIcon,
   DocumentIcon,
   PrepIcon,
-  ShieldIcon,
 } from "@/components/navigation-icons";
 
 import styles from "./favo-shell.module.css";
@@ -15,7 +15,7 @@ import styles from "./favo-shell.module.css";
 const primaryNav = [
   { label: "Meny & lägglistor", icon: BookIcon, href: "/" },
   { label: "Recept & Produktion", icon: PrepIcon, href: "/prep" },
-  { label: "Rutiner", icon: ShieldIcon, href: "#" },
+  { label: "Receptkalkyl", icon: CalculatorIcon, href: "/kalkyl" },
   { label: "Handbok", icon: DocumentIcon, href: "#" },
 ];
 

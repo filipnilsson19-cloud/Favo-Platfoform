@@ -51,6 +51,19 @@ export function ShieldIcon(props: IconProps) {
   );
 }
 
+export function CalculatorIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <path d="M7 4.5h10a1.5 1.5 0 0 1 1.5 1.5v12A1.5 1.5 0 0 1 17 19.5H7A1.5 1.5 0 0 1 5.5 18V6A1.5 1.5 0 0 1 7 4.5z" />
+      <path d="M8.5 8h7" />
+      <path d="M8.5 11.5h2.25" />
+      <path d="M13.25 11.5h2.25" />
+      <path d="M8.5 15h2.25" />
+      <path d="M13.25 15h2.25" />
+    </BaseIcon>
+  );
+}
+
 export function DocumentIcon(props: IconProps) {
   return (
     <BaseIcon {...props}>

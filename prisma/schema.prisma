@@ -26,6 +26,8 @@ model Recipe {
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
   items        RecipeItem[]
+  costProfile  RecipeCostProfile?
+  costLinks    RecipeItemCostLink[]
 
   @@index([category])
   @@index([status])
@@ -76,6 +78,36 @@ model RecipeItem {
 
   @@index([recipeId, sortOrder])
   @@map("recipe_items")
+}
+
+model RecipeCostProfile {
+  recipeId             String   @id
+  sellingPriceInclVat  Decimal  @default(0) @db.Decimal(10, 2)
+  vatRate              Decimal  @default(12) @db.Decimal(5, 2)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  recipe               Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@map("recipe_cost_profiles")
+}
+
+model RecipeItemCostLink {
+  id               String         @id @default(cuid())
+  recipeId         String
+  itemIndex        Int
+  sourceKind       CostSourceKind @default(raw)
+  rawIngredientId  String?
+  prepRecipeId     String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  recipe           Recipe         @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  rawIngredient    RawIngredient? @relation(fields: [rawIngredientId], references: [id], onDelete: SetNull)
+  prepRecipe       PrepRecipe?    @relation(fields: [prepRecipeId], references: [id], onDelete: SetNull)
+
+  @@unique([recipeId, itemIndex])
+  @@index([rawIngredientId])
+  @@index([prepRecipeId])
+  @@map("recipe_item_cost_links")
 }
 
 model UserProfile {
@@ -146,6 +178,8 @@ model PrepRecipe {
   ingredients   PrepIngredient[]
   steps         PrepStep[]
   batches       PrepBatch[]
+  ingredientLinks PrepIngredientCostLink[]
+  menuLinks     RecipeItemCostLink[]
 
   @@index([category])
   @@index([status])
@@ -164,6 +198,21 @@ model PrepIngredient {
 
   @@index([prepRecipeId, sortOrder])
   @@map("prep_ingredients")
+}
+
+model PrepIngredientCostLink {
+  id              String         @id @default(cuid())
+  prepRecipeId    String
+  ingredientIndex Int
+  rawIngredientId String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  prepRecipe      PrepRecipe     @relation(fields: [prepRecipeId], references: [id], onDelete: Cascade)
+  rawIngredient   RawIngredient? @relation(fields: [rawIngredientId], references: [id], onDelete: SetNull)
+
+  @@unique([prepRecipeId, ingredientIndex])
+  @@index([rawIngredientId])
+  @@map("prep_ingredient_cost_links")
 }
 
 model PrepStep {
@@ -191,4 +240,30 @@ model PrepBatch {
   @@index([prepRecipeId])
   @@index([bestBefore])
   @@map("prep_batches")
+}
+
+model RawIngredient {
+  id             String                  @id @default(cuid())
+  name           String                  @unique
+  supplier       String                  @default("")
+  purchasePrice  Decimal                 @default(0) @db.Decimal(10, 2)
+  packageType    String                  @default("förpackning")
+  packageCount   Decimal                 @default(1) @db.Decimal(10, 3)
+  purchaseAmount Decimal                 @default(1) @db.Decimal(10, 3)
+  purchaseUnit   String                  @default("kg")
+  yieldPercent   Decimal                 @default(100) @db.Decimal(5, 2)
+  notes          String                  @default("")
+  isActive       Boolean                 @default(true)
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  prepLinks      PrepIngredientCostLink[]
+  recipeLinks    RecipeItemCostLink[]
+
+  @@index([isActive, name])
+  @@map("raw_ingredients")
+}
+
+enum CostSourceKind {
+  raw
+  prep
 }

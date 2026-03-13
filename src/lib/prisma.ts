@@ -11,12 +11,16 @@ export function getPrismaClient() {
     | (PrismaClient & {
         category?: unknown;
         stationView?: unknown;
-        userProfile?: unknown;
-        recipe?: unknown;
-        prepCategory?: unknown;
-        prepUnitOption?: unknown;
-        prepStorageOption?: unknown;
-      })
+      userProfile?: unknown;
+      recipe?: unknown;
+      prepCategory?: unknown;
+      prepUnitOption?: unknown;
+      prepStorageOption?: unknown;
+      rawIngredient?: unknown;
+      recipeCostProfile?: unknown;
+      recipeItemCostLink?: unknown;
+      prepIngredientCostLink?: unknown;
+    })
     | undefined;
 
   if (
@@ -26,7 +30,11 @@ export function getPrismaClient() {
     existingClient?.recipe &&
     existingClient?.prepCategory &&
     existingClient?.prepUnitOption &&
-    existingClient?.prepStorageOption
+    existingClient?.prepStorageOption &&
+    existingClient?.rawIngredient &&
+    existingClient?.recipeCostProfile &&
+    existingClient?.recipeItemCostLink &&
+    existingClient?.prepIngredientCostLink
   ) {
     return existingClient;
   }

@@ -1,0 +1,414 @@
+.page {
+  display: grid;
+  gap: 1.25rem;
+  max-width: 88rem;
+}
+
+.header {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: rgba(17, 17, 17, 0.5);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 0.94;
+  letter-spacing: -0.06em;
+}
+
+.intro {
+  margin: 0;
+  max-width: 52rem;
+  color: rgba(17, 17, 17, 0.58);
+  line-height: 1.5;
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: max-content minmax(20rem, 28rem);
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+  padding: 1rem 1.05rem;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  border-radius: 1.35rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 245, 240, 0.88));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 12px 28px rgba(17, 17, 17, 0.04);
+}
+
+.sectionTabs {
+  display: inline-flex;
+  gap: 0.35rem;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.06);
+}
+
+.sectionTab {
+  min-height: 2rem;
+  padding: 0 0.92rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(17, 17, 17, 0.65);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sectionTabActive {
+  background: rgba(17, 17, 17, 0.96);
+  color: #fff;
+  box-shadow: 0 12px 22px rgba(17, 17, 17, 0.16);
+}
+
+.searchWrap {
+  display: grid;
+  gap: 0.35rem;
+  justify-self: end;
+}
+
+.searchLabel {
+  color: rgba(17, 17, 17, 0.48);
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.searchField {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.94);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.summaryCard {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.summaryCard strong {
+  font-size: 1.55rem;
+  letter-spacing: -0.05em;
+}
+
+.summaryLabel {
+  color: rgba(17, 17, 17, 0.52);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(21rem, 0.9fr);
+  gap: 1rem;
+}
+
+.listPanel,
+.detailPanel {
+  display: grid;
+  align-content: start;
+  gap: 0.8rem;
+  min-height: 34rem;
+  padding: 1rem;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.panelEyebrow {
+  margin: 0 0 0.2rem;
+  color: rgba(17, 17, 17, 0.48);
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.panelHeader h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: -0.04em;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 2.15rem;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  border: 0;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primaryButton {
+  background: #111;
+  color: #fff;
+}
+
+.secondaryButton {
+  background: rgba(17, 17, 17, 0.08);
+  color: #111;
+}
+
+.tableHeader,
+.detailTableHeader,
+.detailTableHeaderWide {
+  display: grid;
+  gap: 0.8rem;
+  padding: 0 0.3rem 0.45rem;
+  color: rgba(17, 17, 17, 0.54);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.08);
+}
+
+.tableHeader {
+  grid-template-columns: minmax(0, 1.2fr) 0.85fr 0.9fr 0.65fr;
+}
+
+.rawTableHeader {
+  grid-template-columns: minmax(0, 1.15fr) 0.7fr 1.1fr 0.72fr 0.78fr 0.55fr;
+}
+
+.detailTableHeader {
+  grid-template-columns: 0.85fr minmax(0, 1fr) minmax(0, 1.05fr) 0.7fr;
+}
+
+.detailTableHeaderWide {
+  grid-template-columns: 0.85fr minmax(0, 1fr) 0.82fr minmax(0, 1.05fr) 0.7fr;
+}
+
+.listBody,
+.detailTableBody {
+  display: grid;
+}
+
+.listRow,
+.detailTableRow,
+.detailTableRowWide {
+  border: 0;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+
+.listRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 0.85fr 0.9fr 0.65fr;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.8rem 0.3rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.06);
+  cursor: pointer;
+}
+
+.rawListRow {
+  grid-template-columns: minmax(0, 1.15fr) 0.7fr 1.1fr 0.72fr 0.78fr 0.55fr;
+}
+
+.listRow:hover {
+  background: rgba(17, 17, 17, 0.03);
+}
+
+.listRowActive {
+  background: rgba(17, 17, 17, 0.05);
+}
+
+.rowTitleCell,
+.detailNameCell {
+  display: grid;
+  gap: 0.18rem;
+}
+
+.rowTitleCell strong,
+.detailNameCell strong {
+  font-size: 0.92rem;
+}
+
+.rowTitleCell small,
+.detailNameCell small {
+  color: rgba(17, 17, 17, 0.48);
+  font-size: 0.74rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+.field span {
+  color: rgba(17, 17, 17, 0.54);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.field input,
+.field select,
+.field textarea,
+.detailTableRow select,
+.detailTableRowWide select {
+  min-height: 2.3rem;
+  padding: 0 0.78rem;
+  border: 1px solid rgba(17, 17, 17, 0.1);
+  border-radius: 0.8rem;
+  background: rgba(255, 255, 255, 0.94);
+  font: inherit;
+  font-size: 0.86rem;
+}
+
+.field textarea {
+  min-height: 6.5rem;
+  padding: 0.7rem 0.78rem;
+  resize: vertical;
+}
+
+.inlineSummary,
+.pricingGrid {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.inlineSummary {
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+}
+
+.pricingGrid {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.78fr) auto;
+  align-items: end;
+}
+
+.pricingSaveButton {
+  align-self: end;
+  white-space: nowrap;
+}
+
+.inlineSummary > div {
+  display: grid;
+  gap: 0.22rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.9rem;
+  background: rgba(17, 17, 17, 0.04);
+}
+
+.inlineSummary span {
+  color: rgba(17, 17, 17, 0.48);
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.inlineSummary strong {
+  font-size: 0.92rem;
+}
+
+.detailActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.detailTable {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.detailTableRow {
+  display: grid;
+  grid-template-columns: 0.85fr minmax(0, 1fr) minmax(0, 1.05fr) 0.7fr;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.75rem 0.3rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.06);
+}
+
+.detailTableRowWide {
+  display: grid;
+  grid-template-columns: 0.85fr minmax(0, 1fr) 0.82fr minmax(0, 1.05fr) 0.7fr;
+  gap: 0.8rem;
+  align-items: center;
+  padding: 0.75rem 0.3rem;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.06);
+}
+
+@media (max-width: 1080px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .searchWrap {
+    justify-self: stretch;
+  }
+
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formGrid,
+  .pricingGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .pricingSaveButton {
+    width: 100%;
+  }
+}

@@ -4,7 +4,8 @@ import type { AppStationView } from "@/types/station-view";
 
 async function readJson<T>(response: Response, errorMessage: string) {
   if (!response.ok) {
-    throw new Error(errorMessage);
+    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(payload?.error || errorMessage);
   }
 
   return (await response.json()) as T;

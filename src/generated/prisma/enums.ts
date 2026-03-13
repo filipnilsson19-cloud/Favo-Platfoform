@@ -15,3 +15,11 @@ export const UserRole = {
 } as const
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const CostSourceKind = {
+  raw: 'raw',
+  prep: 'prep'
+} as const
+
+export type CostSourceKind = (typeof CostSourceKind)[keyof typeof CostSourceKind]

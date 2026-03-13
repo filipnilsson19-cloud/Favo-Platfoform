@@ -275,6 +275,8 @@ export type PrepRecipeWhereInput = {
   ingredients?: Prisma.PrepIngredientListRelationFilter
   steps?: Prisma.PrepStepListRelationFilter
   batches?: Prisma.PrepBatchListRelationFilter
+  ingredientLinks?: Prisma.PrepIngredientCostLinkListRelationFilter
+  menuLinks?: Prisma.RecipeItemCostLinkListRelationFilter
 }
 
 export type PrepRecipeOrderByWithRelationInput = {
@@ -293,6 +295,8 @@ export type PrepRecipeOrderByWithRelationInput = {
   ingredients?: Prisma.PrepIngredientOrderByRelationAggregateInput
   steps?: Prisma.PrepStepOrderByRelationAggregateInput
   batches?: Prisma.PrepBatchOrderByRelationAggregateInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkOrderByRelationAggregateInput
+  menuLinks?: Prisma.RecipeItemCostLinkOrderByRelationAggregateInput
 }
 
 export type PrepRecipeWhereUniqueInput = Prisma.AtLeast<{
@@ -314,6 +318,8 @@ export type PrepRecipeWhereUniqueInput = Prisma.AtLeast<{
   ingredients?: Prisma.PrepIngredientListRelationFilter
   steps?: Prisma.PrepStepListRelationFilter
   batches?: Prisma.PrepBatchListRelationFilter
+  ingredientLinks?: Prisma.PrepIngredientCostLinkListRelationFilter
+  menuLinks?: Prisma.RecipeItemCostLinkListRelationFilter
 }, "id">
 
 export type PrepRecipeOrderByWithAggregationInput = {
@@ -370,6 +376,8 @@ export type PrepRecipeCreateInput = {
   ingredients?: Prisma.PrepIngredientCreateNestedManyWithoutPrepRecipeInput
   steps?: Prisma.PrepStepCreateNestedManyWithoutPrepRecipeInput
   batches?: Prisma.PrepBatchCreateNestedManyWithoutPrepRecipeInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkCreateNestedManyWithoutPrepRecipeInput
+  menuLinks?: Prisma.RecipeItemCostLinkCreateNestedManyWithoutPrepRecipeInput
 }
 
 export type PrepRecipeUncheckedCreateInput = {
@@ -388,6 +396,8 @@ export type PrepRecipeUncheckedCreateInput = {
   ingredients?: Prisma.PrepIngredientUncheckedCreateNestedManyWithoutPrepRecipeInput
   steps?: Prisma.PrepStepUncheckedCreateNestedManyWithoutPrepRecipeInput
   batches?: Prisma.PrepBatchUncheckedCreateNestedManyWithoutPrepRecipeInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUncheckedCreateNestedManyWithoutPrepRecipeInput
+  menuLinks?: Prisma.RecipeItemCostLinkUncheckedCreateNestedManyWithoutPrepRecipeInput
 }
 
 export type PrepRecipeUpdateInput = {
@@ -406,6 +416,8 @@ export type PrepRecipeUpdateInput = {
   ingredients?: Prisma.PrepIngredientUpdateManyWithoutPrepRecipeNestedInput
   steps?: Prisma.PrepStepUpdateManyWithoutPrepRecipeNestedInput
   batches?: Prisma.PrepBatchUpdateManyWithoutPrepRecipeNestedInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUpdateManyWithoutPrepRecipeNestedInput
+  menuLinks?: Prisma.RecipeItemCostLinkUpdateManyWithoutPrepRecipeNestedInput
 }
 
 export type PrepRecipeUncheckedUpdateInput = {
@@ -424,6 +436,8 @@ export type PrepRecipeUncheckedUpdateInput = {
   ingredients?: Prisma.PrepIngredientUncheckedUpdateManyWithoutPrepRecipeNestedInput
   steps?: Prisma.PrepStepUncheckedUpdateManyWithoutPrepRecipeNestedInput
   batches?: Prisma.PrepBatchUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  menuLinks?: Prisma.RecipeItemCostLinkUncheckedUpdateManyWithoutPrepRecipeNestedInput
 }
 
 export type PrepRecipeCreateManyInput = {
@@ -469,6 +483,11 @@ export type PrepRecipeUncheckedUpdateManyInput = {
   notes?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type PrepRecipeNullableScalarRelationFilter = {
+  is?: Prisma.PrepRecipeWhereInput | null
+  isNot?: Prisma.PrepRecipeWhereInput | null
 }
 
 export type PrepRecipeCountOrderByAggregateInput = {
@@ -529,6 +548,22 @@ export type PrepRecipeScalarRelationFilter = {
   isNot?: Prisma.PrepRecipeWhereInput
 }
 
+export type PrepRecipeCreateNestedOneWithoutMenuLinksInput = {
+  create?: Prisma.XOR<Prisma.PrepRecipeCreateWithoutMenuLinksInput, Prisma.PrepRecipeUncheckedCreateWithoutMenuLinksInput>
+  connectOrCreate?: Prisma.PrepRecipeCreateOrConnectWithoutMenuLinksInput
+  connect?: Prisma.PrepRecipeWhereUniqueInput
+}
+
+export type PrepRecipeUpdateOneWithoutMenuLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.PrepRecipeCreateWithoutMenuLinksInput, Prisma.PrepRecipeUncheckedCreateWithoutMenuLinksInput>
+  connectOrCreate?: Prisma.PrepRecipeCreateOrConnectWithoutMenuLinksInput
+  upsert?: Prisma.PrepRecipeUpsertWithoutMenuLinksInput
+  disconnect?: Prisma.PrepRecipeWhereInput | boolean
+  delete?: Prisma.PrepRecipeWhereInput | boolean
+  connect?: Prisma.PrepRecipeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PrepRecipeUpdateToOneWithWhereWithoutMenuLinksInput, Prisma.PrepRecipeUpdateWithoutMenuLinksInput>, Prisma.PrepRecipeUncheckedUpdateWithoutMenuLinksInput>
+}
+
 export type PrepRecipeCreateNestedOneWithoutIngredientsInput = {
   create?: Prisma.XOR<Prisma.PrepRecipeCreateWithoutIngredientsInput, Prisma.PrepRecipeUncheckedCreateWithoutIngredientsInput>
   connectOrCreate?: Prisma.PrepRecipeCreateOrConnectWithoutIngredientsInput
@@ -541,6 +576,20 @@ export type PrepRecipeUpdateOneRequiredWithoutIngredientsNestedInput = {
   upsert?: Prisma.PrepRecipeUpsertWithoutIngredientsInput
   connect?: Prisma.PrepRecipeWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.PrepRecipeUpdateToOneWithWhereWithoutIngredientsInput, Prisma.PrepRecipeUpdateWithoutIngredientsInput>, Prisma.PrepRecipeUncheckedUpdateWithoutIngredientsInput>
+}
+
+export type PrepRecipeCreateNestedOneWithoutIngredientLinksInput = {
+  create?: Prisma.XOR<Prisma.PrepRecipeCreateWithoutIngredientLinksInput, Prisma.PrepRecipeUncheckedCreateWithoutIngredientLinksInput>
+  connectOrCreate?: Prisma.PrepRecipeCreateOrConnectWithoutIngredientLinksInput
+  connect?: Prisma.PrepRecipeWhereUniqueInput
+}
+
+export type PrepRecipeUpdateOneRequiredWithoutIngredientLinksNestedInput = {
+  create?: Prisma.XOR<Prisma.PrepRecipeCreateWithoutIngredientLinksInput, Prisma.PrepRecipeUncheckedCreateWithoutIngredientLinksInput>
+  connectOrCreate?: Prisma.PrepRecipeCreateOrConnectWithoutIngredientLinksInput
+  upsert?: Prisma.PrepRecipeUpsertWithoutIngredientLinksInput
+  connect?: Prisma.PrepRecipeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PrepRecipeUpdateToOneWithWhereWithoutIngredientLinksInput, Prisma.PrepRecipeUpdateWithoutIngredientLinksInput>, Prisma.PrepRecipeUncheckedUpdateWithoutIngredientLinksInput>
 }
 
 export type PrepRecipeCreateNestedOneWithoutStepsInput = {
@@ -571,6 +620,98 @@ export type PrepRecipeUpdateOneRequiredWithoutBatchesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PrepRecipeUpdateToOneWithWhereWithoutBatchesInput, Prisma.PrepRecipeUpdateWithoutBatchesInput>, Prisma.PrepRecipeUncheckedUpdateWithoutBatchesInput>
 }
 
+export type PrepRecipeCreateWithoutMenuLinksInput = {
+  id?: string
+  title: string
+  category: string
+  status?: string
+  storage?: string
+  shelfLifeDays?: number
+  defaultYield?: string
+  yieldUnit?: string
+  allergens?: string
+  notes?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ingredients?: Prisma.PrepIngredientCreateNestedManyWithoutPrepRecipeInput
+  steps?: Prisma.PrepStepCreateNestedManyWithoutPrepRecipeInput
+  batches?: Prisma.PrepBatchCreateNestedManyWithoutPrepRecipeInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkCreateNestedManyWithoutPrepRecipeInput
+}
+
+export type PrepRecipeUncheckedCreateWithoutMenuLinksInput = {
+  id?: string
+  title: string
+  category: string
+  status?: string
+  storage?: string
+  shelfLifeDays?: number
+  defaultYield?: string
+  yieldUnit?: string
+  allergens?: string
+  notes?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ingredients?: Prisma.PrepIngredientUncheckedCreateNestedManyWithoutPrepRecipeInput
+  steps?: Prisma.PrepStepUncheckedCreateNestedManyWithoutPrepRecipeInput
+  batches?: Prisma.PrepBatchUncheckedCreateNestedManyWithoutPrepRecipeInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUncheckedCreateNestedManyWithoutPrepRecipeInput
+}
+
+export type PrepRecipeCreateOrConnectWithoutMenuLinksInput = {
+  where: Prisma.PrepRecipeWhereUniqueInput
+  create: Prisma.XOR<Prisma.PrepRecipeCreateWithoutMenuLinksInput, Prisma.PrepRecipeUncheckedCreateWithoutMenuLinksInput>
+}
+
+export type PrepRecipeUpsertWithoutMenuLinksInput = {
+  update: Prisma.XOR<Prisma.PrepRecipeUpdateWithoutMenuLinksInput, Prisma.PrepRecipeUncheckedUpdateWithoutMenuLinksInput>
+  create: Prisma.XOR<Prisma.PrepRecipeCreateWithoutMenuLinksInput, Prisma.PrepRecipeUncheckedCreateWithoutMenuLinksInput>
+  where?: Prisma.PrepRecipeWhereInput
+}
+
+export type PrepRecipeUpdateToOneWithWhereWithoutMenuLinksInput = {
+  where?: Prisma.PrepRecipeWhereInput
+  data: Prisma.XOR<Prisma.PrepRecipeUpdateWithoutMenuLinksInput, Prisma.PrepRecipeUncheckedUpdateWithoutMenuLinksInput>
+}
+
+export type PrepRecipeUpdateWithoutMenuLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
+  shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
+  defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
+  yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
+  allergens?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingredients?: Prisma.PrepIngredientUpdateManyWithoutPrepRecipeNestedInput
+  steps?: Prisma.PrepStepUpdateManyWithoutPrepRecipeNestedInput
+  batches?: Prisma.PrepBatchUpdateManyWithoutPrepRecipeNestedInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUpdateManyWithoutPrepRecipeNestedInput
+}
+
+export type PrepRecipeUncheckedUpdateWithoutMenuLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
+  shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
+  defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
+  yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
+  allergens?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingredients?: Prisma.PrepIngredientUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  steps?: Prisma.PrepStepUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  batches?: Prisma.PrepBatchUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUncheckedUpdateManyWithoutPrepRecipeNestedInput
+}
+
 export type PrepRecipeCreateWithoutIngredientsInput = {
   id?: string
   title: string
@@ -586,6 +727,8 @@ export type PrepRecipeCreateWithoutIngredientsInput = {
   updatedAt?: Date | string
   steps?: Prisma.PrepStepCreateNestedManyWithoutPrepRecipeInput
   batches?: Prisma.PrepBatchCreateNestedManyWithoutPrepRecipeInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkCreateNestedManyWithoutPrepRecipeInput
+  menuLinks?: Prisma.RecipeItemCostLinkCreateNestedManyWithoutPrepRecipeInput
 }
 
 export type PrepRecipeUncheckedCreateWithoutIngredientsInput = {
@@ -603,6 +746,8 @@ export type PrepRecipeUncheckedCreateWithoutIngredientsInput = {
   updatedAt?: Date | string
   steps?: Prisma.PrepStepUncheckedCreateNestedManyWithoutPrepRecipeInput
   batches?: Prisma.PrepBatchUncheckedCreateNestedManyWithoutPrepRecipeInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUncheckedCreateNestedManyWithoutPrepRecipeInput
+  menuLinks?: Prisma.RecipeItemCostLinkUncheckedCreateNestedManyWithoutPrepRecipeInput
 }
 
 export type PrepRecipeCreateOrConnectWithoutIngredientsInput = {
@@ -636,6 +781,8 @@ export type PrepRecipeUpdateWithoutIngredientsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   steps?: Prisma.PrepStepUpdateManyWithoutPrepRecipeNestedInput
   batches?: Prisma.PrepBatchUpdateManyWithoutPrepRecipeNestedInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUpdateManyWithoutPrepRecipeNestedInput
+  menuLinks?: Prisma.RecipeItemCostLinkUpdateManyWithoutPrepRecipeNestedInput
 }
 
 export type PrepRecipeUncheckedUpdateWithoutIngredientsInput = {
@@ -653,6 +800,100 @@ export type PrepRecipeUncheckedUpdateWithoutIngredientsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   steps?: Prisma.PrepStepUncheckedUpdateManyWithoutPrepRecipeNestedInput
   batches?: Prisma.PrepBatchUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  menuLinks?: Prisma.RecipeItemCostLinkUncheckedUpdateManyWithoutPrepRecipeNestedInput
+}
+
+export type PrepRecipeCreateWithoutIngredientLinksInput = {
+  id?: string
+  title: string
+  category: string
+  status?: string
+  storage?: string
+  shelfLifeDays?: number
+  defaultYield?: string
+  yieldUnit?: string
+  allergens?: string
+  notes?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ingredients?: Prisma.PrepIngredientCreateNestedManyWithoutPrepRecipeInput
+  steps?: Prisma.PrepStepCreateNestedManyWithoutPrepRecipeInput
+  batches?: Prisma.PrepBatchCreateNestedManyWithoutPrepRecipeInput
+  menuLinks?: Prisma.RecipeItemCostLinkCreateNestedManyWithoutPrepRecipeInput
+}
+
+export type PrepRecipeUncheckedCreateWithoutIngredientLinksInput = {
+  id?: string
+  title: string
+  category: string
+  status?: string
+  storage?: string
+  shelfLifeDays?: number
+  defaultYield?: string
+  yieldUnit?: string
+  allergens?: string
+  notes?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  ingredients?: Prisma.PrepIngredientUncheckedCreateNestedManyWithoutPrepRecipeInput
+  steps?: Prisma.PrepStepUncheckedCreateNestedManyWithoutPrepRecipeInput
+  batches?: Prisma.PrepBatchUncheckedCreateNestedManyWithoutPrepRecipeInput
+  menuLinks?: Prisma.RecipeItemCostLinkUncheckedCreateNestedManyWithoutPrepRecipeInput
+}
+
+export type PrepRecipeCreateOrConnectWithoutIngredientLinksInput = {
+  where: Prisma.PrepRecipeWhereUniqueInput
+  create: Prisma.XOR<Prisma.PrepRecipeCreateWithoutIngredientLinksInput, Prisma.PrepRecipeUncheckedCreateWithoutIngredientLinksInput>
+}
+
+export type PrepRecipeUpsertWithoutIngredientLinksInput = {
+  update: Prisma.XOR<Prisma.PrepRecipeUpdateWithoutIngredientLinksInput, Prisma.PrepRecipeUncheckedUpdateWithoutIngredientLinksInput>
+  create: Prisma.XOR<Prisma.PrepRecipeCreateWithoutIngredientLinksInput, Prisma.PrepRecipeUncheckedCreateWithoutIngredientLinksInput>
+  where?: Prisma.PrepRecipeWhereInput
+}
+
+export type PrepRecipeUpdateToOneWithWhereWithoutIngredientLinksInput = {
+  where?: Prisma.PrepRecipeWhereInput
+  data: Prisma.XOR<Prisma.PrepRecipeUpdateWithoutIngredientLinksInput, Prisma.PrepRecipeUncheckedUpdateWithoutIngredientLinksInput>
+}
+
+export type PrepRecipeUpdateWithoutIngredientLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
+  shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
+  defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
+  yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
+  allergens?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingredients?: Prisma.PrepIngredientUpdateManyWithoutPrepRecipeNestedInput
+  steps?: Prisma.PrepStepUpdateManyWithoutPrepRecipeNestedInput
+  batches?: Prisma.PrepBatchUpdateManyWithoutPrepRecipeNestedInput
+  menuLinks?: Prisma.RecipeItemCostLinkUpdateManyWithoutPrepRecipeNestedInput
+}
+
+export type PrepRecipeUncheckedUpdateWithoutIngredientLinksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  storage?: Prisma.StringFieldUpdateOperationsInput | string
+  shelfLifeDays?: Prisma.IntFieldUpdateOperationsInput | number
+  defaultYield?: Prisma.StringFieldUpdateOperationsInput | string
+  yieldUnit?: Prisma.StringFieldUpdateOperationsInput | string
+  allergens?: Prisma.StringFieldUpdateOperationsInput | string
+  notes?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingredients?: Prisma.PrepIngredientUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  steps?: Prisma.PrepStepUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  batches?: Prisma.PrepBatchUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  menuLinks?: Prisma.RecipeItemCostLinkUncheckedUpdateManyWithoutPrepRecipeNestedInput
 }
 
 export type PrepRecipeCreateWithoutStepsInput = {
@@ -670,6 +911,8 @@ export type PrepRecipeCreateWithoutStepsInput = {
   updatedAt?: Date | string
   ingredients?: Prisma.PrepIngredientCreateNestedManyWithoutPrepRecipeInput
   batches?: Prisma.PrepBatchCreateNestedManyWithoutPrepRecipeInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkCreateNestedManyWithoutPrepRecipeInput
+  menuLinks?: Prisma.RecipeItemCostLinkCreateNestedManyWithoutPrepRecipeInput
 }
 
 export type PrepRecipeUncheckedCreateWithoutStepsInput = {
@@ -687,6 +930,8 @@ export type PrepRecipeUncheckedCreateWithoutStepsInput = {
   updatedAt?: Date | string
   ingredients?: Prisma.PrepIngredientUncheckedCreateNestedManyWithoutPrepRecipeInput
   batches?: Prisma.PrepBatchUncheckedCreateNestedManyWithoutPrepRecipeInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUncheckedCreateNestedManyWithoutPrepRecipeInput
+  menuLinks?: Prisma.RecipeItemCostLinkUncheckedCreateNestedManyWithoutPrepRecipeInput
 }
 
 export type PrepRecipeCreateOrConnectWithoutStepsInput = {
@@ -720,6 +965,8 @@ export type PrepRecipeUpdateWithoutStepsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ingredients?: Prisma.PrepIngredientUpdateManyWithoutPrepRecipeNestedInput
   batches?: Prisma.PrepBatchUpdateManyWithoutPrepRecipeNestedInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUpdateManyWithoutPrepRecipeNestedInput
+  menuLinks?: Prisma.RecipeItemCostLinkUpdateManyWithoutPrepRecipeNestedInput
 }
 
 export type PrepRecipeUncheckedUpdateWithoutStepsInput = {
@@ -737,6 +984,8 @@ export type PrepRecipeUncheckedUpdateWithoutStepsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ingredients?: Prisma.PrepIngredientUncheckedUpdateManyWithoutPrepRecipeNestedInput
   batches?: Prisma.PrepBatchUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  menuLinks?: Prisma.RecipeItemCostLinkUncheckedUpdateManyWithoutPrepRecipeNestedInput
 }
 
 export type PrepRecipeCreateWithoutBatchesInput = {
@@ -754,6 +1003,8 @@ export type PrepRecipeCreateWithoutBatchesInput = {
   updatedAt?: Date | string
   ingredients?: Prisma.PrepIngredientCreateNestedManyWithoutPrepRecipeInput
   steps?: Prisma.PrepStepCreateNestedManyWithoutPrepRecipeInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkCreateNestedManyWithoutPrepRecipeInput
+  menuLinks?: Prisma.RecipeItemCostLinkCreateNestedManyWithoutPrepRecipeInput
 }
 
 export type PrepRecipeUncheckedCreateWithoutBatchesInput = {
@@ -771,6 +1022,8 @@ export type PrepRecipeUncheckedCreateWithoutBatchesInput = {
   updatedAt?: Date | string
   ingredients?: Prisma.PrepIngredientUncheckedCreateNestedManyWithoutPrepRecipeInput
   steps?: Prisma.PrepStepUncheckedCreateNestedManyWithoutPrepRecipeInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUncheckedCreateNestedManyWithoutPrepRecipeInput
+  menuLinks?: Prisma.RecipeItemCostLinkUncheckedCreateNestedManyWithoutPrepRecipeInput
 }
 
 export type PrepRecipeCreateOrConnectWithoutBatchesInput = {
@@ -804,6 +1057,8 @@ export type PrepRecipeUpdateWithoutBatchesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ingredients?: Prisma.PrepIngredientUpdateManyWithoutPrepRecipeNestedInput
   steps?: Prisma.PrepStepUpdateManyWithoutPrepRecipeNestedInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUpdateManyWithoutPrepRecipeNestedInput
+  menuLinks?: Prisma.RecipeItemCostLinkUpdateManyWithoutPrepRecipeNestedInput
 }
 
 export type PrepRecipeUncheckedUpdateWithoutBatchesInput = {
@@ -821,6 +1076,8 @@ export type PrepRecipeUncheckedUpdateWithoutBatchesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   ingredients?: Prisma.PrepIngredientUncheckedUpdateManyWithoutPrepRecipeNestedInput
   steps?: Prisma.PrepStepUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  ingredientLinks?: Prisma.PrepIngredientCostLinkUncheckedUpdateManyWithoutPrepRecipeNestedInput
+  menuLinks?: Prisma.RecipeItemCostLinkUncheckedUpdateManyWithoutPrepRecipeNestedInput
 }
 
 
@@ -832,12 +1089,16 @@ export type PrepRecipeCountOutputType = {
   ingredients: number
   steps: number
   batches: number
+  ingredientLinks: number
+  menuLinks: number
 }
 
 export type PrepRecipeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   ingredients?: boolean | PrepRecipeCountOutputTypeCountIngredientsArgs
   steps?: boolean | PrepRecipeCountOutputTypeCountStepsArgs
   batches?: boolean | PrepRecipeCountOutputTypeCountBatchesArgs
+  ingredientLinks?: boolean | PrepRecipeCountOutputTypeCountIngredientLinksArgs
+  menuLinks?: boolean | PrepRecipeCountOutputTypeCountMenuLinksArgs
 }
 
 /**
@@ -871,6 +1132,20 @@ export type PrepRecipeCountOutputTypeCountBatchesArgs<ExtArgs extends runtime.Ty
   where?: Prisma.PrepBatchWhereInput
 }
 
+/**
+ * PrepRecipeCountOutputType without action
+ */
+export type PrepRecipeCountOutputTypeCountIngredientLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PrepIngredientCostLinkWhereInput
+}
+
+/**
+ * PrepRecipeCountOutputType without action
+ */
+export type PrepRecipeCountOutputTypeCountMenuLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecipeItemCostLinkWhereInput
+}
+
 
 export type PrepRecipeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -888,6 +1163,8 @@ export type PrepRecipeSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   ingredients?: boolean | Prisma.PrepRecipe$ingredientsArgs<ExtArgs>
   steps?: boolean | Prisma.PrepRecipe$stepsArgs<ExtArgs>
   batches?: boolean | Prisma.PrepRecipe$batchesArgs<ExtArgs>
+  ingredientLinks?: boolean | Prisma.PrepRecipe$ingredientLinksArgs<ExtArgs>
+  menuLinks?: boolean | Prisma.PrepRecipe$menuLinksArgs<ExtArgs>
   _count?: boolean | Prisma.PrepRecipeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["prepRecipe"]>
 
@@ -941,6 +1218,8 @@ export type PrepRecipeInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   ingredients?: boolean | Prisma.PrepRecipe$ingredientsArgs<ExtArgs>
   steps?: boolean | Prisma.PrepRecipe$stepsArgs<ExtArgs>
   batches?: boolean | Prisma.PrepRecipe$batchesArgs<ExtArgs>
+  ingredientLinks?: boolean | Prisma.PrepRecipe$ingredientLinksArgs<ExtArgs>
+  menuLinks?: boolean | Prisma.PrepRecipe$menuLinksArgs<ExtArgs>
   _count?: boolean | Prisma.PrepRecipeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PrepRecipeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -952,6 +1231,8 @@ export type $PrepRecipePayload<ExtArgs extends runtime.Types.Extensions.Internal
     ingredients: Prisma.$PrepIngredientPayload<ExtArgs>[]
     steps: Prisma.$PrepStepPayload<ExtArgs>[]
     batches: Prisma.$PrepBatchPayload<ExtArgs>[]
+    ingredientLinks: Prisma.$PrepIngredientCostLinkPayload<ExtArgs>[]
+    menuLinks: Prisma.$RecipeItemCostLinkPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1363,6 +1644,8 @@ export interface Prisma__PrepRecipeClient<T, Null = never, ExtArgs extends runti
   ingredients<T extends Prisma.PrepRecipe$ingredientsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrepRecipe$ingredientsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrepIngredientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   steps<T extends Prisma.PrepRecipe$stepsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrepRecipe$stepsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrepStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   batches<T extends Prisma.PrepRecipe$batchesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrepRecipe$batchesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrepBatchPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  ingredientLinks<T extends Prisma.PrepRecipe$ingredientLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrepRecipe$ingredientLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PrepIngredientCostLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  menuLinks<T extends Prisma.PrepRecipe$menuLinksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PrepRecipe$menuLinksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecipeItemCostLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1861,6 +2144,54 @@ export type PrepRecipe$batchesArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.PrepBatchScalarFieldEnum | Prisma.PrepBatchScalarFieldEnum[]
+}
+
+/**
+ * PrepRecipe.ingredientLinks
+ */
+export type PrepRecipe$ingredientLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PrepIngredientCostLink
+   */
+  select?: Prisma.PrepIngredientCostLinkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PrepIngredientCostLink
+   */
+  omit?: Prisma.PrepIngredientCostLinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PrepIngredientCostLinkInclude<ExtArgs> | null
+  where?: Prisma.PrepIngredientCostLinkWhereInput
+  orderBy?: Prisma.PrepIngredientCostLinkOrderByWithRelationInput | Prisma.PrepIngredientCostLinkOrderByWithRelationInput[]
+  cursor?: Prisma.PrepIngredientCostLinkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PrepIngredientCostLinkScalarFieldEnum | Prisma.PrepIngredientCostLinkScalarFieldEnum[]
+}
+
+/**
+ * PrepRecipe.menuLinks
+ */
+export type PrepRecipe$menuLinksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecipeItemCostLink
+   */
+  select?: Prisma.RecipeItemCostLinkSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecipeItemCostLink
+   */
+  omit?: Prisma.RecipeItemCostLinkOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecipeItemCostLinkInclude<ExtArgs> | null
+  where?: Prisma.RecipeItemCostLinkWhereInput
+  orderBy?: Prisma.RecipeItemCostLinkOrderByWithRelationInput | Prisma.RecipeItemCostLinkOrderByWithRelationInput[]
+  cursor?: Prisma.RecipeItemCostLinkWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecipeItemCostLinkScalarFieldEnum | Prisma.RecipeItemCostLinkScalarFieldEnum[]
 }
 
 /**

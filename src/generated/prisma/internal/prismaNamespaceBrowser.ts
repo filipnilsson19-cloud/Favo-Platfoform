@@ -55,14 +55,18 @@ export const ModelName = {
   Category: 'Category',
   StationView: 'StationView',
   RecipeItem: 'RecipeItem',
+  RecipeCostProfile: 'RecipeCostProfile',
+  RecipeItemCostLink: 'RecipeItemCostLink',
   UserProfile: 'UserProfile',
   PrepCategory: 'PrepCategory',
   PrepUnitOption: 'PrepUnitOption',
   PrepStorageOption: 'PrepStorageOption',
   PrepRecipe: 'PrepRecipe',
   PrepIngredient: 'PrepIngredient',
+  PrepIngredientCostLink: 'PrepIngredientCostLink',
   PrepStep: 'PrepStep',
-  PrepBatch: 'PrepBatch'
+  PrepBatch: 'PrepBatch',
+  RawIngredient: 'RawIngredient'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -139,6 +143,31 @@ export const RecipeItemScalarFieldEnum = {
 } as const
 
 export type RecipeItemScalarFieldEnum = (typeof RecipeItemScalarFieldEnum)[keyof typeof RecipeItemScalarFieldEnum]
+
+
+export const RecipeCostProfileScalarFieldEnum = {
+  recipeId: 'recipeId',
+  sellingPriceInclVat: 'sellingPriceInclVat',
+  vatRate: 'vatRate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RecipeCostProfileScalarFieldEnum = (typeof RecipeCostProfileScalarFieldEnum)[keyof typeof RecipeCostProfileScalarFieldEnum]
+
+
+export const RecipeItemCostLinkScalarFieldEnum = {
+  id: 'id',
+  recipeId: 'recipeId',
+  itemIndex: 'itemIndex',
+  sourceKind: 'sourceKind',
+  rawIngredientId: 'rawIngredientId',
+  prepRecipeId: 'prepRecipeId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RecipeItemCostLinkScalarFieldEnum = (typeof RecipeItemCostLinkScalarFieldEnum)[keyof typeof RecipeItemCostLinkScalarFieldEnum]
 
 
 export const UserProfileScalarFieldEnum = {
@@ -220,6 +249,18 @@ export const PrepIngredientScalarFieldEnum = {
 export type PrepIngredientScalarFieldEnum = (typeof PrepIngredientScalarFieldEnum)[keyof typeof PrepIngredientScalarFieldEnum]
 
 
+export const PrepIngredientCostLinkScalarFieldEnum = {
+  id: 'id',
+  prepRecipeId: 'prepRecipeId',
+  ingredientIndex: 'ingredientIndex',
+  rawIngredientId: 'rawIngredientId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PrepIngredientCostLinkScalarFieldEnum = (typeof PrepIngredientCostLinkScalarFieldEnum)[keyof typeof PrepIngredientCostLinkScalarFieldEnum]
+
+
 export const PrepStepScalarFieldEnum = {
   id: 'id',
   prepRecipeId: 'prepRecipeId',
@@ -241,6 +282,25 @@ export const PrepBatchScalarFieldEnum = {
 } as const
 
 export type PrepBatchScalarFieldEnum = (typeof PrepBatchScalarFieldEnum)[keyof typeof PrepBatchScalarFieldEnum]
+
+
+export const RawIngredientScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  supplier: 'supplier',
+  purchasePrice: 'purchasePrice',
+  packageType: 'packageType',
+  packageCount: 'packageCount',
+  purchaseAmount: 'purchaseAmount',
+  purchaseUnit: 'purchaseUnit',
+  yieldPercent: 'yieldPercent',
+  notes: 'notes',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RawIngredientScalarFieldEnum = (typeof RawIngredientScalarFieldEnum)[keyof typeof RawIngredientScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -273,4 +333,12 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

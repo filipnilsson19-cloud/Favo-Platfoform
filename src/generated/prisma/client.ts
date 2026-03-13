@@ -62,6 +62,16 @@ export type StationView = Prisma.StationViewModel
  */
 export type RecipeItem = Prisma.RecipeItemModel
 /**
+ * Model RecipeCostProfile
+ * 
+ */
+export type RecipeCostProfile = Prisma.RecipeCostProfileModel
+/**
+ * Model RecipeItemCostLink
+ * 
+ */
+export type RecipeItemCostLink = Prisma.RecipeItemCostLinkModel
+/**
  * Model UserProfile
  * 
  */
@@ -92,6 +102,11 @@ export type PrepRecipe = Prisma.PrepRecipeModel
  */
 export type PrepIngredient = Prisma.PrepIngredientModel
 /**
+ * Model PrepIngredientCostLink
+ * 
+ */
+export type PrepIngredientCostLink = Prisma.PrepIngredientCostLinkModel
+/**
  * Model PrepStep
  * 
  */
@@ -101,3 +116,8 @@ export type PrepStep = Prisma.PrepStepModel
  * 
  */
 export type PrepBatch = Prisma.PrepBatchModel
+/**
+ * Model RawIngredient
+ * 
+ */
+export type RawIngredient = Prisma.RawIngredientModel

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useDeferredValue, useEffect, useRef, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   blankRecipe,
@@ -102,6 +102,10 @@ const StationViewManagerDrawer = dynamic(
   },
 );
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
 export function RecipeBook({ categories, recipes }: RecipeBookProps) {
   const { role } = useAppUser();
   const canManage = role === "admin";
@@ -141,13 +145,18 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
     setCategoryList(sortRecipeCategories(categories));
   }, [categories]);
 
-  const availableCategories = sortRecipeCategories(
-    recipeList.map((recipe) => recipe.category),
+  const availableCategories = useMemo(
+    () => sortRecipeCategories(recipeList.map((recipe) => recipe.category)),
+    [recipeList],
   );
-  const editorCategories = sortRecipeCategories([
-    ...categoryList,
-    ...recipeList.map((recipe) => recipe.category),
-  ]);
+  const editorCategories = useMemo(
+    () =>
+      sortRecipeCategories([
+        ...categoryList,
+        ...recipeList.map((recipe) => recipe.category),
+      ]),
+    [categoryList, recipeList],
+  );
   const categoryOptions = ["Alla", ...availableCategories] as CategoryOption[];
   const activeCategoryLabel =
     activeCategories.length === 0
@@ -157,57 +166,82 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
       : "Flera kategorier";
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const normalizedSearchQuery = deferredSearchQuery.trim().toLowerCase();
-  const matchesSharedRecipeFilters = (recipe: Recipe) => {
-    const statusMatch = activeStatus === "Alla" || recipe.status === activeStatus;
-    const searchHaystack = [
-      recipe.title,
-      recipe.category,
-      recipe.summary,
-      recipe.notes,
-      recipe.allergens,
-      ...recipe.items.map((item) => `${item.info} ${item.name} ${item.amount} ${item.unit}`),
-    ]
-      .join(" ")
-      .toLowerCase();
-    const searchMatch =
-      normalizedSearchQuery.length === 0 ||
-      searchHaystack.includes(normalizedSearchQuery);
+  const matchesSharedRecipeFilters = useCallback(
+    (recipe: Recipe) => {
+      const statusMatch = activeStatus === "Alla" || recipe.status === activeStatus;
+      const searchHaystack = [
+        recipe.title,
+        recipe.category,
+        recipe.summary,
+        recipe.notes,
+        recipe.allergens,
+        ...recipe.items.map((item) => `${item.info} ${item.name} ${item.amount} ${item.unit}`),
+      ]
+        .join(" ")
+        .toLowerCase();
+      const searchMatch =
+        normalizedSearchQuery.length === 0 ||
+        searchHaystack.includes(normalizedSearchQuery);
 
-    return statusMatch && searchMatch;
-  };
-  const visibleRecipes = recipeList.filter((recipe) => {
-    const categoryMatch =
-      activeCategories.length === 0 || activeCategories.includes(recipe.category);
+      return statusMatch && searchMatch;
+    },
+    [activeStatus, normalizedSearchQuery],
+  );
+  const visibleRecipes = useMemo(
+    () =>
+      recipeList.filter((recipe) => {
+        const categoryMatch =
+          activeCategories.length === 0 || activeCategories.includes(recipe.category);
 
-    return categoryMatch && matchesSharedRecipeFilters(recipe);
-  });
-  const stationBrowseRecipes = recipeList.filter((recipe) =>
-    matchesSharedRecipeFilters(recipe),
+        return categoryMatch && matchesSharedRecipeFilters(recipe);
+      }),
+    [activeCategories, matchesSharedRecipeFilters, recipeList],
   );
-  const stationCategoryOptions = availableCategories.filter((category) =>
-    stationBrowseRecipes.some((recipe) => recipe.category === category),
+  const stationBrowseRecipes = useMemo(
+    () => recipeList.filter((recipe) => matchesSharedRecipeFilters(recipe)),
+    [matchesSharedRecipeFilters, recipeList],
   );
-  const preferredStationCategory =
-    activeCategories.find((category) => stationCategoryOptions.includes(category)) ??
-    stationCategoryOptions[0] ??
-    "";
-  const resolvedStationCategory =
-    stationCategory &&
-    stationCategoryOptions.includes(stationCategory as RecipeCategory)
-      ? stationCategory
-      : preferredStationCategory;
-  const resolvedActiveRecipeId =
-    visibleRecipes.find((recipe) => recipe.id === activeRecipeId)?.id ??
-    recipeList.find((recipe) => recipe.id === activeRecipeId)?.id ??
-    visibleRecipes[0]?.id ??
-    recipeList[0]?.id ??
-    "";
-  const activeRecipe =
-    recipeList.find((recipe) => recipe.id === resolvedActiveRecipeId) ??
-    visibleRecipes[0] ??
-    recipeList[0];
-  const selectedRecipes = recipeList.filter((recipe) =>
-    selectedRecipeIds.includes(recipe.id),
+  const stationCategoryOptions = useMemo(
+    () =>
+      availableCategories.filter((category) =>
+        stationBrowseRecipes.some((recipe) => recipe.category === category),
+      ),
+    [availableCategories, stationBrowseRecipes],
+  );
+  const preferredStationCategory = useMemo(
+    () =>
+      activeCategories.find((category) => stationCategoryOptions.includes(category)) ??
+      stationCategoryOptions[0] ??
+      "",
+    [activeCategories, stationCategoryOptions],
+  );
+  const resolvedStationCategory = useMemo(
+    () =>
+      stationCategory &&
+      stationCategoryOptions.includes(stationCategory as RecipeCategory)
+        ? stationCategory
+        : preferredStationCategory,
+    [preferredStationCategory, stationCategory, stationCategoryOptions],
+  );
+  const resolvedActiveRecipeId = useMemo(
+    () =>
+      visibleRecipes.find((recipe) => recipe.id === activeRecipeId)?.id ??
+      recipeList.find((recipe) => recipe.id === activeRecipeId)?.id ??
+      visibleRecipes[0]?.id ??
+      recipeList[0]?.id ??
+      "",
+    [activeRecipeId, recipeList, visibleRecipes],
+  );
+  const activeRecipe = useMemo(
+    () =>
+      recipeList.find((recipe) => recipe.id === resolvedActiveRecipeId) ??
+      visibleRecipes[0] ??
+      recipeList[0],
+    [recipeList, resolvedActiveRecipeId, visibleRecipes],
+  );
+  const selectedRecipes = useMemo(
+    () => recipeList.filter((recipe) => selectedRecipeIds.includes(recipe.id)),
+    [recipeList, selectedRecipeIds],
   );
   const visibleRecipeIds = visibleRecipes.map((recipe) => recipe.id);
   const selectedVisibleRecipeIds = visibleRecipeIds.filter((id) =>
@@ -227,40 +261,61 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
     );
   const stationSource: StationSource =
     selectedRecipes.length > 0 ? "selected" : "visible";
-  const stationVisibleRecipes =
-    stationSource === "selected"
-      ? visibleRecipes
-      : stationBrowseRecipes.filter(
-          (recipe) =>
-            resolvedStationCategory.length > 0 &&
-            recipe.category === resolvedStationCategory,
-        );
-  const stationPayload =
-    isStationOpen || selectedRecipes.length > 0 || stationBrowseRecipes.length > 0
-      ? buildStationPayload({
-          source: stationSource,
-          visibleRecipes: stationVisibleRecipes,
-          selectedRecipes,
-          activeCategory:
-            stationSource === "selected"
-              ? activeCategoryLabel
-              : resolvedStationCategory || "Alla",
-        })
-      : null;
-  const stationViewScope = buildStationViewScope({
-    source: stationSource,
-    activeCategory:
+  const stationVisibleRecipes = useMemo(
+    () =>
       stationSource === "selected"
-        ? activeCategoryLabel
-        : resolvedStationCategory || "Alla",
-    selectedRecipeIds,
-  });
-  const stationToggleCategories =
-    stationSource === "selected"
-      ? [...new Set(selectedRecipes.map((recipe) => recipe.category))]
-      : resolvedStationCategory
-        ? [resolvedStationCategory]
-        : [];
+        ? visibleRecipes
+        : stationBrowseRecipes.filter(
+            (recipe) =>
+              resolvedStationCategory.length > 0 &&
+              recipe.category === resolvedStationCategory,
+          ),
+    [resolvedStationCategory, stationBrowseRecipes, stationSource, visibleRecipes],
+  );
+  const stationPayload = useMemo(
+    () =>
+      isStationOpen || selectedRecipes.length > 0 || stationBrowseRecipes.length > 0
+        ? buildStationPayload({
+            source: stationSource,
+            visibleRecipes: stationVisibleRecipes,
+            selectedRecipes,
+            activeCategory:
+              stationSource === "selected"
+                ? activeCategoryLabel
+                : resolvedStationCategory || "Alla",
+          })
+        : null,
+    [
+      activeCategoryLabel,
+      isStationOpen,
+      resolvedStationCategory,
+      selectedRecipes,
+      stationBrowseRecipes.length,
+      stationSource,
+      stationVisibleRecipes,
+    ],
+  );
+  const stationViewScope = useMemo(
+    () =>
+      buildStationViewScope({
+        source: stationSource,
+        activeCategory:
+          stationSource === "selected"
+            ? activeCategoryLabel
+            : resolvedStationCategory || "Alla",
+        selectedRecipeIds,
+      }),
+    [activeCategoryLabel, resolvedStationCategory, selectedRecipeIds, stationSource],
+  );
+  const stationToggleCategories = useMemo(
+    () =>
+      stationSource === "selected"
+        ? [...new Set(selectedRecipes.map((recipe) => recipe.category))]
+        : resolvedStationCategory
+          ? [resolvedStationCategory]
+          : [],
+    [resolvedStationCategory, selectedRecipes, stationSource],
+  );
   const canOpenStation =
     selectedRecipes.length > 0 || stationBrowseRecipes.length > 0;
 
@@ -471,7 +526,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
     } catch (error) {
       console.error("Could not save recipe", error);
       setEditorSaveLabel("Kunde inte spara");
-      window.alert("Det gick inte att spara receptet. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att spara receptet. Försök igen."));
     } finally {
       setIsSaving(false);
     }
@@ -499,7 +554,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
       return createdCategory;
     } catch (error) {
       console.error("Could not create category", error);
-      window.alert("Det gick inte att skapa kategorin. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att skapa kategorin. Försök igen."));
       return null;
     }
   }
@@ -512,7 +567,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
       setManagedCategories(payload.categories);
     } catch (error) {
       console.error("Could not load categories", error);
-      window.alert("Det gick inte att läsa kategorierna. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att läsa kategorierna. Försök igen."));
     } finally {
       setIsManagingCategories(false);
     }
@@ -526,7 +581,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
       setManagedStationViews(payload.views);
     } catch (error) {
       console.error("Could not load station views", error);
-      window.alert("Det gick inte att läsa vyerna. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att läsa vyerna. Försök igen."));
     } finally {
       setIsManagingStationViews(false);
     }
@@ -567,7 +622,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
       );
     } catch (error) {
       console.error("Could not rename category", error);
-      window.alert("Det gick inte att byta namn på kategorin. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att byta namn på kategorin. Försök igen."));
     } finally {
       setIsManagingCategories(false);
     }
@@ -588,7 +643,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
       );
     } catch (error) {
       console.error("Could not update category state", error);
-      window.alert("Det gick inte att uppdatera kategorin. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att uppdatera kategorin. Försök igen."));
     } finally {
       setIsManagingCategories(false);
     }
@@ -601,7 +656,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
       setManagedStationViews(payload.views);
     } catch (error) {
       console.error("Could not rename station view", error);
-      window.alert("Det gick inte att byta namn på vyn. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att byta namn på vyn. Försök igen."));
     } finally {
       setIsManagingStationViews(false);
     }
@@ -614,7 +669,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
       setManagedStationViews(payload.views);
     } catch (error) {
       console.error("Could not update station view state", error);
-      window.alert("Det gick inte att uppdatera vyn. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att uppdatera vyn. Försök igen."));
     } finally {
       setIsManagingStationViews(false);
     }
@@ -633,7 +688,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
       setManagedStationViews(payload.views);
     } catch (error) {
       console.error("Could not delete station view", error);
-      window.alert("Det gick inte att radera vyn. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att radera vyn. Försök igen."));
     } finally {
       setIsManagingStationViews(false);
     }
@@ -659,7 +714,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
       }
     } catch (error) {
       console.error("Could not delete recipe", error);
-      window.alert("Det gick inte att radera receptet. Försök igen.");
+      window.alert(getErrorMessage(error, "Det gick inte att radera receptet. Försök igen."));
     }
   }
 
