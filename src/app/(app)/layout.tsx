@@ -4,6 +4,8 @@ import { FavoShell } from "@/components/favo-shell";
 import { hasSupabaseAuthEnv } from "@/lib/supabase/config";
 import { getCurrentAppUser, getLocalPreviewUser } from "@/server/auth-store";
 
+export const dynamic = "force-dynamic";
+
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const authEnabled = hasSupabaseAuthEnv();
   const canUseLocalPreview = !authEnabled && process.env.NODE_ENV !== "production";

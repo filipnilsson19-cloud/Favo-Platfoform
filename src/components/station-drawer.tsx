@@ -446,7 +446,7 @@ export function StationDrawer({
                   onPrint(payload, viewMode === "editable" ? editableLayout : null)
                 }
               >
-                Skriv ut A4
+                Öppna exportvy
               </button>
               <button className={styles.buttonGhost} type="button" onClick={onClose}>
                 Stäng

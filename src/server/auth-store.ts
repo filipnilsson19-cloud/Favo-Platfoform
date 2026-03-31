@@ -36,6 +36,17 @@ export function getLocalPreviewUser(): AppUser {
   };
 }
 
+function buildFallbackAppUser(
+  user: Pick<User, "id" | "email" | "user_metadata">,
+): AppUser {
+  return {
+    id: user.id,
+    email: user.email ?? "",
+    displayName: deriveDisplayName(user),
+    role: "personal",
+  };
+}
+
 export async function ensureUserProfileForUser(user: Pick<User, "id" | "email" | "user_metadata">) {
   const prisma = getPrismaClient();
   const existing = await prisma.userProfile.findUnique({
@@ -80,22 +91,35 @@ export const getCurrentAppUser = cache(async (): Promise<AppUser | null> => {
     return null;
   }
 
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+  try {
+    const supabase = await createSupabaseServerClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
 
-  if (error || !user) {
+    if (error || !user) {
+      return null;
+    }
+
+    try {
+      const profile = await ensureUserProfileForUser(user);
+
+      return {
+        id: user.id,
+        email: user.email ?? profile.email,
+        displayName: profile.displayName || deriveDisplayName(user),
+        role: mapRole(profile.role),
+      };
+    } catch (profileError) {
+      console.error(
+        "Failed to sync user profile. Continuing with a fallback app user.",
+        profileError,
+      );
+      return buildFallbackAppUser(user);
+    }
+  } catch (error) {
+    console.error("Failed to load authenticated app user.", error);
     return null;
   }
-
-  const profile = await ensureUserProfileForUser(user);
-
-  return {
-    id: user.id,
-    email: user.email ?? profile.email,
-    displayName: profile.displayName || deriveDisplayName(user),
-    role: mapRole(profile.role),
-  };
 });

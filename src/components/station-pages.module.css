@@ -351,6 +351,38 @@
   --accent-text: #4b3d69;
 }
 
+@media print {
+  .pagesPrint {
+    gap: 0;
+    padding: 0;
+  }
+
+  .pagesPrint .page {
+    width: auto;
+    min-height: calc(210mm - 16mm);
+    height: calc(210mm - 16mm);
+    aspect-ratio: auto;
+    margin: 0;
+    padding: 4mm 4.5mm;
+    border: 0;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: none;
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .pagesPrint .page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .pagesPrint .pageHeader {
+    min-height: 4mm;
+    padding: 0;
+  }
+}
+
 .packSingle {
   --columns: 1;
   --pack-gap: 0.42rem;

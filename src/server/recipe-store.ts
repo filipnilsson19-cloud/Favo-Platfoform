@@ -64,7 +64,7 @@ function mapRecipe(record: DatabaseRecipe): Recipe {
 }
 
 function hasDatabaseConfig() {
-  return Boolean(process.env.DATABASE_URL && process.env.DIRECT_URL);
+  return Boolean(process.env.DATABASE_URL);
 }
 
 async function getStoredCategories() {

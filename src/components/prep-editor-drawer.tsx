@@ -1,6 +1,8 @@
 "use client";
 
-import { prepStatusOptions } from "@/lib/prep-utils";
+import { useEffect, useRef } from "react";
+
+import { computePrepAmountSummary, prepStatusOptions } from "@/lib/prep-utils";
 import type { PrepEditorMode, PrepIngredient, PrepRecipe, PrepStatus } from "@/types/prep";
 import styles from "./prep-book.module.css";
 
@@ -45,6 +47,89 @@ export function PrepEditorDrawer({
   onSave,
   onCreateCategory,
 }: PrepEditorDrawerProps) {
+  const drawerRef = useRef<HTMLDivElement | null>(null);
+  const pendingFocusKeyRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!isOpen || !pendingFocusKeyRef.current) return;
+
+    const focusKey = pendingFocusKeyRef.current;
+    pendingFocusKeyRef.current = null;
+
+    const frameId = window.requestAnimationFrame(() => {
+      const target = drawerRef.current?.querySelector<HTMLElement>(
+        `[data-focus-key="${focusKey}"]`,
+      );
+      target?.focus();
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [draft.ingredients.length, draft.steps.length, isOpen]);
+
+  function focusField(key: string) {
+    const target = drawerRef.current?.querySelector<HTMLElement>(
+      `[data-focus-key="${key}"]`,
+    );
+    target?.focus();
+  }
+
+  function queueFocus(key: string) {
+    pendingFocusKeyRef.current = key;
+  }
+
+  function handleAddIngredientWithFocus() {
+    queueFocus(`ingredient-${draft.ingredients.length}-amount`);
+    onAddIngredient();
+  }
+
+  function handleAddStepWithFocus() {
+    queueFocus(`step-${draft.steps.length}`);
+    onAddStep();
+  }
+
+  function handleIngredientEnter(
+    event: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>,
+    index: number,
+    field: keyof PrepIngredient,
+  ) {
+    if (event.key !== "Enter") return;
+
+    event.preventDefault();
+
+    if (field === "amount") {
+      focusField(`ingredient-${index}-name`);
+      return;
+    }
+
+    if (field === "name") {
+      focusField(`ingredient-${index}-unit`);
+      return;
+    }
+
+    if (field === "unit") {
+      focusField(`ingredient-${index}-info`);
+      return;
+    }
+
+    handleAddIngredientWithFocus();
+  }
+
+  function handleStepEnter(
+    event: React.KeyboardEvent<HTMLTextAreaElement>,
+    index: number,
+  ) {
+    if (event.key !== "Enter" || event.shiftKey) return;
+
+    event.preventDefault();
+
+    if (index < draft.steps.length - 1) {
+      focusField(`step-${index + 1}`);
+      return;
+    }
+
+    handleAddStepWithFocus();
+  }
+
   async function handleNewCategory() {
     const name = window.prompt("Namn på ny kategori:");
     if (!name?.trim()) return;
@@ -62,7 +147,7 @@ export function PrepEditorDrawer({
         aria-label="Stäng"
         onClick={onClose}
       />
-      <div className={[styles.sheet, styles.editorSheet].join(" ")}>
+      <div ref={drawerRef} className={[styles.sheet, styles.editorSheet].join(" ")}>
         <div className={styles.sheetHeader}>
           <h2>{mode === "new" ? "Nytt prepprecept" : "Redigera prepprecept"}</h2>
           <div className={styles.sheetActions}>
@@ -87,6 +172,7 @@ export function PrepEditorDrawer({
               <div className={styles.fieldGroupWide}>
                 <span>Namn</span>
                 <input
+                  data-focus-key="prep-title"
                   className={styles.editorInput}
                   type="text"
                   value={draft.title}
@@ -99,6 +185,7 @@ export function PrepEditorDrawer({
                 <span>Kategori</span>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: "0.4rem" }}>
                   <select
+                    data-focus-key="prep-category"
                     className={styles.editorSelect}
                     value={draft.category}
                     onChange={(e) => onFieldChange("category", e.target.value)}
@@ -122,6 +209,7 @@ export function PrepEditorDrawer({
               <div className={styles.fieldGroup}>
                 <span>Status</span>
                 <select
+                  data-focus-key="prep-status"
                   className={styles.editorSelect}
                   value={draft.status}
                   onChange={(e) => onFieldChange("status", e.target.value as PrepStatus)}
@@ -135,6 +223,7 @@ export function PrepEditorDrawer({
               <div className={styles.fieldGroup}>
                 <span>Förvaring</span>
                 <select
+                  data-focus-key="prep-storage"
                   className={styles.editorSelect}
                   value={draft.storage}
                   onChange={(e) => onFieldChange("storage", e.target.value)}
@@ -148,6 +237,7 @@ export function PrepEditorDrawer({
               <div className={styles.fieldGroup}>
                 <span>Hållbarhet (dagar)</span>
                 <input
+                  data-focus-key="prep-shelf-life"
                   className={styles.editorInput}
                   type="number"
                   min={1}
@@ -160,6 +250,7 @@ export function PrepEditorDrawer({
               <div className={styles.fieldGroup}>
                 <span>Standardsats</span>
                 <input
+                  data-focus-key="prep-default-yield"
                   className={styles.editorInput}
                   type="text"
                   value={draft.defaultYield}
@@ -171,6 +262,7 @@ export function PrepEditorDrawer({
               <div className={styles.fieldGroup}>
                 <span>Enhet</span>
                 <select
+                  data-focus-key="prep-yield-unit"
                   className={styles.editorSelect}
                   value={draft.yieldUnit}
                   onChange={(e) => onFieldChange("yieldUnit", e.target.value)}
@@ -184,6 +276,7 @@ export function PrepEditorDrawer({
               <div className={styles.fieldGroupWide}>
                 <span>Allergener</span>
                 <input
+                  data-focus-key="prep-allergens"
                   className={styles.editorInput}
                   type="text"
                   value={draft.allergens}
@@ -195,6 +288,7 @@ export function PrepEditorDrawer({
               <div className={styles.fieldGroupWide}>
                 <span>Anteckningar</span>
                 <textarea
+                  data-focus-key="prep-notes"
                   className={styles.editorTextarea}
                   value={draft.notes}
                   placeholder="Förvaring, tips, övrigt..."
@@ -207,7 +301,11 @@ export function PrepEditorDrawer({
             <div style={{ marginTop: "1.2rem" }}>
               <div className={styles.editorListHeader}>
                 <strong style={{ fontSize: "0.9rem" }}>Ingredienser</strong>
-                <button className={styles.iconButton} type="button" onClick={onAddIngredient}>
+                <button
+                  className={styles.iconButton}
+                  type="button"
+                  onClick={handleAddIngredientWithFocus}
+                >
                   + Lägg till
                 </button>
               </div>
@@ -222,34 +320,42 @@ export function PrepEditorDrawer({
                 {draft.ingredients.map((ing, idx) => (
                   <div key={idx} className={styles.editorRow}>
                     <input
+                      data-focus-key={`ingredient-${idx}-amount`}
                       className={styles.editorInput}
                       type="text"
                       value={ing.amount}
                       placeholder="Mängd"
                       onChange={(e) => onIngredientChange(idx, "amount", e.target.value)}
+                      onKeyDown={(event) => handleIngredientEnter(event, idx, "amount")}
                     />
                     <input
+                      data-focus-key={`ingredient-${idx}-name`}
                       className={styles.editorInput}
                       type="text"
                       value={ing.name}
                       placeholder="Ingrediens"
                       onChange={(e) => onIngredientChange(idx, "name", e.target.value)}
+                      onKeyDown={(event) => handleIngredientEnter(event, idx, "name")}
                     />
                     <select
+                      data-focus-key={`ingredient-${idx}-unit`}
                       className={styles.editorSelect}
                       value={ing.unit}
                       onChange={(e) => onIngredientChange(idx, "unit", e.target.value)}
+                      onKeyDown={(event) => handleIngredientEnter(event, idx, "unit")}
                     >
                       {unitOptions.map((unit) => (
                         <option key={unit} value={unit}>{unit}</option>
                       ))}
                     </select>
                     <input
+                      data-focus-key={`ingredient-${idx}-info`}
                       className={styles.editorInput}
                       type="text"
                       value={ing.info}
                       placeholder="Info"
                       onChange={(e) => onIngredientChange(idx, "info", e.target.value)}
+                      onKeyDown={(event) => handleIngredientEnter(event, idx, "info")}
                     />
                     <button
                       className={styles.iconButton}
@@ -267,7 +373,11 @@ export function PrepEditorDrawer({
             <div style={{ marginTop: "1.2rem" }}>
               <div className={styles.editorListHeader}>
                 <strong style={{ fontSize: "0.9rem" }}>Tillagning (steg)</strong>
-                <button className={styles.iconButton} type="button" onClick={onAddStep}>
+                <button
+                  className={styles.iconButton}
+                  type="button"
+                  onClick={handleAddStepWithFocus}
+                >
                   + Lägg till steg
                 </button>
               </div>
@@ -276,10 +386,12 @@ export function PrepEditorDrawer({
                   <div key={idx} className={styles.stepEditorRow}>
                     <span className={styles.stepEditorNumber}>{idx + 1}</span>
                     <textarea
+                      data-focus-key={`step-${idx}`}
                       className={styles.stepEditorTextarea}
                       value={step.description}
                       placeholder={`Steg ${idx + 1}...`}
                       onChange={(e) => onStepChange(idx, e.target.value)}
+                      onKeyDown={(event) => handleStepEnter(event, idx)}
                     />
                     <button
                       className={styles.iconButton}
@@ -304,6 +416,10 @@ export function PrepEditorDrawer({
                 <div>
                   <div style={{ fontSize: "0.66rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "rgba(20,20,20,0.6)", marginBottom: "0.15rem" }}>Ingredienser</div>
                   <div style={{ fontWeight: 600 }}>{draft.ingredients.filter((i) => i.name.trim()).length} st</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: "0.66rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "rgba(20,20,20,0.6)", marginBottom: "0.15rem" }}>Total</div>
+                  <div style={{ fontWeight: 600 }}>{computePrepAmountSummary(draft.ingredients)}</div>
                 </div>
                 <div>
                   <div style={{ fontSize: "0.66rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", color: "rgba(20,20,20,0.6)", marginBottom: "0.15rem" }}>Steg</div>

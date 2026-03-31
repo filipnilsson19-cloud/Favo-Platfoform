@@ -15,7 +15,7 @@ import { getPrepRecipesForApp } from "./prep-store";
 import { getRecipesForApp } from "./recipe-store";
 
 function hasDatabaseConfig() {
-  return Boolean(process.env.DATABASE_URL && process.env.DIRECT_URL);
+  return Boolean(process.env.DATABASE_URL);
 }
 
 function toNumber(value: unknown, fallback = 0) {

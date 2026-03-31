@@ -37,17 +37,44 @@ export async function loginAction(formData: FormData) {
     redirect(buildLoginUrl("Fyll i både e-post och lösenord.", nextPath));
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  let supabase;
+
+  try {
+    supabase = await createSupabaseServerClient();
+  } catch (error) {
+    console.error("Failed to create Supabase client during login.", error);
+    redirect(buildLoginUrl("Inloggning är inte korrekt konfigurerad ännu.", nextPath));
+  }
+
+  let data;
+  let error;
+
+  try {
+    const result = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    data = result.data;
+    error = result.error;
+  } catch (loginError) {
+    console.error("Supabase login request failed.", loginError);
+    redirect(buildLoginUrl("Inloggningen kunde inte genomföras just nu.", nextPath));
+  }
 
   if (error || !data.user) {
     redirect(buildLoginUrl("Fel e-post eller lösenord.", nextPath));
   }
 
-  await ensureUserProfileForUser(data.user);
+  try {
+    await ensureUserProfileForUser(data.user);
+  } catch (profileError) {
+    console.error(
+      "Failed to ensure user profile after login. Continuing with authenticated fallback access.",
+      profileError,
+    );
+  }
+
   redirect(nextPath);
 }
 

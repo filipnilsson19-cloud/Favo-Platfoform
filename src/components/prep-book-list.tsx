@@ -1,3 +1,4 @@
+import { computePrepAmountSummary } from "@/lib/prep-utils";
 import type { PrepRecipe } from "@/types/prep";
 import styles from "./prep-book.module.css";
 import type { PrepViewMode } from "./prep-book-types";
@@ -46,6 +47,7 @@ export function PrepBookList({
           const ingredientNames = recipe.ingredients
             .map((ingredient) => ingredient.name.trim())
             .filter(Boolean);
+          const totalAmount = computePrepAmountSummary(recipe.ingredients);
           const contentPreview = ingredientNames.slice(0, 4).join(", ");
           const hiddenCount = Math.max(ingredientNames.length - 4, 0);
           return (
@@ -65,12 +67,15 @@ export function PrepBookList({
 
               <div className={styles.prepMain}>
                 <strong className={styles.prepTitle}>{recipe.title}</strong>
-                <span className={styles.prepMeta}>
-                  {recipe.ingredients.filter((i) => i.name).length} ingredienser
-                  {recipe.steps.length > 0
-                    ? ` · ${recipe.steps.length} steg`
-                    : ""}
-                </span>
+                <div className={styles.prepMetaRow}>
+                  <span className={styles.prepMeta}>
+                    {recipe.ingredients.filter((i) => i.name).length} ingredienser
+                    {recipe.steps.length > 0
+                      ? ` · ${recipe.steps.length} steg`
+                      : ""}
+                  </span>
+                  <span className={styles.prepTotalChip}>{totalAmount}</span>
+                </div>
               </div>
 
               <span className={styles.prepContentCell}>

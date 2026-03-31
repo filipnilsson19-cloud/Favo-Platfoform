@@ -3,18 +3,13 @@ import { NextResponse, type NextRequest } from "next/server";
 import { hasSupabaseAuthEnv } from "@/lib/supabase/config";
 import { updateSession } from "@/lib/supabase/proxy";
 
-function isPublicPath(pathname: string) {
-  return pathname === "/login" || pathname.startsWith("/auth/");
-}
-
 export async function proxy(request: NextRequest) {
   if (!hasSupabaseAuthEnv()) {
     return NextResponse.next();
   }
 
   const pathname = request.nextUrl.pathname;
-
-  if (isPublicPath(pathname)) {
+  try {
     const { response, user } = await updateSession(request);
 
     if (user && pathname === "/login") {
@@ -22,9 +17,12 @@ export async function proxy(request: NextRequest) {
     }
 
     return response;
+  } catch (error) {
+    console.error("Failed to refresh Supabase session in proxy.", error);
+    return NextResponse.next({
+      request,
+    });
   }
-
-  return NextResponse.next();
 }
 
 export const config = {

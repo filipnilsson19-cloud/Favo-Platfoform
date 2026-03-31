@@ -35,6 +35,10 @@ function isValidStatus(value: string): value is PrepStatus {
   return validStatuses.has(value as PrepStatus);
 }
 
+function hasDatabaseConfig() {
+  return Boolean(process.env.DATABASE_URL);
+}
+
 function mapPrepRecipe(record: DbPrepRecipe): PrepRecipe {
   return {
     id: record.id,
@@ -112,8 +116,17 @@ const fetchPrepRecipesFromDb = unstable_cache(
 );
 
 export async function getPrepRecipesForApp(): Promise<PrepRecipe[]> {
-  const records = await fetchPrepRecipesFromDb();
-  return records.map(mapPrepRecipe);
+  if (!hasDatabaseConfig()) {
+    return [];
+  }
+
+  try {
+    const records = await fetchPrepRecipesFromDb();
+    return records.map(mapPrepRecipe);
+  } catch (error) {
+    console.error("Failed to load prep recipes from database.", error);
+    return [];
+  }
 }
 
 const fetchPrepCategoriesFromDb = unstable_cache(
@@ -136,12 +149,21 @@ const fetchPrepCategoriesFromDb = unstable_cache(
 );
 
 export async function getPrepCategoriesForApp(): Promise<string[]> {
-  const { categories, recipeCategories } = await fetchPrepCategoriesFromDb();
-  const names = new Set([
-    ...categories.map((c) => c.name),
-    ...recipeCategories.map((r) => r.category),
-  ]);
-  return [...names].sort();
+  if (!hasDatabaseConfig()) {
+    return [];
+  }
+
+  try {
+    const { categories, recipeCategories } = await fetchPrepCategoriesFromDb();
+    const names = new Set([
+      ...categories.map((c) => c.name),
+      ...recipeCategories.map((r) => r.category),
+    ]);
+    return [...names].sort();
+  } catch (error) {
+    console.error("Failed to load prep categories from database.", error);
+    return [];
+  }
 }
 
 export async function getPrepCategoryEntriesForApp(): Promise<AppPrepCategory[]> {
@@ -203,13 +225,22 @@ const fetchPrepUnitOptionsFromDb = unstable_cache(
 );
 
 export async function getPrepUnitOptionsForApp(): Promise<string[]> {
-  const { units, ingredientUnits, yieldUnits } = await fetchPrepUnitOptionsFromDb();
-  const names = new Set([
-    ...units.map((unit) => unit.name),
-    ...ingredientUnits.map((unit) => unit.unit).filter(Boolean),
-    ...yieldUnits.map((unit) => unit.yieldUnit).filter(Boolean),
-  ]);
-  return [...names].sort((a, b) => a.localeCompare(b, "sv"));
+  if (!hasDatabaseConfig()) {
+    return prepManagedUnitDefaults.map((option) => option.value);
+  }
+
+  try {
+    const { units, ingredientUnits, yieldUnits } = await fetchPrepUnitOptionsFromDb();
+    const names = new Set([
+      ...units.map((unit) => unit.name),
+      ...ingredientUnits.map((unit) => unit.unit).filter(Boolean),
+      ...yieldUnits.map((unit) => unit.yieldUnit).filter(Boolean),
+    ]);
+    return [...names].sort((a, b) => a.localeCompare(b, "sv"));
+  } catch (error) {
+    console.error("Failed to load prep unit options from database.", error);
+    return prepManagedUnitDefaults.map((option) => option.value);
+  }
 }
 
 export async function getPrepUnitEntriesForApp(): Promise<AppPrepOption[]> {
@@ -340,12 +371,21 @@ const fetchPrepStorageOptionsFromDb = unstable_cache(
 );
 
 export async function getPrepStorageOptionsForApp(): Promise<string[]> {
-  const { options, storageValues } = await fetchPrepStorageOptionsFromDb();
-  const names = new Set([
-    ...options.map((option) => option.name),
-    ...storageValues.map((value) => value.storage).filter(Boolean),
-  ]);
-  return [...names].sort((a, b) => a.localeCompare(b, "sv"));
+  if (!hasDatabaseConfig()) {
+    return prepStorageOptions.map((option) => option.value);
+  }
+
+  try {
+    const { options, storageValues } = await fetchPrepStorageOptionsFromDb();
+    const names = new Set([
+      ...options.map((option) => option.name),
+      ...storageValues.map((value) => value.storage).filter(Boolean),
+    ]);
+    return [...names].sort((a, b) => a.localeCompare(b, "sv"));
+  } catch (error) {
+    console.error("Failed to load prep storage options from database.", error);
+    return prepStorageOptions.map((option) => option.value);
+  }
 }
 
 export async function getPrepStorageEntriesForApp(): Promise<AppPrepOption[]> {
@@ -555,7 +595,21 @@ export async function upsertPrepRecipeForApp(input: PrepRecipe): Promise<PrepRec
 }
 
 export async function deletePrepRecipeForApp(id: string): Promise<void> {
-  await getPrismaClient().prepRecipe.delete({ where: { id } });
+  const prisma = getPrismaClient();
+
+  await prisma.$transaction(async (tx) => {
+    await tx.prepBatch.deleteMany({
+      where: { prepRecipeId: id },
+    });
+
+    await tx.recipeItemCostLink.deleteMany({
+      where: { prepRecipeId: id },
+    });
+
+    await tx.prepRecipe.delete({
+      where: { id },
+    });
+  });
 }
 
 export async function getRecentBatchesForApp(prepRecipeId: string, limit = 5): Promise<PrepBatch[]> {

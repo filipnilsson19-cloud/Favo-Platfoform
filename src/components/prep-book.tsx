@@ -291,8 +291,11 @@ export function PrepBook({
     try {
       await deletePrepRecipeRequest(id);
       setRecipeList((cur) => cur.filter((r) => r.id !== id));
+      setActiveRecipeId((current) => (current === id ? "" : current));
       setIsDetailOpen(false);
+      setIsBatchOpen(false);
     } catch (error) {
+      console.error("Failed to delete prep recipe", error);
       window.alert(getErrorMessage(error, "Det gick inte att radera. Försök igen."));
     }
   }

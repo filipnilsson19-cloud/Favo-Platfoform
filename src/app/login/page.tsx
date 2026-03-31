@@ -13,6 +13,8 @@ export const metadata: Metadata = {
   description: "Logga in till FAVOs interna personalportal.",
 };
 
+export const dynamic = "force-dynamic";
+
 type LoginPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
