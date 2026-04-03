@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { hasSupabaseAuthEnv } from "@/lib/supabase/config";
 import { getCurrentAppUser } from "@/server/auth-store";
 
-import { loginAction } from "./actions";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -14,6 +13,8 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = "force-dynamic";
+
+const LOGIN_ROUTE: string = "/auth/login";
 
 type LoginPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -64,7 +65,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
 
         {authConfigured ? (
-          <form className={styles.form} action={loginAction}>
+          <form className={styles.form} action={LOGIN_ROUTE} method="post">
             <input type="hidden" name="next" value={nextPath} />
 
             <label className={styles.field}>

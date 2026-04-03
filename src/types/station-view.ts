@@ -7,5 +7,6 @@ export type AppStationView = {
   scopeLabel: string;
   recipeCount: number;
   isActive: boolean;
+  recipeIds?: string[] | null;
   layout?: StationEditableLayout | null;
 };

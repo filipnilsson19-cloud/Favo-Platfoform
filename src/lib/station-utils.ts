@@ -263,6 +263,16 @@ export function serializeStationPrintBundle(bundle: StationPrintBundle) {
   return JSON.stringify(bundle);
 }
 
+export function mapRecipesToStationPrintableRecipes(recipes: Recipe[]) {
+  return recipes.map((recipe) => ({
+    id: recipe.id,
+    title: recipe.title,
+    category: recipe.category,
+    totalAmount: computeAmountSummary(recipe.items),
+    items: recipe.items.map((item) => ({ ...item })),
+  }));
+}
+
 export function buildStationViewScope(params: {
   source: StationSource;
   activeCategory: string;
@@ -372,12 +382,6 @@ export function buildStationPayload(params: {
     ),
     showCategoryLabel,
     recipeCount: sourceRecipes.length,
-    recipes: sourceRecipes.map((recipe) => ({
-      id: recipe.id,
-      title: recipe.title,
-      category: recipe.category,
-      totalAmount: computeAmountSummary(recipe.items),
-      items: recipe.items.map((item) => ({ ...item })),
-    })),
+    recipes: mapRecipesToStationPrintableRecipes(sourceRecipes),
   };
 }

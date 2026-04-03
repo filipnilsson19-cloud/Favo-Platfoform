@@ -76,8 +76,8 @@
 }
 
 @page {
-  size: A4 landscape;
-  margin: 8mm;
+  size: A4 portrait;
+  margin: 4mm 4.5mm;
 }
 
 @media print {

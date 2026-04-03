@@ -67,6 +67,96 @@ function hasDatabaseConfig() {
   return Boolean(process.env.DATABASE_URL);
 }
 
+type StoredStationViewLayout =
+  | StationEditableLayout
+  | {
+      version: 2;
+      recipeIds: string[];
+      layout: StationEditableLayout;
+    };
+
+function isStationEditableLayout(value: unknown): value is StationEditableLayout {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const candidate = value as Partial<StationEditableLayout>;
+  return (
+    candidate.version === 1 &&
+    Array.isArray(candidate.pagePresets) &&
+    Array.isArray(candidate.items)
+  );
+}
+
+function parseStoredStationViewLayout(value: unknown): {
+  layout: StationEditableLayout | null;
+  recipeIds: string[] | null;
+} {
+  if (isStationEditableLayout(value)) {
+    return {
+      layout: value,
+      recipeIds: null,
+    };
+  }
+
+  if (!value || typeof value !== "object") {
+    return {
+      layout: null,
+      recipeIds: null,
+    };
+  }
+
+  const candidate = value as Partial<{
+    version: number;
+    recipeIds: unknown;
+    layout: unknown;
+  }>;
+
+  if (
+    candidate.version === 2 &&
+    Array.isArray(candidate.recipeIds) &&
+    isStationEditableLayout(candidate.layout)
+  ) {
+    return {
+      layout: candidate.layout,
+      recipeIds: candidate.recipeIds.filter(
+        (entry): entry is string => typeof entry === "string" && entry.trim().length > 0,
+      ),
+    };
+  }
+
+  return {
+    layout: null,
+    recipeIds: null,
+  };
+}
+
+function filterStationPayloadByRecipeIds(
+  payload: StationPrintPayload,
+  recipeIds: string[],
+): StationPrintPayload {
+  const recipeIdSet = new Set(recipeIds);
+  const recipes = payload.recipes.filter((recipe) => recipeIdSet.has(recipe.id));
+
+  return {
+    ...payload,
+    recipeCount: recipes.length,
+    recipes,
+    showCategoryLabel: new Set(recipes.map((recipe) => recipe.category)).size > 1,
+  };
+}
+
+function buildStoredStationViewLayout(input: {
+  recipeIds: string[];
+  layout: StationEditableLayout;
+}): StoredStationViewLayout {
+  return {
+    version: 2,
+    recipeIds: input.recipeIds,
+    layout: input.layout,
+  };
+}
+
 async function getStoredCategories() {
   const records = await getPrismaClient().category.findMany({
     where: {
@@ -391,6 +481,12 @@ function mapStationView(
   },
   payload?: StationPrintPayload,
 ): AppStationView {
+  const parsed = parseStoredStationViewLayout(record.layout);
+  const normalizedPayload =
+    payload && parsed.recipeIds && parsed.recipeIds.length > 0
+      ? filterStationPayloadByRecipeIds(payload, parsed.recipeIds)
+      : payload;
+
   return {
     id: record.id,
     name: record.name,
@@ -398,8 +494,9 @@ function mapStationView(
     scopeLabel: record.scopeLabel,
     recipeCount: record.recipeCount,
     isActive: record.isActive,
-    layout: payload
-      ? normalizeEditableLayout(payload, record.layout as StationEditableLayout)
+    recipeIds: parsed.recipeIds,
+    layout: normalizedPayload && parsed.layout
+      ? normalizeEditableLayout(normalizedPayload, parsed.layout)
       : undefined,
   };
 }
@@ -441,6 +538,7 @@ export async function saveStationViewForApp(input: {
   scopeKey: string;
   scopeLabel: string;
   recipeCount: number;
+  recipeIds: string[];
   payload: StationPrintPayload;
   layout: StationEditableLayout;
 }) {
@@ -451,7 +549,12 @@ export async function saveStationViewForApp(input: {
   }
 
   const normalizedLayout = normalizeEditableLayout(input.payload, input.layout);
+  const normalizedRecipeIds = [...new Set(input.recipeIds.filter((id) => id.trim().length > 0))];
   const prisma = getPrismaClient();
+  const storedLayout = buildStoredStationViewLayout({
+    recipeIds: normalizedRecipeIds,
+    layout: normalizedLayout,
+  });
 
   let record;
 
@@ -466,7 +569,7 @@ export async function saveStationViewForApp(input: {
         scopeLabel: input.scopeLabel,
         recipeCount: input.recipeCount,
         isActive: true,
-        layout: normalizedLayout,
+        layout: storedLayout,
       },
     });
   } else {
@@ -483,13 +586,13 @@ export async function saveStationViewForApp(input: {
         scopeLabel: input.scopeLabel,
         recipeCount: input.recipeCount,
         isActive: true,
-        layout: normalizedLayout,
+        layout: storedLayout,
       },
       update: {
         scopeLabel: input.scopeLabel,
         recipeCount: input.recipeCount,
         isActive: true,
-        layout: normalizedLayout,
+        layout: storedLayout,
       },
     });
   }

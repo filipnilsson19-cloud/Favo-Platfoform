@@ -4,12 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   createEditableLayoutFromMeasuredPages,
-  mergeEditableLayouts,
 } from "@/lib/station-editable-utils";
-import type { RecipeCategory } from "@/types/recipe";
+import { mapRecipesToStationPrintableRecipes } from "@/lib/station-utils";
+import type { Recipe, RecipeCategory } from "@/types/recipe";
 import type {
   StationEditableLayout,
   StationPrintPayload,
+  StationPrintableRecipe,
   StationViewMode,
 } from "@/types/station";
 import type { AppStationView } from "@/types/station-view";
@@ -20,6 +21,7 @@ import styles from "./station-drawer.module.css";
 
 type StationDrawerProps = {
   activeCategories: RecipeCategory[];
+  allRecipes: Recipe[];
   canManage: boolean;
   categoriesLocked: boolean;
   categoryOptions: RecipeCategory[];
@@ -35,8 +37,51 @@ type StationDrawerProps = {
   scopeLabel: string;
 };
 
+function buildSelectedStationPayload(
+  payload: StationPrintPayload | null,
+  recipeIds: string[],
+  titleOverride?: string | null,
+): StationPrintPayload | null {
+  if (!payload) {
+    return null;
+  }
+
+  const recipeMap = new Map(payload.recipes.map((recipe) => [recipe.id, recipe]));
+  const recipes = recipeIds
+    .map((recipeId) => recipeMap.get(recipeId))
+    .filter((recipe): recipe is StationPrintableRecipe => Boolean(recipe));
+
+  return {
+    ...payload,
+    title: titleOverride?.trim() || payload.title,
+    sourceLabel:
+      recipes.length === 0
+        ? "Tom lägglista"
+        : `${recipes.length} ${recipes.length === 1 ? "rätt" : "rätter"} i lägglistan`,
+    showCategoryLabel: new Set(recipes.map((recipe) => recipe.category)).size > 1,
+    recipeCount: recipes.length,
+    recipes,
+  };
+}
+
+function matchesRecipeSearch(recipe: StationPrintableRecipe, query: string) {
+  if (!query) return true;
+
+  const haystack = [
+    recipe.title,
+    recipe.category,
+    recipe.totalAmount,
+    ...recipe.items.map((item) => `${item.info} ${item.name} ${item.amount} ${item.unit}`),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(query);
+}
+
 export function StationDrawer({
   activeCategories,
+  allRecipes,
   canManage,
   categoriesLocked,
   categoryOptions,
@@ -65,6 +110,9 @@ export function StationDrawer({
   const [isSavingView, setIsSavingView] = useState(false);
   const [activeViewId, setActiveViewId] = useState("");
   const [viewNameDraft, setViewNameDraft] = useState("");
+  const [selectedRecipeIds, setSelectedRecipeIds] = useState<string[]>([]);
+  const [isRecipePickerOpen, setIsRecipePickerOpen] = useState(false);
+  const [recipeSearch, setRecipeSearch] = useState("");
 
   const payloadSignature = useMemo(() => {
     if (!payload) return "";
@@ -87,9 +135,111 @@ export function StationDrawer({
     Boolean(activeSavedView) &&
     viewNameDraft.trim().length > 0 &&
     viewNameDraft.trim() === activeSavedView?.name;
+  const allCandidateRecipes = useMemo(
+    () =>
+      mapRecipesToStationPrintableRecipes(
+        [...allRecipes].sort((left, right) =>
+          left.title.localeCompare(right.title, "sv"),
+        ),
+      ),
+    [allRecipes],
+  );
+  const candidateRecipes = useMemo(
+    () => (allCandidateRecipes.length > 0 ? allCandidateRecipes : payload?.recipes ?? []),
+    [allCandidateRecipes, payload],
+  );
+  const quickFillRecipes = useMemo(
+    () => payload?.recipes ?? [],
+    [payload],
+  );
+  const builderPayload = useMemo<StationPrintPayload | null>(() => {
+    if (!payload && candidateRecipes.length === 0) {
+      return null;
+    }
+
+    return {
+      title: "Lägglista",
+      source: payload?.source ?? "visible",
+      sourceLabel:
+        candidateRecipes.length === 0
+          ? "Tom lägglista"
+          : `${candidateRecipes.length} tillgängliga rätter`,
+      showCategoryLabel:
+        new Set(candidateRecipes.map((recipe) => recipe.category)).size > 1,
+      recipeCount: candidateRecipes.length,
+      recipes: candidateRecipes,
+    };
+  }, [candidateRecipes, payload]);
+  const candidateRecipeIdSet = useMemo(
+    () => new Set(candidateRecipes.map((recipe) => recipe.id)),
+    [candidateRecipes],
+  );
+  const selectedRecipeIdsInScope = useMemo(
+    () => selectedRecipeIds.filter((recipeId) => candidateRecipeIdSet.has(recipeId)),
+    [candidateRecipeIdSet, selectedRecipeIds],
+  );
+  const currentPayload = useMemo(
+    () =>
+      buildSelectedStationPayload(
+        builderPayload,
+        selectedRecipeIdsInScope,
+        activeSavedView?.name || "Lägglista",
+      ),
+    [activeSavedView?.name, builderPayload, selectedRecipeIdsInScope],
+  );
+  const normalizedRecipeSearch = recipeSearch.trim().toLowerCase();
+  const filteredCandidateRecipes = useMemo(
+    () =>
+      candidateRecipes.filter((recipe) =>
+        matchesRecipeSearch(recipe, normalizedRecipeSearch),
+      ),
+    [candidateRecipes, normalizedRecipeSearch],
+  );
+
+  function resetEditorForCurrentSelection() {
+    setEditorSession({
+      signature: payloadSignature,
+      viewMode: "static",
+      baselineLayout: null,
+      editableLayout: null,
+    });
+  }
+
+  function replaceSelectedRecipes(nextRecipeIds: string[]) {
+    const normalizedIds = [...new Set(nextRecipeIds)].filter((recipeId) =>
+      candidateRecipeIdSet.has(recipeId),
+    );
+
+    setSelectedRecipeIds(normalizedIds);
+    resetEditorForCurrentSelection();
+  }
+
+  function toggleRecipeSelection(recipeId: string) {
+    replaceSelectedRecipes(
+      selectedRecipeIds.includes(recipeId)
+        ? selectedRecipeIds.filter((currentId) => currentId !== recipeId)
+        : [...selectedRecipeIds, recipeId],
+    );
+  }
+
+  function addCurrentScopeToSelection() {
+    replaceSelectedRecipes([
+      ...selectedRecipeIds,
+      ...quickFillRecipes.map((recipe) => recipe.id),
+    ]);
+  }
+
+  function clearSelection(options?: { keepPickerOpen?: boolean }) {
+    setActiveViewId("");
+    setViewNameDraft("");
+    setSelectedRecipeIds([]);
+    setIsRecipePickerOpen(options?.keepPickerOpen ? true : false);
+    setRecipeSearch("");
+    resetEditorForCurrentSelection();
+  }
 
   function captureStaticLayout() {
-    if (!payload || !previewWrapRef.current) {
+    if (!currentPayload || currentPayload.recipes.length === 0 || !previewWrapRef.current) {
       return null;
     }
 
@@ -153,7 +303,7 @@ export function StationDrawer({
     }
 
     return createEditableLayoutFromMeasuredPages({
-      payload,
+      payload: currentPayload,
       pages: measuredPages,
     });
   }
@@ -168,14 +318,30 @@ export function StationDrawer({
     async function loadViews() {
       try {
         setIsLoadingViews(true);
-        const params = new URLSearchParams({
-          scopeKey,
-          payload: JSON.stringify(payload),
+        const payloadForViews = builderPayload ?? payload;
+
+        if (!payloadForViews) {
+          setSavedViews([]);
+          return;
+        }
+
+        const response = await fetch("/api/station-views", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            action: "load",
+            scopeKey,
+            payload: payloadForViews,
+          }),
         });
-        const response = await fetch(`/api/station-views?${params.toString()}`);
 
         if (!response.ok) {
-          throw new Error("Failed to load station views");
+          if (!isCancelled) {
+            setSavedViews([]);
+          }
+          return;
         }
 
         const result = (await response.json()) as { views: AppStationView[] };
@@ -196,11 +362,20 @@ export function StationDrawer({
     return () => {
       isCancelled = true;
     };
-  }, [isOpen, payload, payloadSignature, scopeKey]);
+  }, [builderPayload, isOpen, payload, payloadSignature, scopeKey]);
 
   useEffect(() => {
     setActiveViewId("");
     setViewNameDraft("");
+    setSelectedRecipeIds([]);
+    setRecipeSearch("");
+    setIsRecipePickerOpen(false);
+    setEditorSession({
+      signature: payloadSignature,
+      viewMode: "static",
+      baselineLayout: null,
+      editableLayout: null,
+    });
   }, [payloadSignature, scopeKey]);
 
   function ensureBaselineLayout() {
@@ -213,6 +388,10 @@ export function StationDrawer({
 
   function switchViewMode(mode: StationViewMode) {
     if (mode === "editable") {
+      if (!currentPayload || currentPayload.recipes.length === 0) {
+        return;
+      }
+
       if (editableLayout) {
         setEditorSession((current) => ({
           ...current,
@@ -249,35 +428,42 @@ export function StationDrawer({
       signature: payloadSignature,
       editableLayout: baselineLayout,
     }));
-    setActiveViewId("");
-    setViewNameDraft("");
   }
 
   function applySavedView(view: AppStationView) {
-    if (!payload || !view.layout) {
+    if (!payload) {
       return;
     }
 
-    const nextBaseline = ensureBaselineLayout();
-    if (!nextBaseline) {
-      return;
-    }
+    const nextRecipeIds = (view.recipeIds?.length
+      ? view.recipeIds
+      : candidateRecipes.map((recipe) => recipe.id)
+    ).filter((recipeId) => candidateRecipeIdSet.has(recipeId));
 
+    setSelectedRecipeIds(nextRecipeIds);
     setEditorSession({
       signature: payloadSignature,
-      viewMode: "editable",
-      baselineLayout: nextBaseline,
-      editableLayout: mergeEditableLayouts(nextBaseline, view.layout),
+      viewMode: view.layout ? "editable" : "static",
+      baselineLayout: view.layout ?? null,
+      editableLayout: view.layout ?? null,
     });
     setActiveViewId(view.id);
     setViewNameDraft(view.name);
+    setIsRecipePickerOpen(false);
+    setRecipeSearch("");
   }
 
   async function saveCurrentView() {
     const normalizedName = viewNameDraft.trim();
     const layoutToSave = editableLayout ?? ensureBaselineLayout();
 
-    if (!payload || !layoutToSave || !normalizedName || isSavingView) {
+    if (
+      !currentPayload ||
+      currentPayload.recipes.length === 0 ||
+      !layoutToSave ||
+      !normalizedName ||
+      isSavingView
+    ) {
       return;
     }
 
@@ -289,13 +475,14 @@ export function StationDrawer({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
+      body: JSON.stringify({
           id: canUpdateSavedView ? activeSavedView?.id : undefined,
           name: normalizedName,
           scopeKey,
           scopeLabel,
-          recipeCount: payload.recipeCount,
-          payload,
+          recipeCount: currentPayload.recipeCount,
+          recipeIds: selectedRecipeIdsInScope,
+          payload: currentPayload,
           layout: layoutToSave,
         }),
       });
@@ -313,12 +500,22 @@ export function StationDrawer({
       setActiveViewId(result.view.id);
       setViewNameDraft(result.view.name);
     } catch (error) {
-      console.error("Could not save station view", error);
+      console.error("Could not save station views", error);
       window.alert("Det gick inte att spara vyn. Försök igen.");
     } finally {
       setIsSavingView(false);
     }
   }
+
+  const toolbarTitle = activeSavedView?.name || payload?.title || "Stationsblad";
+  const selectedCount = selectedRecipeIdsInScope.length;
+  const toolbarSummary = currentPayload
+    ? currentPayload.recipeCount > 0
+      ? currentPayload.sourceLabel
+      : "Tom lägglista. Lägg till rätter för att börja."
+    : "Inget urval";
+  const canQuickFill = quickFillRecipes.length > 0;
+  const canExport = Boolean(currentPayload && currentPayload.recipes.length > 0);
 
   return (
     <section
@@ -341,12 +538,8 @@ export function StationDrawer({
       >
         <header className={styles.toolbar}>
           <div className={styles.meta}>
-            <h2 id="station-sheet-title">{payload?.title || "Stationsblad"}</h2>
-            <p>
-              {payload
-                ? `${payload.sourceLabel} • ${payload.recipeCount} recept`
-                : "Inget urval"}
-            </p>
+            <h2 id="station-sheet-title">{toolbarTitle}</h2>
+            <p>{toolbarSummary}</p>
 
             <div
               className={`${styles.sourceToggle} ${
@@ -379,6 +572,36 @@ export function StationDrawer({
 
           <div className={styles.toolbarRight}>
             <div className={styles.actions}>
+              <button
+                className={styles.buttonGhost}
+                type="button"
+                disabled={candidateRecipes.length === 0}
+                onClick={() => {
+                  setRecipeSearch("");
+                  setIsRecipePickerOpen(true);
+                }}
+              >
+                Lägg till rätt
+              </button>
+
+              <button
+                className={styles.buttonGhost}
+                type="button"
+                disabled={!canQuickFill}
+                onClick={addCurrentScopeToSelection}
+              >
+                Lägg till aktuellt urval
+              </button>
+
+              <button
+                className={styles.buttonGhost}
+                type="button"
+                disabled={selectedRecipeIds.length === 0}
+                onClick={() => clearSelection()}
+              >
+                Rensa
+              </button>
+
               {canManage ? (
                 <div className={styles.headerSavedViewSave}>
                   <input
@@ -392,7 +615,7 @@ export function StationDrawer({
                     className={styles.button}
                     type="button"
                     disabled={
-                      !payload ||
+                      !canExport ||
                       viewNameDraft.trim().length === 0 ||
                       isSavingView
                     }
@@ -415,17 +638,17 @@ export function StationDrawer({
                   type="button"
                   onClick={() => switchViewMode("static")}
                 >
-                  Statisk vy
+                  Byggläge
                 </button>
                 <button
                   className={`${styles.modeButton} ${
                     viewMode === "editable" ? styles.modeButtonActive : ""
                   }`}
                   type="button"
-                  disabled={!payload}
+                  disabled={!canExport}
                   onClick={() => switchViewMode("editable")}
                 >
-                  Redigerbar vy
+                  Redigera layout
                 </button>
               </div>
 
@@ -435,15 +658,16 @@ export function StationDrawer({
                   type="button"
                   onClick={resetEditableView}
                 >
-                  Återställ vy
+                  Återställ layout
                 </button>
               ) : null}
 
               <button
                 className={styles.button}
                 type="button"
+                disabled={!canExport}
                 onClick={() =>
-                  onPrint(payload, viewMode === "editable" ? editableLayout : null)
+                  onPrint(currentPayload, viewMode === "editable" ? editableLayout : null)
                 }
               >
                 Öppna exportvy
@@ -482,35 +706,146 @@ export function StationDrawer({
         </header>
 
         <div ref={previewWrapRef} className={styles.previewWrap}>
-          {viewMode === "editable" ? (
-            <StationEditableView
-              payload={payload}
-              layout={editableLayout}
-              variant="screen"
-              interactive
-              emptyMessage="Inga recept finns i det här urvalet ännu."
-              onLayoutChange={(value) => {
-                setEditorSession((current) => ({
-                  ...current,
-                  signature: payloadSignature,
-                  editableLayout:
-                    typeof value === "function"
-                      ? value(
-                          current.signature === payloadSignature
-                            ? current.editableLayout
-                            : null,
-                        )
-                      : value,
-                }));
-              }}
-            />
+          {canExport ? (
+            viewMode === "editable" ? (
+              <StationEditableView
+                payload={currentPayload}
+                layout={editableLayout}
+                variant="screen"
+                interactive
+                emptyMessage="Inga recept finns i det här urvalet ännu."
+                onLayoutChange={(value) => {
+                  setEditorSession((current) => ({
+                    ...current,
+                    signature: payloadSignature,
+                    editableLayout:
+                      typeof value === "function"
+                        ? value(
+                            current.signature === payloadSignature
+                              ? current.editableLayout
+                              : null,
+                          )
+                        : value,
+                  }));
+                }}
+              />
+            ) : (
+              <StationAutoView
+                payload={currentPayload}
+                variant="screen"
+                emptyMessage="Inga recept finns i det här urvalet ännu."
+              />
+            )
           ) : (
-            <StationAutoView
-              payload={payload}
-              variant="screen"
-              emptyMessage="Inga recept finns i det här urvalet ännu."
-            />
+            <button
+              className={styles.emptyBuilder}
+              type="button"
+              disabled={candidateRecipes.length === 0}
+              onClick={() => {
+                setRecipeSearch("");
+                setIsRecipePickerOpen(true);
+              }}
+            >
+              <strong>Bygg din lägglista</strong>
+              <span>
+                {candidateRecipes.length > 0
+                  ? "Klicka här för att välja bland alla rätter i systemet, eller använd snabbgenvägen för att fylla med aktuellt urval."
+                  : "Det finns inga rätter att välja just nu."}
+              </span>
+            </button>
           )}
+
+          {isRecipePickerOpen ? (
+            <div className={styles.recipePickerOverlay}>
+              <button
+                className={styles.recipePickerBackdrop}
+                type="button"
+                aria-label="Stäng väljare för rätter"
+                onClick={() => setIsRecipePickerOpen(false)}
+              />
+
+              <section className={styles.recipePickerCard}>
+                <header className={styles.recipePickerHeader}>
+                  <div>
+                    <strong>Välj rätter till lägglistan</strong>
+                    <span>
+                      {candidateRecipes.length > 0
+                        ? `${candidateRecipes.length} rätter tillgängliga, ${selectedCount} valda`
+                        : "Inga rätter tillgängliga just nu"}
+                    </span>
+                  </div>
+
+                  <div className={styles.recipePickerHeaderActions}>
+                    <button
+                      className={styles.buttonGhost}
+                      type="button"
+                      disabled={selectedCount === 0}
+                      onClick={() => clearSelection({ keepPickerOpen: true })}
+                    >
+                      Rensa
+                    </button>
+                    <button
+                      className={styles.buttonGhost}
+                      type="button"
+                      onClick={() => setIsRecipePickerOpen(false)}
+                    >
+                      Klar
+                    </button>
+                  </div>
+                </header>
+
+                <input
+                  className={styles.recipePickerSearch}
+                  type="search"
+                  value={recipeSearch}
+                  placeholder="Sök på rätt, kategori eller ingrediens"
+                  onChange={(event) => setRecipeSearch(event.target.value)}
+                />
+
+                <div className={styles.recipePickerList}>
+                  <div className={styles.recipePickerListHeader} aria-hidden="true">
+                    <span />
+                    <span className={styles.recipePickerHeaderTitle}>Rätt</span>
+                    <span className={styles.recipePickerHeaderCategory}>Kategori</span>
+                    <span className={styles.recipePickerHeaderAmount}>Total</span>
+                  </div>
+
+                  {filteredCandidateRecipes.length > 0 ? (
+                    filteredCandidateRecipes.map((recipe) => {
+                      const isSelected = selectedRecipeIds.includes(recipe.id);
+
+                      return (
+                        <label
+                          key={recipe.id}
+                          className={`${styles.recipePickerItem} ${
+                            isSelected ? styles.recipePickerItemSelected : ""
+                          }`}
+                        >
+                          <input
+                            className={styles.recipePickerCheckbox}
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => toggleRecipeSelection(recipe.id)}
+                          />
+                          <strong className={styles.recipePickerTitle}>{recipe.title}</strong>
+                          <span className={styles.recipePickerCategory}>
+                            {recipe.category}
+                          </span>
+                          <span className={styles.recipePickerAmount}>
+                            {recipe.totalAmount}
+                          </span>
+                        </label>
+                      );
+                    })
+                  ) : (
+                    <div className={styles.recipePickerEmpty}>
+                      Inga rätter matchade din sökning.
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
+          ) : null}
         </div>
       </article>
     </section>

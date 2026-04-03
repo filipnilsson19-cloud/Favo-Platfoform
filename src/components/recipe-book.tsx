@@ -884,6 +884,7 @@ export function RecipeBook({ categories, recipes }: RecipeBookProps) {
         categoriesLocked={selectedRecipes.length > 0}
         categoryOptions={stationCategoryOptions}
         canManage={canManage}
+        allRecipes={recipeList}
         isOpen={isStationOpen}
         payload={stationPayload}
         scopeKey={stationViewScope.key}

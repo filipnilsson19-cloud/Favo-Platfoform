@@ -75,22 +75,39 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const appUser = await requireAdminUser();
-
-  if (appUser instanceof NextResponse) {
-    return appUser;
-  }
-
   try {
     const body = (await request.json()) as {
+      action?: "load";
       id?: string;
       name?: string;
       scopeKey?: string;
       scopeLabel?: string;
       recipeCount?: number;
+      recipeIds?: string[];
       payload?: StationPrintPayload;
       layout?: StationEditableLayout;
     };
+
+    if (body.action === "load") {
+      const appUser = await requireAuthenticatedUser();
+
+      if (appUser instanceof NextResponse) {
+        return appUser;
+      }
+
+      if (!body.scopeKey?.trim() || !body.payload) {
+        return NextResponse.json({ views: [] });
+      }
+
+      const views = await getStationViewsForScopeForApp(body.scopeKey, body.payload);
+      return NextResponse.json({ views });
+    }
+
+    const appUser = await requireAdminUser();
+
+    if (appUser instanceof NextResponse) {
+      return appUser;
+    }
 
     if (
       !body.name?.trim() ||
@@ -111,6 +128,10 @@ export async function POST(request: Request) {
       scopeKey: body.scopeKey,
       scopeLabel: body.scopeLabel,
       recipeCount: body.recipeCount ?? body.payload.recipeCount,
+      recipeIds:
+        body.recipeIds?.filter(
+          (value): value is string => typeof value === "string" && value.trim().length > 0,
+        ) ?? body.payload.recipes.map((recipe) => recipe.id),
       payload: body.payload,
       layout: body.layout,
     });

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-import { StationAutoView } from "@/components/station-auto-view";
-import { StationEditableView } from "@/components/station-editable-view";
+import { StationKitchenSheet } from "@/components/station-kitchen-sheet";
+import { exportStationBundleToExcel } from "@/lib/station-excel";
 import { STATION_PRINT_STORAGE_KEY } from "@/lib/station-utils";
 import type { StationPrintBundle } from "@/types/station";
 
@@ -20,35 +20,14 @@ function readBundle(): StationPrintBundle | null {
   }
 }
 
-function toAbsoluteUrl(value: string) {
-  return new URL(value, window.location.origin).toString();
-}
-
-function absolutizeSrcSet(value: string) {
-  return value
-    .split(",")
-    .map((entry) => {
-      const [url, descriptor] = entry.trim().split(/\s+/, 2);
-      const absoluteUrl = toAbsoluteUrl(url);
-      return descriptor ? `${absoluteUrl} ${descriptor}` : absoluteUrl;
-    })
-    .join(", ");
-}
-
-function toFileName(value: string) {
-  return (
-    value
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "stationsblad"
-  );
-}
-
 export default function StationPrintPage() {
-  const [bundle] = useState<StationPrintBundle | null>(() => readBundle());
+  const [bundle, setBundle] = useState<StationPrintBundle | null>(null);
+  const [isExportingExcel, setIsExportingExcel] = useState(false);
   const payload = bundle?.payload ?? null;
+
+  useEffect(() => {
+    setBundle(readBundle());
+  }, []);
 
   function handleClose() {
     window.close();
@@ -63,46 +42,18 @@ export default function StationPrintPage() {
     }, 120);
   }
 
-  function handleDownloadHtml() {
-    const documentClone = document.documentElement.cloneNode(true) as HTMLHtmlElement;
+  async function handleDownloadExcel() {
+    if (!bundle) return;
 
-    documentClone
-      .querySelectorAll('[data-export-hide="true"]')
-      .forEach((element) => element.remove());
-    documentClone.querySelectorAll("script").forEach((element) => element.remove());
-
-    documentClone.querySelectorAll<HTMLElement>("[hidden]").forEach((element) => {
-      element.removeAttribute("hidden");
-    });
-
-    documentClone.querySelectorAll<HTMLLinkElement>('link[href]').forEach((element) => {
-      element.href = toAbsoluteUrl(element.getAttribute("href") ?? element.href);
-    });
-
-    documentClone.querySelectorAll<HTMLElement>("[src]").forEach((element) => {
-      const src = element.getAttribute("src");
-      if (!src) return;
-      element.setAttribute("src", toAbsoluteUrl(src));
-    });
-
-    documentClone.querySelectorAll<HTMLElement>("[srcset]").forEach((element) => {
-      const srcSet = element.getAttribute("srcset");
-      if (!srcSet) return;
-      element.setAttribute("srcset", absolutizeSrcSet(srcSet));
-    });
-
-    const html = `<!DOCTYPE html>\n${documentClone.outerHTML}`;
-    const blob = new Blob([html], { type: "text/html;charset=utf-8" });
-    const downloadUrl = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = downloadUrl;
-    link.download = `${toFileName(payload?.title || "stationsblad")}-export.html`;
-    document.body.append(link);
-    link.click();
-    link.remove();
-
-    window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 250);
+    try {
+      setIsExportingExcel(true);
+      await exportStationBundleToExcel(bundle);
+    } catch (error) {
+      console.error("Failed to export Excel", error);
+      window.alert("Det gick inte att exportera Excel-filen. Försök igen.");
+    } finally {
+      setIsExportingExcel(false);
+    }
   }
 
   useEffect(() => {
@@ -122,49 +73,29 @@ export default function StationPrintPage() {
           <strong>{payload?.title || "Stationsblad"}</strong>
           <span>{summary}</span>
           <span className={styles.hint}>
-            Öppna den här sidan, justera om det behövs och skriv sedan ut eller spara som PDF.
+            Utskriftsvyn matchar nu samma t\u00e4ta layout som Excel-exporten.
           </span>
         </div>
 
         <div className={styles.actions}>
-          <button
-            className={styles.buttonGhost}
-            type="button"
-            onClick={handleClose}
-          >
+          <button className={styles.buttonGhost} type="button" onClick={handleClose}>
             Stäng
           </button>
           <button
             className={styles.buttonGhost}
             type="button"
-            onClick={handleDownloadHtml}
+            disabled={!bundle || isExportingExcel}
+            onClick={() => void handleDownloadExcel()}
           >
-            Ladda ner HTML
+            {isExportingExcel ? "Exporterar..." : "Exportera Excel"}
           </button>
-          <button
-            className={styles.button}
-            type="button"
-            onClick={() => window.print()}
-          >
+          <button className={styles.button} type="button" onClick={() => window.print()}>
             Skriv ut / spara PDF
           </button>
         </div>
       </header>
 
-      {bundle?.editableLayout ? (
-        <StationEditableView
-          payload={payload}
-          layout={bundle.editableLayout}
-          variant="print"
-          emptyMessage="Ingen utskriftsdata hittades. Gå tillbaka till stationsvyn och försök igen."
-        />
-      ) : (
-        <StationAutoView
-          payload={payload}
-          variant="print"
-          emptyMessage="Ingen utskriftsdata hittades. Gå tillbaka till stationsvyn och försök igen."
-        />
-      )}
+      <StationKitchenSheet bundle={bundle} />
     </div>
   );
 }
